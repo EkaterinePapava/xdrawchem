@@ -85,7 +85,7 @@ void Bond::Edit()
 
 void Bond::Render()
 {
-    double myangle, x1, y1, x2, y2, rise, run, lx, ly, cf = 0.02;
+    double myangle, x1, y1, x2, y2, lx, ly, cf = 0.02;
     QColor c1;
 
     if ( highlighted )
@@ -199,27 +199,103 @@ void Bond::Render()
         cf = 0.05;
     if ( bl < 27.0 )
         cf = 0.07;
-    // find sp1 and ep1
-    rise = ( end->y + y2 ) - ( start->y + y2 );
-    run = ( end->x + x2 ) - ( start->x + x2 );
-    lx = start->x + x2 + run * cf;
-    ly = start->y + y2 + rise * cf;
-    QPoint sp1( ( int ) lx, ( int ) ly );
 
-    lx = start->x + x2 + run * ( 1.0 - cf );
-    ly = start->y + y2 + rise * ( 1.0 - cf );
-    QPoint ep1( ( int ) lx, ( int ) ly );
+    // --- Improved inner-line trimming (fixes issue #9: double bond geometry) ---
+    // Compute trim at each end based on the angle formed with neighboring bonds.
+    // The inner offset line is shortened so it visually "meets" adjacent bonds
+    // cleanly at non-linear (e.g. 90°, 120°) angles.
+    //
+    // Algorithm: at each endpoint, for each neighbor on the inner-line side,
+    // trim = abl / tan(interior_angle_between_bond_and_neighbor).
+    // A positive trim shortens from that end; negative or zero means no trim.
 
-    // find sp2 and ep2
-    rise = ( end->y - y2 ) - ( start->y - y2 );
-    run = ( end->x - x2 ) - ( start->x - x2 );
-    lx = start->x - x2 + run * cf;
-    ly = start->y - y2 + rise * cf;
-    QPoint sp2( ( int ) lx, ( int ) ly );
+    // Bond direction unit vector
+    double bdx = end->x - start->x;
+    double bdy = end->y - start->y;
+    double blen = sqrt( bdx * bdx + bdy * bdy );
+    if ( blen < 1e-6 ) blen = 1e-6;
+    bdx /= blen;
+    bdy /= blen;
 
-    lx = start->x - x2 + run * ( 1.0 - cf );
-    ly = start->y - y2 + rise * ( 1.0 - cf );
-    QPoint ep2( ( int ) lx, ( int ) ly );
+    // The inner-side perpendicular (x2/abl, y2/abl)
+    double px = x2 / abl;
+    double py = y2 / abl;
+
+    // Helper: given endpoint EP and its neighbor list, compute trim distance
+    // for the inner (perp-side) offset line.
+    // perp_sign: +1 for sp1/ep1 side, -1 for sp2/ep2 side
+    auto calcTrim = [&]( DPoint *ep, DPoint *other_end, double perp_sign ) -> double {
+        double best_trim = 0.0;
+        for ( DPoint *nb : ep->neighbors ) {
+            if ( nb == other_end )
+                continue;           // skip the bond's own other endpoint
+            double ndx = nb->x - ep->x;
+            double ndy = nb->y - ep->y;
+            double nmag = sqrt( ndx * ndx + ndy * ndy );
+            if ( nmag < 1e-6 )
+                continue;
+            ndx /= nmag;
+            ndy /= nmag;
+
+            // Is this neighbor on the inner (perp) side?
+            double dot_perp = ndx * px * perp_sign + ndy * py * perp_sign;
+            if ( dot_perp <= 0.0 )
+                continue;           // neighbor is on outer side — no trim needed
+
+            // Interior angle between the (reversed) bond direction and neighbor
+            // back_dir = (-bdx, -bdy); neighbor_dir = (ndx, ndy)
+            double dot_back = ( -bdx ) * ndx + ( -bdy ) * ndy;
+            dot_back = qBound( -1.0, dot_back, 1.0 );
+            double interior_angle = acos( dot_back );  // 0..PI
+
+            // trim = abl / tan(interior_angle)
+            // interior_angle == 0 → collinear, no trim
+            // interior_angle == PI/2 → trim = 0
+            // interior_angle < PI/2 → trim > 0 (neighbor bends away from inner line)
+            double sin_ia = sin( interior_angle );
+            if ( sin_ia < 1e-6 )
+                continue;
+            double tan_ia = sin_ia / cos( interior_angle );
+            if ( tan_ia < 1e-6 )
+                continue;
+            double trim = abl / tan_ia;
+            if ( trim > best_trim )
+                best_trim = trim;
+        }
+        return best_trim;
+    };
+
+    // sp1/ep1 are the +perp side (wside==1)
+    double trim1_s = calcTrim( start, end,   +1.0 );
+    double trim1_e = calcTrim( end,   start, +1.0 );
+    double sp1_frac = ( blen > 1e-6 ) ? trim1_s / blen : cf;
+    double ep1_frac = ( blen > 1e-6 ) ? trim1_e / blen : cf;
+    sp1_frac = qBound( cf, sp1_frac, 0.45 );
+    ep1_frac = qBound( cf, ep1_frac, 0.45 );
+
+    lx = start->x + x2 + ( end->x + x2 - start->x - x2 ) * sp1_frac;
+    ly = start->y + y2 + ( end->y + y2 - start->y - y2 ) * sp1_frac;
+    QPoint sp1( qRound( lx ), qRound( ly ) );
+
+    lx = start->x + x2 + ( end->x + x2 - start->x - x2 ) * ( 1.0 - ep1_frac );
+    ly = start->y + y2 + ( end->y + y2 - start->y - y2 ) * ( 1.0 - ep1_frac );
+    QPoint ep1( qRound( lx ), qRound( ly ) );
+
+    // sp2/ep2 are the -perp side (wside==0)
+    double trim2_s = calcTrim( start, end,   -1.0 );
+    double trim2_e = calcTrim( end,   start, -1.0 );
+    double sp2_frac = ( blen > 1e-6 ) ? trim2_s / blen : cf;
+    double ep2_frac = ( blen > 1e-6 ) ? trim2_e / blen : cf;
+    sp2_frac = qBound( cf, sp2_frac, 0.45 );
+    ep2_frac = qBound( cf, ep2_frac, 0.45 );
+
+    lx = start->x - x2 + ( end->x - x2 - start->x + x2 ) * sp2_frac;
+    ly = start->y - y2 + ( end->y - y2 - start->y + y2 ) * sp2_frac;
+    QPoint sp2( qRound( lx ), qRound( ly ) );
+
+    lx = start->x - x2 + ( end->x - x2 - start->x + x2 ) * ( 1.0 - ep2_frac );
+    ly = start->y - y2 + ( end->y - y2 - start->y + y2 ) * ( 1.0 - ep2_frac );
+    QPoint ep2( qRound( lx ), qRound( ly ) );
 
     if ( special_case_1 == true ) {
         if ( dashed > 1 )

@@ -244,11 +244,12 @@ target_link_libraries(xdrawchem_obj PUBLIC
     ${OpenBabel_LIBRARIES}
 )
 
-qt_add_executable(xdrawchem
+add_executable(xdrawchem
     $<TARGET_OBJECTS:xdrawchem_obj>
     xdrawchem/main.cpp
     ${XDC_HEADERS}
 )
+set_target_properties(xdrawchem PROPERTIES AUTOMOC OFF AUTOUIC OFF AUTORCC OFF)
 
 # ── Include paths ─────────────────────────────────────────────────────────────
 target_include_directories(xdrawchem PRIVATE
