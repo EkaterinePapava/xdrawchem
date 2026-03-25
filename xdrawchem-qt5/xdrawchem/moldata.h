@@ -52,41 +52,37 @@ public:
             iso.remove(0,999);
             thiselement.remove(0,999);
             repeatnum.remove(0,999);
-            // Check if token starts with a number
-            if (x.at(ptr).isNumber() == true) { // read isotope value
+            // Check if token starts with a number (isotope prefix)
+            if (ptr < x.length() && x.at(ptr).isNumber() == true) {
                 isoflag = true;
-                iso.append(x.at(ptr));
-                ptr++;
-                if (x.at(ptr).isNumber() == true) {
-                iso.append(x.at(ptr));
-                ptr++;
+                iso.append(x.at(ptr)); ptr++;
+                if (ptr < x.length() && x.at(ptr).isNumber() == true) {
+                    iso.append(x.at(ptr)); ptr++;
                 }
-                if (x.at(ptr).isNumber() == true) {
-                    iso.append(x.at(ptr));
-                    ptr++;
+                if (ptr < x.length() && x.at(ptr).isNumber() == true) {
+                    iso.append(x.at(ptr)); ptr++;
                 }
             }
             // ptr now points to first letter of element
-            thiselement.append(x.at(ptr));
-            ptr++;
-            // if next letter is lowercase, add it too
-            if (x.at(ptr).category() == QChar::Letter_Lowercase) {
+            if (ptr < x.length()) {
                 thiselement.append(x.at(ptr));
                 ptr++;
             }
-            // if next character is number, it's the subscript
-            if (x.at(ptr).isNumber() == true) {
-                repeatnum.append(x.at(ptr));
+            // if next letter is lowercase, add it too
+            if (ptr < x.length() && x.at(ptr).category() == QChar::Letter_Lowercase) {
+                thiselement.append(x.at(ptr));
                 ptr++;
-                if (x.at(ptr).isNumber() == true) {
-                    repeatnum.append(x.at(ptr));
-                    ptr++;
+            }
+            // if next character is a digit, it's the subscript count
+            if (ptr < x.length() && x.at(ptr).isNumber() == true) {
+                repeatnum.append(x.at(ptr)); ptr++;
+                if (ptr < x.length() && x.at(ptr).isNumber() == true) {
+                    repeatnum.append(x.at(ptr)); ptr++;
                 }
-                if (x.at(ptr).isNumber() == true) {
-                    repeatnum.append(x.at(ptr));
-                    ptr++;
+                if (ptr < x.length() && x.at(ptr).isNumber() == true) {
+                    repeatnum.append(x.at(ptr)); ptr++;
                 }
-            repeat = repeatnum.toInt();
+                repeat = repeatnum.toInt();
             }
             // Move to next letter/number
             if (ptr < x.length()) {

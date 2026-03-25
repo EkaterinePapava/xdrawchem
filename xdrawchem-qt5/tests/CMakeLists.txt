@@ -82,3 +82,17 @@ target_link_libraries(tst_smiles PRIVATE xdrawchem_obj)
 set_tests_properties(tst_smiles PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
 )
+
+# ── Test: MolData static lookup functions ─────────────────────────────────────
+# Pure header-only static class — zero Qt widget or OpenBabel dependency.
+xdc_test(tst_moldata
+    tst_moldata.cpp
+)
+
+# ── Test: Aromaticity detection (SSSR::FindAromatic) ─────────────────────────
+# Uses Bond objects (Render2D* = nullptr), no Render2D dereference at test time.
+xdc_test(tst_aromaticity
+    tst_aromaticity.cpp
+    globals_stub.cpp
+)
+target_link_libraries(tst_aromaticity PRIVATE xdrawchem_obj)
