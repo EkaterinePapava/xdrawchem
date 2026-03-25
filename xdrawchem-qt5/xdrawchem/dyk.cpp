@@ -33,18 +33,18 @@ DYKDialog::DYKDialog( QWidget *parent )
     QHBoxLayout *btnLayout = new QHBoxLayout();
 
     QPushButton *prevTipBtn = new QPushButton( tr( "Previous tip" ) );
-    connect( prevTipBtn, SIGNAL( clicked() ), SLOT( prevTip() ) );
+    connect( prevTipBtn, &QAbstractButton::clicked, this, &DYKDialog::prevTip );
     btnLayout->addWidget( prevTipBtn );
 
     QPushButton *nextTipBtn = new QPushButton( tr( "Next tip" ) );
-    connect( nextTipBtn, SIGNAL( clicked() ), SLOT( nextTip() ) );
+    connect( nextTipBtn, &QAbstractButton::clicked, this, &DYKDialog::nextTip );
     btnLayout->addWidget( nextTipBtn );
 
     QSpacerItem *btnSpacer = new QSpacerItem( 1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum );
     btnLayout->addItem( btnSpacer );
 
     QPushButton *okBtn = new QPushButton( tr( "OK" ) );
-    connect( okBtn, SIGNAL( clicked() ), SLOT( finished() ) );
+    connect( okBtn, &QAbstractButton::clicked, this, &DYKDialog::finished );
     btnLayout->addWidget( okBtn );
 
     dykLayout->addLayout(btnLayout, 4, 0, 1, 2 );

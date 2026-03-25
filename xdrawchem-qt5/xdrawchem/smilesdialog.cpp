@@ -31,7 +31,7 @@ SmilesDialog::SmilesDialog( QWidget *parent )
     smilesLayout->addWidget( smilesLabel );
 
     smilesInput = new QLineEdit( this );
-    connect( smilesInput, SIGNAL( returnPressed() ), this, SLOT( accept() ) );
+    connect( smilesInput, &QLineEdit::returnPressed, this, &QDialog::accept );
     smilesLayout->addWidget( smilesInput );
 
     QHBoxLayout *btnLayout = new QHBoxLayout();
@@ -39,11 +39,11 @@ SmilesDialog::SmilesDialog( QWidget *parent )
     btnLayout->addItem( btnSpacer );
 
     QPushButton *okBtn = new QPushButton( tr( "OK" ), this );
-    connect( okBtn, SIGNAL( clicked() ), SLOT( accept() ) );
+    connect( okBtn, &QAbstractButton::clicked, this, &QDialog::accept );
     btnLayout->addWidget( okBtn );
 
     QPushButton *cancelBtn = new QPushButton( tr( "Cancel" ), this );
-    connect( cancelBtn, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( cancelBtn, &QAbstractButton::clicked, this, &QDialog::reject );
     btnLayout->addWidget( cancelBtn );
 
     smilesLayout->addLayout( btnLayout );

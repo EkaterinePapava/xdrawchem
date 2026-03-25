@@ -11,6 +11,7 @@
 #include <QDateTime>
 #include <QGridLayout>
 #include <QApplication>
+#include <QGuiApplication>
 #include <QCloseEvent>
 #include <QWhatsThis>
 #include <QStatusBar>
@@ -18,7 +19,7 @@
 #include <QMessageBox>
 #include <QColorDialog>
 #include <QFontDialog>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QLineEdit>
 #include <QBitmap>
 #include <unistd.h>
@@ -164,7 +165,7 @@ ApplicationWindow::ApplicationWindow()
     m_renderArea = new RenderArea( m_centralWidget );
     m_renderer = new Render2D( m_centralWidget );
     m_renderArea->setWidget( m_renderer );
-    connect( m_renderArea, SIGNAL( scrolled( int, int ) ), SLOT( svXY( int, int ) ) );
+    connect( m_renderArea, &RenderArea::scrolled, this, &ApplicationWindow::svXY );
 
     /// create grid layout
     QGridLayout *glo = new QGridLayout( m_centralWidget );
@@ -188,43 +189,43 @@ ApplicationWindow::ApplicationWindow()
     fileTools = new QToolBar( tr( "File Operations" ), this );
     addToolBar( fileTools );
 
-    QAction *fileOpenAction = fileTools->addAction( QIcon( RingDir + "fileopen.png" ), tr( "Open file" ),
-                                                    this, SLOT( load() ) );
+    QAction *fileOpenAction = fileTools->addAction( QIcon( RingDir + "fileopen.png" ), tr( "Open file" ) );
+    connect( fileOpenAction, &QAction::triggered, this, [this](){ load(); } );
 
     fileOpenAction->setWhatsThis( fileOpenText );
 
-    QAction *fileSaveAction = fileTools->addAction( QIcon( RingDir + "filesave.png" ), tr( "Save file" ),
-                                                    this, SLOT( save() ) );
+    QAction *fileSaveAction = fileTools->addAction( QIcon( RingDir + "filesave.png" ), tr( "Save file" ) );
+    connect( fileSaveAction, &QAction::triggered, this, [this](){ save(); } );
 
     fileSaveAction->setWhatsThis( fileSaveText );
 
     QAction *filePrintAction = fileTools->addAction( QIcon( RingDir + "fileprint.png" ), tr( "Print file" ),
-                                                     this, SLOT( print() ) );
+                                                     this, &ApplicationWindow::print );
 
     filePrintAction->setWhatsThis( filePrintText );
 
     QAction *cutAction = fileTools->addAction( QIcon( RingDir + "cuttool.png" ), tr( "Cut" ),
-                                               this, SLOT( Cut() ) );
+                                               this, &ApplicationWindow::Cut );
 
     cutAction->setWhatsThis( editCutText );
 
     QAction *copyAction = fileTools->addAction( QIcon( RingDir + "copytool.png" ), tr( "Copy" ),
-                                                this, SLOT( Copy() ) );
+                                                this, &ApplicationWindow::Copy );
 
     copyAction->setWhatsThis( editCopyText );
 
     QAction *pasteAction = fileTools->addAction( QIcon( RingDir + "pastetool.png" ), tr( "Paste" ),
-                                                 this, SLOT( Paste() ) );
+                                                 this, &ApplicationWindow::Paste );
 
     pasteAction->setWhatsThis( editPasteText );
 
     QAction *magPlusAction = fileTools->addAction( QIcon( RingDir + "mag_plus.png" ), tr( "Zoom In" ),
-                                                   this, SLOT( MagnifyPlus() ) );
+                                                   this, &ApplicationWindow::MagnifyPlus );
 
     magPlusAction->setWhatsThis( editMPText );
 
     QAction *magMinusAction = fileTools->addAction( QIcon( RingDir + "mag_minus.png" ), tr( "Zoom Out" ),
-                                                    this, SLOT( MagnifyMinus() ) );
+                                                    this, &ApplicationWindow::MagnifyMinus );
 
     magMinusAction->setWhatsThis( editMMText );
 
@@ -238,10 +239,10 @@ ApplicationWindow::ApplicationWindow()
 //     pixpaint.drawLine( 24, 2, 24, 16 );
 //     pixpaint.drawLine( 24, 16, 20, 12 );
 //     pixpaint.drawLine( 24, 16, 28, 12 );
-//     setColorAction = fileTools->addAction( QIcon( tmp_pm ), tr( "Color" ), this, SLOT( NewColor() ) );
+//     setColorAction = fileTools->addAction( QIcon( tmp_pm ), tr( "Color" ), this, &ApplicationWindow::NewColor );
 
     colorBtn = new ColorButton( m_renderer->GetColor() );
-    connect( colorBtn, SIGNAL( pressed() ), SLOT( NewColor() ) );
+    connect( colorBtn, &QAbstractButton::pressed, this, &ApplicationWindow::NewColor );
     fileTools->addWidget( colorBtn );
 
     ltList = new QComboBox( fileTools );
@@ -258,7 +259,7 @@ ApplicationWindow::ApplicationWindow()
     ltList->addItem( QIcon( RingDir + "line3.png" ), "3" );
     ltList->addItem( QIcon( RingDir + "line4.png" ), "4" );
     ltList->addItem( QIcon( RingDir + "line5.png" ), "5" );
-    connect( ltList, SIGNAL( activated( int ) ), SLOT( SetThick( int ) ) );
+    connect( ltList, &QComboBox::activated, this, &ApplicationWindow::SetThick );
 
     fileTools->addWidget( ltList );
 
@@ -270,7 +271,7 @@ ApplicationWindow::ApplicationWindow()
     fontList->addItem( "Symbol" );
     fontList->addItem( "Times" );
     fontList->setCurrentIndex( 1 );
-    connect( fontList, SIGNAL( activated( int ) ), SLOT( setFontFace( int ) ) );
+    connect( fontList, &QComboBox::activated, this, &ApplicationWindow::setFontFace );
 
     fileTools->addWidget( fontList );
 
@@ -285,32 +286,32 @@ ApplicationWindow::ApplicationWindow()
     fontSizeList->addItem( "24" );
     fontSizeList->addItem( "32" );
     fontSizeList->setCurrentIndex( 2 );
-    connect( fontSizeList, SIGNAL( activated( int ) ), this, SLOT( setFontPoints( int ) ) );
+    connect( fontSizeList, &QComboBox::activated, this, &ApplicationWindow::setFontPoints );
 
     fileTools->addWidget( fontSizeList );
 
-    justifyLeftAction = fileTools->addAction( QIcon( RingDir + "justifylefttool.png" ), tr( "Left-justify selected text" ), m_renderer, SLOT( JustifyLeft() ) );
+    justifyLeftAction = fileTools->addAction( QIcon( RingDir + "justifylefttool.png" ), tr( "Left-justify selected text" ), m_renderer, &Render2D::JustifyLeft );
     justifyLeftAction->setVisible( false );
 
-    justifyCenterAction = fileTools->addAction( QIcon( RingDir + "justifycentertool.png" ), tr( "Center selected text" ), m_renderer, SLOT( JustifyCenter() ) );
+    justifyCenterAction = fileTools->addAction( QIcon( RingDir + "justifycentertool.png" ), tr( "Center selected text" ), m_renderer, &Render2D::JustifyCenter );
     justifyCenterAction->setVisible( false );
 
-    justifyRightAction = fileTools->addAction( QIcon( RingDir + "justifyrighttool.png" ), tr( "Right-justify selected text" ), m_renderer, SLOT( JustifyRight() ) );
+    justifyRightAction = fileTools->addAction( QIcon( RingDir + "justifyrighttool.png" ), tr( "Right-justify selected text" ), m_renderer, &Render2D::JustifyRight );
     justifyRightAction->setVisible( false );
 
-    boldAction = fileTools->addAction( QIcon( RingDir + "boldtool.png" ), tr( "Make selected text <b>bold</b>" ), m_renderer, SLOT( Bold() ) );
+    boldAction = fileTools->addAction( QIcon( RingDir + "boldtool.png" ), tr( "Make selected text <b>bold</b>" ), m_renderer, &Render2D::Bold );
     boldAction->setVisible( false );
 
-    italicAction = fileTools->addAction( QIcon( RingDir + "italictool.png" ), tr( "<i>Italicize</i> selected text" ), m_renderer, SLOT( Italic() ) );
+    italicAction = fileTools->addAction( QIcon( RingDir + "italictool.png" ), tr( "<i>Italicize</i> selected text" ), m_renderer, &Render2D::Italic );
     italicAction->setVisible( false );
 
-    underlineAction = fileTools->addAction( QIcon( RingDir + "underlinetool.png" ), tr( "Underline selected text" ), m_renderer, SLOT( Underline() ) );
+    underlineAction = fileTools->addAction( QIcon( RingDir + "underlinetool.png" ), tr( "Underline selected text" ), m_renderer, &Render2D::Underline );
     underlineAction->setVisible( false );
 
-    superscriptAction = fileTools->addAction( QIcon( RingDir + "superscript.png" ), tr( "Superscript selected text" ), m_renderer, SLOT( Superscript() ) );
+    superscriptAction = fileTools->addAction( QIcon( RingDir + "superscript.png" ), tr( "Superscript selected text" ), m_renderer, &Render2D::Superscript );
     superscriptAction->setVisible( false );
 
-    subscriptAction = fileTools->addAction( QIcon( RingDir + "subscript.png" ), tr( "Subscript selected text" ), m_renderer, SLOT( Subscript() ) );
+    subscriptAction = fileTools->addAction( QIcon( RingDir + "subscript.png" ), tr( "Subscript selected text" ), m_renderer, &Render2D::Subscript );
     subscriptAction->setVisible( false );
 
     QAction *whatsThisAction = QWhatsThis::createAction( fileTools );
@@ -324,32 +325,32 @@ ApplicationWindow::ApplicationWindow()
     addToolBar( Qt::LeftToolBarArea, drawTools );
 
     QAction *selectAction = drawTools->addAction( QIcon( RingDir + "selecttool.png" ), tr( "Select" ),
-                                                  m_renderer, SLOT( setMode_Select() ) );
+                                                  m_renderer, &Render2D::setMode_Select );
 
     selectAction->setWhatsThis( selectToolText );
 
     QAction *lassoAction = drawTools->addAction( QIcon( RingDir + "lassotool.png" ), tr( "Lasso" ),
-                                                 m_renderer, SLOT( setMode_Lasso() ) );
+                                                 m_renderer, &Render2D::setMode_Lasso );
 
     lassoAction->setWhatsThis( lassoToolText );
 
     QAction *eraseAction = drawTools->addAction( QIcon( RingDir + "erasetool.png" ), tr( "Erase" ),
-                                                 m_renderer, SLOT( setMode_Erase() ) );
+                                                 m_renderer, &Render2D::setMode_Erase );
 
     eraseAction->setWhatsThis( eraseToolText );
 
     QAction *drawLineAction = drawTools->addAction( QIcon( RingDir + "linetool.png" ), tr( "Draw Line" ),
-                                                    m_renderer, SLOT( setMode_DrawLine() ) );
+                                                    m_renderer, &Render2D::setMode_DrawLine );
 
     drawLineAction->setWhatsThis( lineToolText );
 
     QAction *drawDashLineAction = drawTools->addAction( QIcon( RingDir + "dashtool.png" ), tr( "Draw dashed line" ),
-                                                        m_renderer, SLOT( setMode_DrawDashLine() ) );
+                                                        m_renderer, &Render2D::setMode_DrawDashLine );
 
     drawDashLineAction->setWhatsThis( dashLineToolText );
 
     QAction *drawChainAction = drawTools->addAction( QIcon( RingDir + "chaintool.png" ), tr( "Draw aliphatic chain" ),
-                                                     m_renderer, SLOT( setMode_DrawChain() ) );
+                                                     m_renderer, &Render2D::setMode_DrawChain );
 
     drawChainAction->setWhatsThis( chainToolText );
 
@@ -376,8 +377,8 @@ ApplicationWindow::ApplicationWindow()
     drawArrowButton->setDefaultAction( regularArrowAction );
     drawArrowButton->setWhatsThis( arrowToolText );
     drawArrowButton->setIcon( QIcon( QPixmap( arrow_regular_xpm ) ) );
-    connect( drawArrowButton, SIGNAL( triggered( QAction * ) ), SLOT( FromArrowMenu( QAction * ) ) );
-    connect( regularArrowMenu, SIGNAL( triggered( QAction * ) ), SLOT( setRegularArrowAction( QAction * ) ) );
+    connect( drawArrowButton, &QToolButton::clicked, this, [this](){ FromArrowMenu( nullptr ); } );
+    connect( regularArrowMenu, &QMenu::triggered, this, &ApplicationWindow::setRegularArrowAction );
     drawTools->addWidget( drawArrowButton );
 
     /// curvearrowbutton
@@ -388,8 +389,8 @@ ApplicationWindow::ApplicationWindow()
     drawCurveArrowButton->setDefaultAction( carrowCW90Action );
     drawCurveArrowButton->setWhatsThis( cArrowToolText );
     drawCurveArrowButton->setIcon( QIcon( QPixmap ( cw90_xpm ) ) );
-    connect( drawCurveArrowButton, SIGNAL( triggered( QAction * ) ), SLOT( FromCurveArrowMenu( QAction * ) ) );
-    connect( curveArrowMenu, SIGNAL( triggered( QAction * ) ), SLOT( setCurveArrowAction( QAction * ) ) );
+    connect( drawCurveArrowButton, &QToolButton::clicked, this, [this](){ FromCurveArrowMenu( nullptr ); } );
+    connect( curveArrowMenu, &QMenu::triggered, this, &ApplicationWindow::setCurveArrowAction );
     drawTools->addWidget( drawCurveArrowButton );
 
     /// bracketbutton
@@ -400,13 +401,13 @@ ApplicationWindow::ApplicationWindow()
     drawBracketButton->setDefaultAction( squareBracketAction );
     drawBracketButton->setWhatsThis( bracketToolText );
     drawBracketButton->setIcon( QIcon( QPixmap( squarebracket_xpm ) ) );
-    connect( drawBracketButton, SIGNAL( triggered( QAction * ) ), SLOT( FromBracketMenu( QAction * ) ) );
-    connect( bracketMenu, SIGNAL( triggered( QAction * ) ), SLOT( setBracketAction( QAction * ) ) );
+    connect( drawBracketButton, &QToolButton::clicked, this, [this](){ FromBracketMenu( nullptr ); } );
+    connect( bracketMenu, &QMenu::triggered, this, &ApplicationWindow::setBracketAction );
     drawTools->addWidget( drawBracketButton );
 
     /// textbutton
     QAction *drawTextAction = drawTools->addAction( QIcon( RingDir + "texttool.png" ), tr( "Draw or edit text" ),
-                                                    m_renderer, SLOT( setMode_DrawText() ) );
+                                                    m_renderer, &Render2D::setMode_DrawText );
 
     drawTextAction->setWhatsThis( textToolText );
 
@@ -419,8 +420,8 @@ ApplicationWindow::ApplicationWindow()
     drawRingButton->setDefaultAction( ring3Action );
     drawRingButton->setWhatsThis( ringToolText );
     drawRingButton->setIcon( QIcon( RingDir + "ringtool.png" ) );
-    connect( drawRingButton, SIGNAL( triggered( QAction * ) ), SLOT( FromNewerRingMenu( QAction * ) ) );
-    connect( ringMenu, SIGNAL( triggered( QAction * ) ), SLOT( setRingAction( QAction * ) ) );
+    connect( drawRingButton, &QToolButton::clicked, this, [this](){ FromNewerRingMenu( nullptr ); } );
+    connect( ringMenu, &QMenu::triggered, this, &ApplicationWindow::setRingAction );
     drawTools->addWidget( drawRingButton );
 
     /// symbolbutton
@@ -431,8 +432,8 @@ ApplicationWindow::ApplicationWindow()
     drawSymbolButton->setDefaultAction( symbolPlusAction );
     drawSymbolButton->setWhatsThis( symbolToolText );
     drawSymbolButton->setIcon( QIcon( RingDir + "sym_plus.png" ) );
-    connect( drawSymbolButton, SIGNAL( triggered( QAction * ) ), SLOT( FromSymbolMenu( QAction * ) ) );
-    connect( symbolMenu, SIGNAL( triggered( QAction * ) ), SLOT( setSymbolAction( QAction * ) ) );
+    connect( drawSymbolButton, &QToolButton::clicked, this, [this](){ FromSymbolMenu( nullptr ); } );
+    connect( symbolMenu, &QMenu::triggered, this, &ApplicationWindow::setSymbolAction );
     drawTools->addWidget( drawSymbolButton );
 
     addToolBarBreak( Qt::LeftToolBarArea );
@@ -446,44 +447,44 @@ ApplicationWindow::ApplicationWindow()
     XDC_ToolButton *b1;
     b1 = new XDC_ToolButton( ringTools, "cyclopropane.cml");
     b1->setIcon( QIcon(RingDir + "cyclopropane.png") );
-    connect( b1, SIGNAL(pressed()), b1, SLOT(trigger()));
-    connect( b1, SIGNAL(IncludeFile(QString)), this,
-	     SLOT(FromRingToolbar(QString)) );
+    connect( b1, &QAbstractButton::pressed, b1, [b1](){ b1->trigger(); } );
+    connect( b1, &XDC_ToolButton::IncludeFile, this,
+	     &ApplicationWindow::FromRingToolbar );
     ringTools->addWidget( b1 );
 
     b1 = new XDC_ToolButton( ringTools, "cyclobutane.cml");
     b1->setIcon( QIcon(RingDir + "cyclobutane.png") );
-    connect( b1, SIGNAL(pressed()), b1, SLOT(trigger()));
-    connect( b1, SIGNAL(IncludeFile(QString)), this,
-	     SLOT(FromRingToolbar(QString)) );
+    connect( b1, &QAbstractButton::pressed, b1, [b1](){ b1->trigger(); } );
+    connect( b1, &XDC_ToolButton::IncludeFile, this,
+	     &ApplicationWindow::FromRingToolbar );
     ringTools->addWidget( b1 );
 
     b1 = new XDC_ToolButton( ringTools, "cyclopentane.cml");
     b1->setIcon( QIcon(RingDir + "cyclopentane.png") );
-    connect( b1, SIGNAL(pressed()), b1, SLOT(trigger()));
-    connect( b1, SIGNAL(IncludeFile(QString)), this,
-	     SLOT(FromRingToolbar(QString)) );
+    connect( b1, &QAbstractButton::pressed, b1, [b1](){ b1->trigger(); } );
+    connect( b1, &XDC_ToolButton::IncludeFile, this,
+	     &ApplicationWindow::FromRingToolbar );
     ringTools->addWidget( b1 );
 
     b1 = new XDC_ToolButton( ringTools, "cyclopentadiene.cml");
     b1->setIcon( QIcon(RingDir + "cyclopentadiene.png") );
-    connect( b1, SIGNAL(pressed()), b1, SLOT(trigger()));
-    connect( b1, SIGNAL(IncludeFile(QString)), this,
-	     SLOT(FromRingToolbar(QString)) );
+    connect( b1, &QAbstractButton::pressed, b1, [b1](){ b1->trigger(); } );
+    connect( b1, &XDC_ToolButton::IncludeFile, this,
+	     &ApplicationWindow::FromRingToolbar );
     ringTools->addWidget( b1 );
 
     b1 = new XDC_ToolButton( ringTools, "cyclohexane.cml");
     b1->setIcon( QIcon(RingDir + "cyclohexane.png") );
-    connect( b1, SIGNAL(pressed()), b1, SLOT(trigger()));
-    connect( b1, SIGNAL(IncludeFile(QString)), this,
-	     SLOT(FromRingToolbar(QString)) );
+    connect( b1, &QAbstractButton::pressed, b1, [b1](){ b1->trigger(); } );
+    connect( b1, &XDC_ToolButton::IncludeFile, this,
+	     &ApplicationWindow::FromRingToolbar );
     ringTools->addWidget( b1 );
 
     b1 = new XDC_ToolButton( ringTools, "benzene.cml");
     b1->setIcon( QIcon(RingDir + "benzene.png") );
-    connect( b1, SIGNAL(pressed()), b1, SLOT(trigger()));
-    connect( b1, SIGNAL(IncludeFile(QString)), this,
-	     SLOT(FromRingToolbar(QString)) );
+    connect( b1, &QAbstractButton::pressed, b1, [b1](){ b1->trigger(); } );
+    connect( b1, &XDC_ToolButton::IncludeFile, this,
+	     &ApplicationWindow::FromRingToolbar );
     ringTools->addWidget( b1 );
 
     /* may have to use these for Qt 4...
@@ -517,10 +518,10 @@ ApplicationWindow::ApplicationWindow()
      */
     QMenu *file = menuBar()->addMenu( tr( "&File" ) );
 
-    file->addAction( tr( "&New" ), this, SLOT( newDoc() ), Qt::CTRL + Qt::Key_N );
-    file->addAction( QIcon( RingDir + "fileopen.png" ), tr( "&Open" ), this, SLOT( load() ), Qt::CTRL + Qt::Key_O );
-    file->addAction( tr( "&Find on Internet" ), this, SLOT( MakeNetDialog() ), Qt::CTRL + Qt::Key_F );
-    file->addAction( saveIcon, tr( "&Save" ), this, SLOT( save() ), Qt::CTRL + Qt::Key_S );
+    file->addAction( tr( "&New" ), this, SLOT( newDoc() ), Qt::CTRL | Qt::Key_N );
+    file->addAction( QIcon( RingDir + "fileopen.png" ), tr( "&Open" ), Qt::CTRL | Qt::Key_O, this, [this](){ load(); } );
+    file->addAction( tr( "&Find on Internet" ), this, SLOT( MakeNetDialog() ), Qt::CTRL | Qt::Key_F );
+    file->addAction( saveIcon, tr( "&Save" ), Qt::CTRL | Qt::Key_S, this, [this](){ save(); } );
     file->addAction( tr( "Save &as..." ), this, SLOT( saveAs() ) );
     file->addAction( tr( "Save picture..." ), this, SLOT( savePicture() ) );
 
@@ -531,39 +532,39 @@ ApplicationWindow::ApplicationWindow()
     file->addSeparator();
 
     file->addAction( tr( "Pa&ge setup" ), this, SLOT( pageSetup() ) );
-    file->addAction( printIcon, tr( "&Print" ), this, SLOT( print() ), Qt::CTRL + Qt::Key_P );
+    file->addAction( printIcon, tr( "&Print" ), Qt::CTRL | Qt::Key_P, this, [this](){ print(); } );
 
     file->addSeparator();
 
-    file->addAction( tr( "Close" ), this, SLOT( close() ), Qt::CTRL + Qt::Key_W );
-    file->addAction( tr( "Quit" ), qApp, SLOT( closeAllWindows() ), Qt::CTRL + Qt::Key_Q );
+    file->addAction( tr( "Close" ), this, SLOT( close() ), Qt::CTRL | Qt::Key_W );
+    file->addAction( tr( "Quit" ), qApp, &QApplication::closeAllWindows, Qt::CTRL | Qt::Key_Q );
 
     /**
      * edit menu
      */
     edit = menuBar()->addMenu( tr( "&Edit" ) );
 
-    edit->addAction( tr( "&Undo" ), this, SLOT( Undo() ), Qt::CTRL + Qt::Key_Z );
+    edit->addAction( tr( "&Undo" ), m_renderer, &Render2D::Undo, Qt::CTRL | Qt::Key_Z );
     insertSymbolAction = edit->addAction( tr( "Insert s&ymbol" ), this, SLOT( InsertSymbol() ) );
     insertSymbolAction->setVisible( false );
 
     edit->addSeparator();
 
-    edit->addAction( tr( "Cu&t" ), this, SLOT( Cut() ), Qt::CTRL + Qt::Key_X );
-    edit->addAction( tr( "&Copy" ), this, SLOT( Copy() ), Qt::CTRL + Qt::Key_C );
-    edit->addAction( tr( "&Paste" ), this, SLOT( Paste() ), Qt::CTRL + Qt::Key_V );
+    edit->addAction( tr( "Cu&t" ), this, &ApplicationWindow::Cut, Qt::CTRL | Qt::Key_X );
+    edit->addAction( tr( "&Copy" ), this, &ApplicationWindow::Copy, Qt::CTRL | Qt::Key_C );
+    edit->addAction( tr( "&Paste" ), this, &ApplicationWindow::Paste, Qt::CTRL | Qt::Key_V );
     edit->addAction( tr( "Clear" ), this, SLOT( Clear() ), Qt::Key_Delete );
 
     edit->addSeparator();
 
-    edit->addAction( tr( "Select &All" ), this, SLOT( SelectAll() ), Qt::CTRL + Qt::Key_A );
-    edit->addAction( tr( "&Deselect All" ), this, SLOT( DeselectAll() ), Qt::CTRL + Qt::SHIFT + Qt::Key_A );
+    edit->addAction( tr( "Select &All" ), m_renderer, &Render2D::SelectAll, Qt::CTRL | Qt::Key_A );
+    edit->addAction( tr( "&Deselect All" ), m_renderer, &Render2D::DeselectAll, Qt::CTRL | Qt::SHIFT | Qt::Key_A );
 
     QMenu *rotateSub = new QMenu( tr( "&Rotate" ), this );
 
-    rotateSub->addAction( tr( "Rotate 90 degrees clockwise" ), this, SLOT( Rotate90() ) );
-    rotateSub->addAction( tr( "Rotate 180 degrees" ), this, SLOT( Rotate180() ) );
-    rotateSub->addAction( tr( "Rotate 90 degrees counterclockwise" ), this, SLOT( Rotate270() ) );
+    rotateSub->addAction( tr( "Rotate 90 degrees clockwise" ), m_renderer, &Render2D::Rotate90 );
+    rotateSub->addAction( tr( "Rotate 180 degrees" ), m_renderer, &Render2D::Rotate180 );
+    rotateSub->addAction( tr( "Rotate 90 degrees counterclockwise" ), m_renderer, &Render2D::Rotate270 );
 
     QMenu *flipSub = new QMenu( tr( "&Flip" ), this );
 
@@ -572,9 +573,9 @@ ApplicationWindow::ApplicationWindow()
 
     QMenu *zoomSub = new QMenu( tr( "&Zoom" ), this );
 
-    zoomSub->addAction( tr( "Normal (100%)" ), this, SLOT( Magnify100() ), Qt::CTRL + Qt::Key_5 );
-    zoomSub->addAction( tr( "Zoom out" ), this, SLOT( MagnifyMinus() ), Qt::CTRL + Qt::Key_1 );
-    zoomSub->addAction( tr( "Zoom in" ), this, SLOT( MagnifyPlus() ), Qt::CTRL + Qt::Key_0 );
+    zoomSub->addAction( tr( "Normal (100%)" ), this, &ApplicationWindow::Magnify100, Qt::CTRL | Qt::Key_5 );
+    zoomSub->addAction( tr( "Zoom out" ), this, &ApplicationWindow::MagnifyMinus, Qt::CTRL | Qt::Key_1 );
+    zoomSub->addAction( tr( "Zoom in" ), this, &ApplicationWindow::MagnifyPlus, Qt::CTRL | Qt::Key_0 );
 
     edit->addMenu( rotateSub );
     edit->addMenu( flipSub );
@@ -609,7 +610,7 @@ ApplicationWindow::ApplicationWindow()
     format->addSeparator();
 
     format->addAction( tr( "Set background &color" ), this, SLOT( BackgroundColor() ) );
-    format->addAction( tr( "Toggle &grid" ), this, SLOT( toggleGrid() ), Qt::CTRL + Qt::Key_G );
+    format->addAction( tr( "Toggle &grid" ), this, SLOT( toggleGrid() ), Qt::CTRL | Qt::Key_G );
 
     format->addSeparator();
 
@@ -622,12 +623,12 @@ ApplicationWindow::ApplicationWindow()
     QMenu *tools = menuBar()->addMenu( tr( "T&ools" ) );
 
     tools->addAction( tr( "Clean up molecule" ), this, SLOT( CleanUpMolecule() ) );
-    tools->addAction( tr( "Auto &layout" ), this, SLOT( AutoLayout() ), Qt::CTRL + Qt::Key_L );
+    tools->addAction( tr( "Auto &layout" ), m_renderer, &Render2D::AutoLayout, Qt::CTRL | Qt::Key_L );
     tools->addAction( tr( "Create custom ring" ), this, SLOT( saveCustomRing() ) );
 
     tools->addSeparator();
 
-    tools->addAction( tr( "Molecule information..." ), this, SLOT( MoleculeInfo() ), Qt::CTRL + Qt::Key_I );
+    tools->addAction( tr( "Molecule information..." ), this, SLOT( MoleculeInfo() ), Qt::CTRL | Qt::Key_I );
     tools->addAction( tr( "Predict 1H NMR" ), this, SLOT( Calc1HNMR() ) );
     tools->addAction( tr( "Predict 13C NMR" ), this, SLOT( Calc13CNMR() ) );
     tools->addAction( tr( "Predict IR" ), this, SLOT( CalcIR() ) );
@@ -670,7 +671,7 @@ ApplicationWindow::ApplicationWindow()
 
     help->addSeparator();
 
-    help->addAction( tr( "What's &This" ), this, SLOT( whatsThis() ), Qt::SHIFT + Qt::Key_F1 );
+    help->addAction( tr( "What's &This" ), this, &QWidget::whatsThis, Qt::SHIFT | Qt::Key_F1 );
 
     /**
      * create data system
@@ -681,15 +682,15 @@ ApplicationWindow::ApplicationWindow()
     /// connect (non-Qt) data center and render widget
     m_renderer->setChemData( m_chemData );
     m_chemData->setRender2D( m_renderer );
-    connect( m_renderer, SIGNAL( XDCEventSignal( XDC_Event * ) ), m_chemData, SLOT( XDCEventHandler( XDC_Event * ) ) );
+    connect( m_renderer, &Render2D::XDCEventSignal, m_chemData, &ChemData::XDCEventHandler );
     // connect m_renderer to application window
-    connect( m_renderer, SIGNAL( textOn( QFont ) ), SLOT( showTextButtons( QFont ) ) );
-    connect( m_renderer, SIGNAL( TextOff() ), SLOT( HideTextButtons() ) );
-    connect( m_renderer, SIGNAL( SignalSetStatusBar( QString ) ), SLOT( SetStatusBar( QString ) ) );
-    connect( m_chemData, SIGNAL( SignalSetStatusBar( QString ) ), SLOT( SetStatusBar( QString ) ) );
-    connect( m_renderer, SIGNAL( SignalHelpTopic( QString ) ), SLOT( HelpTopic( QString ) ) );
-    connect( m_chemData, SIGNAL( SignalHelpTopic( QString ) ), SLOT( HelpTopic( QString ) ) );
-    connect( m_chemData, SIGNAL( SignalUpdateCustomRingMenu() ), SLOT( updateCustomRingMenu() ) );
+    connect( m_renderer, &Render2D::textOn, this, &ApplicationWindow::showTextButtons );
+    connect( m_renderer, &Render2D::TextOff, this, &ApplicationWindow::HideTextButtons );
+    connect( m_renderer, &Render2D::SignalSetStatusBar, this, &ApplicationWindow::SetStatusBar );
+    connect( m_chemData, &ChemData::SignalSetStatusBar, this, &ApplicationWindow::SetStatusBar );
+    connect( m_renderer, &Render2D::SignalHelpTopic, this, &ApplicationWindow::HelpTopic );
+    connect( m_chemData, &ChemData::SignalHelpTopic, this, &ApplicationWindow::HelpTopic );
+    connect( m_chemData, &ChemData::SignalUpdateCustomRingMenu, this, &ApplicationWindow::updateCustomRingMenu );
 
     statusBar()->showMessage( "Ready" );
     resize( 680, 680 );
@@ -1627,7 +1628,7 @@ void ApplicationWindow::MakeNetDialog()
     qDebug() << "Key   :" << netDlg->getKey();
     qDebug() << "Value :" << netDlg->getValue();
     NetAccess *na = new NetAccess();
-    connect( na, SIGNAL( choicesFinished( const QStringList & ) ), this, SLOT( slotChoicesFinished( const QStringList & ) ) );
+    connect( na, &NetAccess::choicesFinished, this, &ApplicationWindow::slotChoicesFinished );
 
     setCursor( Qt::WaitCursor );
     m_renderer->setWaitCursor();
@@ -1813,7 +1814,7 @@ void ApplicationWindow::HelpBrowser( QString home )
     HelpWindow *help = new HelpWindow( home, ".", 0 );
 
     help->setWindowTitle( QString( XDC_VERSION ) + " - Help viewer" );
-    if ( QApplication::desktop()->width() > 400 && QApplication::desktop()->height() > 500 )
+    if ( QGuiApplication::primaryScreen()->geometry().width() > 400 && QGuiApplication::primaryScreen()->geometry().height() > 500 )
         help->show();
     else
         help->showMaximized();

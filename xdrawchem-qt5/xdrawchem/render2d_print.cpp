@@ -1,4 +1,5 @@
 #include <QPrinter>
+#include <QPageSize>
 #include <QPrintDialog>
 
 #include "paintable.h"
@@ -21,20 +22,20 @@ void Render2D::PrintSetup()
 void Render2D::UpdatePageGeometry()
 {
     if ( preferences.getPageOrientation() == PAGE_PORTRAIT ) {
-        printer->setOrientation( QPrinter::Portrait );
+        printer->setPageOrientation( QPageLayout::Portrait );
         switch ( preferences.getPageSize() ) {
         case PAGE_LETTER:
-            printer->setPageSize( QPrinter::Letter );
+            printer->setPageSize( QPageSize( QPageSize::Letter ) );
             renderHeight = 1000;
             renderWidth = 750;
             break;
         case PAGE_LEGAL:
-            printer->setPageSize( QPrinter::Legal );
+            printer->setPageSize( QPageSize( QPageSize::Legal ) );
             renderHeight = 1300;
             renderWidth = 750;
             break;
         case PAGE_A4:
-            printer->setPageSize( QPrinter::A4 );
+            printer->setPageSize( QPageSize( QPageSize::A4 ) );
             renderHeight = 1070;
             renderWidth = 776;
             break;
@@ -54,20 +55,20 @@ void Render2D::UpdatePageGeometry()
             break;
         }
     } else {                    // page_orientation == PAGE_LANDSCAPE
-        printer->setOrientation( QPrinter::Landscape );
+        printer->setPageOrientation( QPageLayout::Landscape );
         switch ( preferences.getPageSize() ) {
         case PAGE_LETTER:
-            printer->setPageSize( QPrinter::Letter );
+            printer->setPageSize( QPageSize( QPageSize::Letter ) );
             renderHeight = 750;
             renderWidth = 1000;
             break;
         case PAGE_LEGAL:
-            printer->setPageSize( QPrinter::Legal );
+            printer->setPageSize( QPageSize( QPageSize::Legal ) );
             renderHeight = 750;
             renderWidth = 1300;
             break;
         case PAGE_A4:
-            printer->setPageSize( QPrinter::A4 );
+            printer->setPageSize( QPageSize( QPageSize::A4 ) );
             renderHeight = 776;
             renderWidth = 1070;
             break;
@@ -93,7 +94,7 @@ void Render2D::UpdatePageGeometry()
 void Render2D::Print( QString epsname )
 {
     QPrintDialog dialog( printer, this );
-    connect( &dialog, SIGNAL( rejected() ), SIGNAL( SignalSetStatusBar( QString::fromLatin1( "Printing canceled." ) ) ) );
+    connect( &dialog, &QDialog::rejected, this, [this]() { emit SignalSetStatusBar( QStringLiteral("Printing canceled.") ); } );
     if ( !dialog.exec() ) {
         return;
     }

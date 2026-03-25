@@ -1306,7 +1306,7 @@ void Render2D::mouseMoveEvent( QMouseEvent * e1 )
         c->DeselectAll();
         //update();
         QPixmap pm;
-        pm = QPixmap::grabWidget( this, savebox );
+        pm = grab( savebox );
 
         c->NewSelectRect( savebox, false );
         selectionBox = c->selectionBox();
@@ -1317,7 +1317,7 @@ void Render2D::mouseMoveEvent( QMouseEvent * e1 )
         drag->setMimeData( dragObject );
         QSize maxSize = pm.size().boundedTo( QSize( 100, 100 ) );
         drag->setPixmap( pm.scaled( maxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
-        drag->start();
+        drag->exec();
         dragging = false;
         update();
         setCursor( Qt::ArrowCursor );

@@ -805,7 +805,7 @@ void Render2D::drawTextReverse( QChar ch, QPoint a, QColor c1, QFont f )
     painter->setFont( f );
     QFontMetrics fm = painter->fontMetrics();
     QPoint topleft( a.x(), a.y() - fm.ascent() );
-    QPoint bottomright( a.x() + fm.width( ch ), a.y() + fm.descent() );
+    QPoint bottomright( a.x() + fm.horizontalAdvance( ch ), a.y() + fm.descent() );
     QRect fr( topleft, bottomright );
 
     painter->fillRect( fr, c1 );
@@ -840,7 +840,7 @@ void Render2D::drawPixmap( QPoint a, QPixmap pix )
                     sumtotal += ( long ) pow( 2.0, ( double ) ( 15 - col ) );
                 }
             }
-            output_ts << hex << sumtotal << dec;
+            output_ts << Qt::hex << sumtotal << Qt::dec;
         }
         output_ts << "end" << Qt::endl << "grestore" << Qt::endl;
         return;

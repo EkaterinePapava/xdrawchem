@@ -25,11 +25,11 @@ ToolDialog( parent )
     QPushButton *qhelp = new QPushButton( tr( "Help" ) );
 
     mygrid->addWidget( qhelp, 2, 0 );
-    connect( qhelp, SIGNAL( clicked() ), SLOT( SendHelp() ) );
+    connect( qhelp, &QAbstractButton::clicked, this, &Tool_13CNMR_Dialog::SendHelp );
     QPushButton *qclose = new QPushButton( tr( "Close" ) );
 
     mygrid->addWidget( qclose, 2, 1 );
-    connect( qclose, SIGNAL( clicked() ), SLOT( accept() ) );
+    connect( qclose, &QAbstractButton::clicked, this, &QDialog::accept );
 }
 
 void Tool_13CNMR_Dialog::process()

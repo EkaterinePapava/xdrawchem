@@ -34,12 +34,12 @@ RingDialog::RingDialog( QWidget *parent )
     filelist->addItem( "(pick)" );
     for ( int cc = 0; cc < dl.count(); cc++ )
         filelist->addItem( dl[cc].left( dl[cc].length() - 4 ) );
-    connect( filelist, SIGNAL( activated( int ) ), this, SLOT( fromComboBox( int ) ) );
+    connect( filelist, &QComboBox::activated, this, &RingDialog::fromComboBox );
 
     mygrid->addWidget( filelist, 1, 1, 0, 4 );
 
     dismiss = new QPushButton( tr( "Cancel" ) );
-    connect( dismiss, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( dismiss, &QAbstractButton::clicked, this, &QDialog::reject );
     mygrid->addWidget( dismiss, 2, 2, 1, 3 );
 }
 

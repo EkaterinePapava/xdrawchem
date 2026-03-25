@@ -59,16 +59,16 @@ void ColorButton::paintEvent( QPaintEvent * )
   if ( hasFocus() ) {
     QRect focusRect = style()->subElementRect( QStyle::SE_PushButtonFocusRect, &butOpt, this );
     QStyleOptionFocusRect focusOpt;
-    focusOpt.init(this);
+    focusOpt.initFrom(this);
     focusOpt.rect            = focusRect;
-    focusOpt.backgroundColor = palette().background().color();
+    focusOpt.backgroundColor = palette().window().color();
     style()->drawPrimitive( QStyle::PE_FrameFocusRect, &focusOpt, &painter, this );
   }
 }
 
 void ColorButton::initStyleOption(QStyleOptionButton* opt) const
 {
-    opt->init(this);
+    opt->initFrom(this);
     opt->text.clear();
     opt->icon = QIcon();
     opt->features = QStyleOptionButton::None;

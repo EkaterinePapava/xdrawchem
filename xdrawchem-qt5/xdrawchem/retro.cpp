@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QRegularExpression>
 #include <QList>
 #include <QTextStream>
 #include <QMessageBox>
@@ -160,7 +161,7 @@ QString Molecule::RetroBondName( Bond * lbond, bool runsssr )
         outer2 = inner1;
     }
     outer1el = outer1->baseElement();
-    canonicalBond = outer1el.remove( QRegExp( "\\-+H+\\d+" ) );
+    canonicalBond = outer1el.remove( QRegularExpression( "\\-+H+\\d+" ) );
     // for some reason, this isn't reliable
     if ( outer1->inring )
         canonicalBond.append( "r" );
@@ -184,7 +185,7 @@ QString Molecule::RetroBondName( Bond * lbond, bool runsssr )
         }
     }
     outer2el = outer2->baseElement();
-    canonicalBond.append( outer2el.remove( QRegExp( "\\-+H+\\d+" ) ) );
+    canonicalBond.append( outer2el.remove( QRegularExpression( "\\-+H+\\d+" ) ) );
     // for some reason, this isn't reliable
     if ( outer2->inring )
         canonicalBond.append( "r" );
@@ -259,7 +260,7 @@ QString Molecule::RetroTraverseBonds( DPoint * parentNode, DPoint * thisNode, Bo
                 }
             }
             outer1el = thisNode->baseElement();
-            canonicalBond.append( outer1el.remove( QRegExp( "\\-+H+\\d+" ) ) );
+            canonicalBond.append( outer1el.remove( QRegularExpression( "\\-+H+\\d+" ) ) );
             // for some reason, this isn't reliable
             // don't care whether side groups are in ring, yet
             //if (thisNode->inring) canonicalBond.append("r");
@@ -289,7 +290,7 @@ QString Molecule::RetroTraverseBonds( DPoint * parentNode, DPoint * thisNode, Bo
         }
     }
     outer1el = thisNode->baseElement();
-    canonicalBond.append( outer1el.remove( QRegExp( "\\-+H+\\d+" ) ) );
+    canonicalBond.append( outer1el.remove( QRegularExpression( "\\-+H+\\d+" ) ) );
     // for some reason, this isn't reliable
     //if (thisNode->inring) canonicalBond.append("r");
 

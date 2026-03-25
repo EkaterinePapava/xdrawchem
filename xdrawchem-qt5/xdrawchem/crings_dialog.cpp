@@ -30,7 +30,7 @@ CustomRingWidget::CustomRingWidget( QWidget *parent )
 {
     QGridLayout *layout = new QGridLayout();
     setLayout( layout );
-    layout->setMargin( 0 );
+    layout->setContentsMargins( 0, 0, 0, 0 );
 
     setMinimumSize( 320, 310 );
 
@@ -51,7 +51,7 @@ CustomRingWidget::CustomRingWidget( QWidget *parent )
     title = new QLineEdit();
     layout->addWidget( title, 1, 1, 1, 1 );
 
-    connect( title, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( signalTextChanged( const QString & ) ) );
+    connect( title, &QLineEdit::textChanged, this, &CustomRingWidget::signalTextChanged );
 
     //render->setMode_SelectNone();
 
@@ -136,9 +136,9 @@ CustomRingDialog::CustomRingDialog( QWidget * parent )
     m_widget = new CustomRingWidget( this );
     mygrid->addWidget( m_widget, 0, 0, 1, 3 );
 
-    connect( m_widget, SIGNAL( signalTextChanged( const QString & ) ), this, SLOT( slotTextChanged( const QString & ) ) );
+    connect( m_widget, &CustomRingWidget::signalTextChanged, this, &CustomRingDialog::slotTextChanged );
 
-    connect( this, SIGNAL( signalTitle( QString & ) ), m_widget, SLOT( slotTitle( QString & ) ) );
+    connect( this, &CustomRingDialog::signalTitle, m_widget, &CustomRingWidget::slotTitle );
 
     //disableResize();
     //enableButtonOK(false);
@@ -151,11 +151,11 @@ CustomRingDialog::CustomRingDialog( QWidget * parent )
     QPushButton *ok, *dismiss;
 
     ok = new QPushButton( tr( "OK" ), this );
-    connect( ok, SIGNAL( clicked() ), SLOT( slotOk() ) );
+    connect( ok, &QAbstractButton::clicked, this, &CustomRingDialog::slotOk );
     mygrid->addWidget( ok, 2, 1 );
 
     dismiss = new QPushButton( tr( "Cancel" ), this );
-    connect( dismiss, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( dismiss, &QAbstractButton::clicked, this, &QDialog::reject );
     mygrid->addWidget( dismiss, 2, 2 );
 }
 

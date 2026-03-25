@@ -65,7 +65,7 @@ bool ChemData::load_native( QString wholefile )
     if ( d1 >= 0 ) {
         d2 = wholefile.indexOf( "</bgcolor>" );
         line = wholefile.mid( d1 + 9, d2 - d1 - 9 );
-        QTextStream is( &line, QIODevice::ReadOnly );
+        QTextStream is( &line);
         int rn, gn, bn;
 
         is >> rn >> gn >> bn;

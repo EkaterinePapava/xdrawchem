@@ -74,7 +74,7 @@ void Render2D::DrawText_FinishText()
 
 //    localtexteditor->setTextFormat( Qt::PlainText );
     QString lt1 = localtexteditor->toHtml();
-    QPixmap ltpix = QPixmap::grabWidget( localtexteditor );
+    QPixmap ltpix = localtexteditor->grab();
 
     qInfo() << "toHtml():" << localtexteditor->toHtml();
     qInfo() << "toPlainText():" << localtexteditor->toPlainText();
@@ -221,8 +221,8 @@ void Render2D::DrawText_mousePressEvent( QMouseEvent * e1, QPoint cqp )
     emit textOn( localtexteditor->currentFont() );
     qDebug() << "DrawText_mousePressEvent 3.7";
     // this no longer works as a signal/slot
-    connect( localtexteditor, SIGNAL( returnPressed() ), this, SLOT( DrawText_returnPressed() ) );
-    connect( localtexteditor, SIGNAL( textChanged() ), this, SLOT( DrawText_textChanged() ) );
+    connect( localtexteditor, &XdcTextEdit::returnPressed, this, &Render2D::DrawText_returnPressed );
+    connect( localtexteditor, &QTextEdit::textChanged, this, &Render2D::DrawText_textChanged );
     qDebug() << "DrawText_mousePressEvent 3.6";
     localtexteditor->show();
     qDebug() << "DrawText_mousePressEvent 3.5";
@@ -354,7 +354,7 @@ void Render2D::keyPressEvent( QKeyEvent * k )
                 return;
             }
             if ( localtexteditor == 0 ) {
-                localtexteditor = new QTextEdit( this );
+                localtexteditor = new XdcTextEdit( this );
 //                localtexteditor->setTextFormat( Qt::RichText );
                 super_set = false;
                 sub_set = false;
@@ -427,8 +427,8 @@ void Render2D::keyPressEvent( QKeyEvent * k )
             }
             emit textOn( localtext->getFont() );
 
-            connect( localtexteditor, SIGNAL( returnPressed() ), this, SLOT( DrawText_returnPressed() ) );
-            connect( localtexteditor, SIGNAL( textChanged() ), this, SLOT( DrawText_textChanged() ) );
+            connect( localtexteditor, &XdcTextEdit::returnPressed, this, &Render2D::DrawText_returnPressed );
+            connect( localtexteditor, &QTextEdit::textChanged, this, &Render2D::DrawText_textChanged );
             localtexteditor->show();
             localtexteditor->setFocus();
             return;
@@ -593,7 +593,7 @@ int Render2D::GetCharWidth( QChar ch, QFont fn )
     //QFontMetrics fm = painter->fontMetrics();
     QFontMetrics fm = QFontMetrics(fn);
 
-    return fm.width( ch );
+    return fm.horizontalAdvance( ch );
 }
 
 int Render2D::GetStringWidth( QString ch, QFont fn )
@@ -605,7 +605,7 @@ int Render2D::GetStringWidth( QString ch, QFont fn )
     //QFontMetrics fm = painter->fontMetrics();
     QFontMetrics fm = QFontMetrics(fn);
 
-    return fm.width( ch );
+    return fm.horizontalAdvance( ch );
 }
 
 QRect Render2D::GetTextDimensions( QString txt, QFont fn )
@@ -625,7 +625,7 @@ QRect Render2D::GetTextDimensions( QString txt, QFont fn )
     QFontMetrics fm = QFontMetrics(fn);
 
     int maxwidth, lwidth, linecount, height;
-    QTextStream t( &txt, QIODevice::ReadOnly );
+    QTextStream t( &txt);
 
     linecount = 1;
     maxwidth = 0;
@@ -634,7 +634,7 @@ QRect Render2D::GetTextDimensions( QString txt, QFont fn )
     // find maximum width
     do {
         l = t.readLine();
-        lwidth = fm.width( l );
+        lwidth = fm.horizontalAdvance( l );
         if ( lwidth > maxwidth )
             maxwidth = lwidth;
     } while ( !t.atEnd() );

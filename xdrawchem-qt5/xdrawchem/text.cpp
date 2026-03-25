@@ -236,7 +236,7 @@ void Text::SetBorderColorFromXML( QString xml_tag )
     xml_tag.remove( i2, 999 );
     xml_tag.remove( i1, 13 );
 
-    QTextStream ts( &xml_tag, QIODevice::ReadOnly );
+    QTextStream ts( &xml_tag);
 
     ts >> d1 >> d2 >> d3;
 
@@ -254,7 +254,7 @@ void Text::SetFillColorFromXML( QString xml_tag )
     xml_tag.remove( i2, 999 );
     xml_tag.remove( i1, 11 );
 
-    QTextStream ts( &xml_tag, QIODevice::ReadOnly );
+    QTextStream ts( &xml_tag);
 
     ts >> d1 >> d2 >> d3;
 
@@ -272,7 +272,7 @@ void Text::SetShapeGeometryFromXML( QString xml_tag )
     xml_tag.remove( i2, 999 );
     xml_tag.remove( i1, 15 );
 
-    QTextStream ts( &xml_tag, QIODevice::ReadOnly );
+    QTextStream ts( &xml_tag);
 
     ts >> d1 >> d2 >> d3 >> d4;
 
@@ -599,7 +599,7 @@ void Text::Render()
     }
   }
   // right-align behavior is different for stand-alone text
-  QTextStream dts( &displayTextMask, QIODevice::ReadOnly );
+  QTextStream dts( &displayTextMask);
   QString displayLine;
   int in1 = 0;
 

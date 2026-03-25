@@ -53,7 +53,7 @@ MolInfoDialog::MolInfoDialog( QWidget * parent )
     QHBoxLayout *btnLayout = new QHBoxLayout();
 
     getpcc = new QPushButton( tr( "Search PubChem" ) );
-    connect( getpcc, SIGNAL( clicked() ), SLOT( doPubChem() ) );
+    connect( getpcc, &QAbstractButton::clicked, this, &MolInfoDialog::doPubChem );
     btnLayout->addWidget( getpcc );
     getpcc->setEnabled( false );
 
@@ -61,15 +61,15 @@ MolInfoDialog::MolInfoDialog( QWidget * parent )
     btnLayout->addItem( spacer );
 
     helpBtn = new QPushButton( tr( "Help" ) );
-    connect( helpBtn, SIGNAL( clicked() ), SLOT( SendHelp() ) );
+    connect( helpBtn, &QAbstractButton::clicked, this, &MolInfoDialog::SendHelp );
     btnLayout->addWidget( helpBtn );
 
     okBtn = new QPushButton( tr( "OK" ) );
-    connect( okBtn, SIGNAL( clicked() ), SLOT( doAccept() ) );
+    connect( okBtn, &QAbstractButton::clicked, this, &MolInfoDialog::doAccept );
     btnLayout->addWidget( okBtn );
 
     dismissBtn = new QPushButton( tr( "Cancel" ) );
-    connect( dismissBtn, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( dismissBtn, &QAbstractButton::clicked, this, &QDialog::reject );
     btnLayout->addWidget( dismissBtn );
 
     grid->addLayout( btnLayout, 8, 0, 1, 1 );

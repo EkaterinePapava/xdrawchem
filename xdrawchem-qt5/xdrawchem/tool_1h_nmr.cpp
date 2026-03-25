@@ -26,11 +26,11 @@ Tool_1HNMR_Dialog::Tool_1HNMR_Dialog( QWidget *parent )
     mygrid->addWidget( peaktext, 1, 0 );
 
     QPushButton *qhelp = new QPushButton( tr( "Help" ) );
-    connect( qhelp, SIGNAL( clicked() ), SLOT( SendHelp() ) );
+    connect( qhelp, &QAbstractButton::clicked, this, &Tool_1HNMR_Dialog::SendHelp );
     mygrid->addWidget( qhelp, 1, 1 );
 
     QPushButton *qclose = new QPushButton( tr( "Close" ) );
-    connect( qclose, SIGNAL( clicked() ), SLOT( accept() ) );
+    connect( qclose, &QAbstractButton::clicked, this, &QDialog::accept );
     mygrid->addWidget( qclose, 1, 2 );
 }
 

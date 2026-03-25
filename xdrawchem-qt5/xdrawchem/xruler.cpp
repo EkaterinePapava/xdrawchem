@@ -1,6 +1,6 @@
 #include <QPaintEvent>
 #include <QPainter>
-#include <QMatrix>
+#include <QTransform>
 
 #include "defs.h"
 #include "prefs.h"
@@ -53,7 +53,7 @@ void XRuler::paintEvent( QPaintEvent * )
     p1.setPen( QColor( 0, 0, 0 ) );
     p1.setFont( fnum );
     QString n1;
-    QMatrix wm;
+    QTransform wm;
 
     wm.rotate( 90.0 );
 

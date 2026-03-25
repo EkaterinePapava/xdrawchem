@@ -24,7 +24,7 @@ NetChooseDialog::NetChooseDialog( QWidget * parent, QStringList r1 )
     mygrid->addWidget( cap1, 0, 0, 1, 4 );
 
     tw = new QTableWidget( this );
-    connect( tw, SIGNAL( cellDoubleClicked(int, int) ), SLOT( cellDoubleClicked(int, int) ) );
+    connect( tw, &QTableWidget::cellDoubleClicked, this, &NetChooseDialog::cellDoubleClicked );
     tw->setRowCount( r1.size() );
     tw->setColumnCount(5);
     QStringList m_TableHeader;
@@ -90,11 +90,11 @@ NetChooseDialog::NetChooseDialog( QWidget * parent, QStringList r1 )
     buttonHBox->addItem( spacer );
 
     ok = new QPushButton( tr( "Select" ), this );
-    connect( ok, SIGNAL( clicked() ), SLOT( OK() ) );
+    connect( ok, &QAbstractButton::clicked, this, &NetChooseDialog::OK );
     buttonHBox->addWidget( ok );
 
     dismiss = new QPushButton( tr( "Cancel" ), this );
-    connect( dismiss, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( dismiss, &QAbstractButton::clicked, this, &QDialog::reject );
     buttonHBox->addWidget( dismiss );
 
     mygrid->addLayout( buttonHBox, 4, 0, 1, 4 );

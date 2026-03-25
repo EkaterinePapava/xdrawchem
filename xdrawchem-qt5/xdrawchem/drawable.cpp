@@ -73,7 +73,7 @@ void Drawable::SetColorFromXML( QString xml_tag )
     xml_tag.remove( i2, 999 );
     xml_tag.remove( i1, 7 );
 
-    QTextStream ts( &xml_tag, QIODevice::ReadOnly );
+    QTextStream ts( &xml_tag);
 
     ts >> d1 >> d2 >> d3;
 
@@ -93,7 +93,7 @@ QColor Drawable::GetColorFromXML( QString xml_tag )
     xml_tag.remove( i2, 999 );
     xml_tag.remove( i1, 7 );
 
-    QTextStream ts( &xml_tag, QIODevice::ReadOnly );
+    QTextStream ts( &xml_tag);
 
     ts >> d1 >> d2 >> d3;
 
@@ -113,7 +113,7 @@ void Drawable::SetStartFromXML( QString xml_tag )
     xml_tag.remove( i2, 999 );
     xml_tag.remove( i1, 7 );
 
-    QTextStream ts( &xml_tag, QIODevice::ReadOnly );
+    QTextStream ts( &xml_tag);
 
     ts >> x1 >> y1;
 
@@ -134,7 +134,7 @@ void Drawable::SetEndFromXML( QString xml_tag )
     xml_tag.remove( i2, 999 );
     xml_tag.remove( i1, 5 );
 
-    QTextStream ts( &xml_tag, QIODevice::ReadOnly );
+    QTextStream ts( &xml_tag);
 
     ts >> x1 >> y1;
 

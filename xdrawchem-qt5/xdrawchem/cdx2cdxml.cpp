@@ -118,7 +118,7 @@ QString ChemData::ParseProperty( QByteArray a )
         propvalue.append( "</s>" );
         return propvalue;
     }
-    qDebug() << "Unrecognized property: " << hex << ( int ) a[1] << " " << ( int ) a[0] << " [" << dec << a.size() - 4 << " bytes]";
+    qDebug() << "Unrecognized property:" << Qt::hex << (int)a[1] << (int)a[0] << "[" << Qt::dec << (a.size() - 4) << "bytes]";
     return QString( "" );
 }
 

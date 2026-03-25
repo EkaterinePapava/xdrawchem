@@ -103,7 +103,7 @@ QMenu *ApplicationWindow::BuildNewRingMenu()
     ringAnthraAction = genericSub->addAction( QIcon( QPixmap( anthracene_xpm ) ), tr( "Anthracene" ) );
     ringSteroidAction = genericSub->addAction( QIcon( QPixmap( r_steroid ) ), tr( "Steroid (fused ring template)" ) );
 
-    connect( genericSub, SIGNAL( triggered( QAction * ) ), SLOT( setRingAction( QAction * ) ) );
+    connect( genericSub, &QMenu::triggered, this, &ApplicationWindow::setRingAction );
     ringSub->addMenu( genericSub );
 
     // make amino acid list

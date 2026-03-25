@@ -4,6 +4,7 @@
 
 #include <QPainter>
 #include <QPrinter>
+#include <QPageSize>
 #include <QPrintDialog>
 #include <QPaintEvent>
 
@@ -110,8 +111,8 @@ void NewGraphWidget::PrintSetup()
 {
     printer = new QPrinter;
     printer->setFullPage( true );
-    printer->setPageSize( QPrinter::Letter );
-    printer->setOrientation( QPrinter::Portrait );
+    printer->setPageSize( QPageSize( QPageSize::Letter ) );
+    printer->setPageOrientation( QPageLayout::Portrait );
     printer->setColorMode( QPrinter::GrayScale );
 }
 

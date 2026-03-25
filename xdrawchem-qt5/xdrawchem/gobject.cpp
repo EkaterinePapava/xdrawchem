@@ -152,7 +152,7 @@ void GraphicObject::FromXML( QString xml_tag )
             xml_subtag.remove( i2, 999 );
             xml_subtag.remove( i1, 7 );
 
-            QTextStream ts( &xml_subtag, QIODevice::ReadOnly );
+            QTextStream ts( &xml_subtag);
 
             ts >> xi >> yi;
             qDebug() << ci << " " << xi << " " << yi;

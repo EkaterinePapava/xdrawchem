@@ -9,6 +9,7 @@
 *****************************************************************************/
 
 #include <QApplication>
+#include <QGuiApplication>
 #include <QString>
 #include <QTextStream>
 #include <QLocale>
@@ -191,7 +192,7 @@ int main( int argc, char **argv )
     if ( quitflag )
         exit( 0 );              // exit if non-interactive mode.
 
-    a.connect( &a, SIGNAL( lastWindowClosed() ), &a, SLOT( quit() ) );
+    a.connect( &a, &QGuiApplication::lastWindowClosed, &a, &QApplication::quit );
     mw->HideTextButtons();
 
     if ( preferences.getDYK() ) {

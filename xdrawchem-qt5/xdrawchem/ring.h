@@ -1,3 +1,4 @@
+#include <algorithm>
 #ifndef RING_H
 #define RING_H
 
@@ -72,7 +73,7 @@ class Ring : public QVector<Atom *>
     for (f = 0; f < size(); f++){
       rep[f] = (at(f))->number;
     }
-    qSort(rep.begin(), rep.end());
+    std::sort(rep.begin(), rep.end());
     //quickSort(rep, 0, rep.length - 1);
     for (f = 0; f < size()-1; f++){
       n1.setNum(rep[f]);
@@ -88,7 +89,7 @@ class Ring : public QVector<Atom *>
     for (int f = 0; f < size(); f++){
       rep[f] = (at(f))->number;
     }
-    qSort(rep.begin(), rep.end());
+    std::sort(rep.begin(), rep.end());
     for (int g = 0; g < size() - 1; g++) {
       if (rep[g] == rep[g+1]) return false;
     }

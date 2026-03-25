@@ -51,19 +51,19 @@ CharSelDialog::CharSelDialog( QWidget *parent )
             firstsym = cc1;
     }
     charfont->setCurrentIndex( firstsym );
-    connect( charfont, SIGNAL( activated( int ) ), this, SLOT( fontChange( int ) ) );
+    connect( charfont, &QComboBox::activated, this, &CharSelDialog::fontChange );
 
     letters = new CharSelLabel( this );
     letters->setGeometry( 10, 50, 512, 128 );
     //letters->setText( "sample" );
     fontChange( firstsym );
-    connect( letters, SIGNAL( thisChar( int ) ), this, SLOT( chosenChar( int ) ) );
+    connect( letters, &CharSelLabel::thisChar, this, &CharSelDialog::chosenChar );
 
     QPushButton *dismiss;
 
     dismiss = new QPushButton( tr( "Cancel" ), this );
     dismiss->setGeometry( 140, 220, 80, 30 );
-    connect( dismiss, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( dismiss, &QAbstractButton::clicked, this, &QDialog::reject );
 }
 
 void CharSelDialog::fontChange( int n1 )

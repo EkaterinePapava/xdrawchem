@@ -177,7 +177,7 @@ void Bracket::SetFillColorFromXML( QString xml_tag )
     xml_tag.remove( i2, 999 );
     xml_tag.remove( i1, 11 );
 
-    QTextStream ts( &xml_tag, QIODevice::ReadOnly );
+    QTextStream ts( &xml_tag);
 
     ts >> d1 >> d2 >> d3;
 

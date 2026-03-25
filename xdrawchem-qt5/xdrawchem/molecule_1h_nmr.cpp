@@ -339,7 +339,7 @@ void Molecule::Calc1HMultiplicityAndIntensity()
         }
         if ( tmp_nmr != current_nmr ) {
             rev_nmr = current_nmr;
-            rev_nmr.replace( QRegExp( "\\(H\\)" ), "" );
+            rev_nmr.replace( QRegularExpression( "\\(H\\)" ), "" );
             qDebug() << "rev_nmr = " << rev_nmr;
             multi = rev_nmr.count( 'H' ) + 1;
             if ( rev_nmr.count( '-' ) > 0 )
@@ -369,7 +369,7 @@ void Molecule::Calc1HMultiplicityAndIntensity()
         }
     }
     rev_nmr = current_nmr;
-    rev_nmr.replace( QRegExp( "\\(H\\)" ), "" );
+    rev_nmr.replace( QRegularExpression( "\\(H\\)" ), "" );
     multi = rev_nmr.count( 'H' ) + 1;
     if ( rev_nmr.count( '-' ) > 0 )
         multi = 1;

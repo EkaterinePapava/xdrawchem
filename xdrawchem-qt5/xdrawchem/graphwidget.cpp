@@ -1,6 +1,7 @@
 // graphwidget.cpp - definitions for functions of class GraphWidget
 
 #include <QPrinter>
+#include <QPageSize>
 #include <QPrintDialog>
 #include <QClipboard>
 #include <QPainter>
@@ -132,8 +133,8 @@ void GraphWidget::PrintSetup()
 {
     printer = new QPrinter;
     printer->setFullPage( true );
-    printer->setPageSize( QPrinter::Letter );
-    printer->setOrientation( QPrinter::Portrait );
+    printer->setPageSize( QPageSize( QPageSize::Letter ) );
+    printer->setPageOrientation( QPageLayout::Portrait );
     printer->setColorMode( QPrinter::GrayScale );
 }
 

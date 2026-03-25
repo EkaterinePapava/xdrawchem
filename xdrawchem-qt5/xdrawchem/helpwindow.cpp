@@ -37,22 +37,23 @@ HelpWindow::HelpWindow( const QString & home_, const QString & _path, QWidget * 
 
 //    browser->setSearchPaths( _path );
     browser->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-    connect( browser, SIGNAL( sourceChanged( const QUrl & ) ), this, SLOT( sourceChanged( const QUrl & ) ) );
+    connect( browser, &QTextBrowser::sourceChanged, this, &HelpWindow::sourceChanged );
 
     setCentralWidget( browser );
 
     if ( !home_.isEmpty() )
         browser->setSource( home_ );
 
-    connect( browser, SIGNAL( highlighted( const QString & ) ), statusBar(), SLOT( showMessage( const QString & ) ) );
+    connect( browser, &QTextBrowser::highlighted, statusBar(),
+        [this](const QUrl &url){ statusBar()->showMessage( url.toString() ); } );
 
     resize( 640, 700 );
 
     QMenu *file = new QMenu( tr( "&File" ), this );
 
-    file->addAction( tr( "&Print" ), this, SLOT( print() ), Qt::CTRL + Qt::Key_P );
+    file->addAction( tr( "&Print" ), Qt::CTRL | Qt::Key_P, this, &HelpWindow::print );
     file->addSeparator();
-    file->addAction( tr( "&Close" ), this, SLOT( close() ), Qt::CTRL + Qt::Key_W );
+    file->addAction( tr( "&Close" ), Qt::CTRL | Qt::Key_W, this, &QWidget::close );
 
     // The same three icons are used twice each.
     QIcon icon_back( QPixmap( RingDir + "back.xpm" ) );
@@ -61,13 +62,13 @@ HelpWindow::HelpWindow( const QString & home_, const QString & _path, QWidget * 
 
     QMenu *go = new QMenu( tr( "&Go" ), this );
 
-    backwardAction = go->addAction( icon_back, tr( "&Backward" ), browser, SLOT( backward() ), Qt::CTRL + Qt::Key_Left );
-    forwardAction = go->addAction( icon_forward, tr( "&Forward" ), browser, SLOT( forward() ), Qt::CTRL + Qt::Key_Right );
-    homeAction = go->addAction( icon_home, tr( "&Home" ), browser, SLOT( home() ) );
+    backwardAction = go->addAction( icon_back, tr( "&Backward" ), Qt::CTRL | Qt::Key_Left, browser, &QTextBrowser::backward );
+    forwardAction = go->addAction( icon_forward, tr( "&Forward" ), Qt::CTRL | Qt::Key_Right, browser, &QTextBrowser::forward );
+    homeAction = go->addAction( icon_home, tr( "&Home" ), browser, &QTextBrowser::home );
 
     QMenu *help = new QMenu( tr( "&Help" ), this );
 
-    help->addAction( tr( "&About ..." ), this, SLOT( about() ) );
+    help->addAction( tr( "&About ..." ), this, &HelpWindow::about );
 
     menuBar()->addMenu( file );
     menuBar()->addMenu( go );
@@ -76,8 +77,8 @@ HelpWindow::HelpWindow( const QString & home_, const QString & _path, QWidget * 
     forwardAction->setEnabled( false );
     backwardAction->setEnabled( false );
 
-    connect( browser, SIGNAL( backwardAvailable( bool ) ), SLOT( setBackwardAvailable( bool ) ) );
-    connect( browser, SIGNAL( forwardAvailable( bool ) ), SLOT( setForwardAvailable( bool ) ) );
+    connect( browser, &QTextBrowser::backwardAvailable, this, &HelpWindow::setBackwardAvailable );
+    connect( browser, &QTextBrowser::forwardAvailable, this, &HelpWindow::setForwardAvailable );
 
 
     QToolBar *toolbar = new QToolBar( this );
@@ -93,7 +94,7 @@ HelpWindow::HelpWindow( const QString & home_, const QString & _path, QWidget * 
 
     pathCombo = new QComboBox( toolbar );
     pathCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum ) );
-    connect( pathCombo, SIGNAL( activated( const QString & ) ), SLOT( pathSelected( const QString & ) ) );
+    connect( pathCombo, &QComboBox::textActivated, this, &HelpWindow::pathSelected );
 
     toolbar->addWidget( pathCombo );
     pathCombo->addItem( home_ );

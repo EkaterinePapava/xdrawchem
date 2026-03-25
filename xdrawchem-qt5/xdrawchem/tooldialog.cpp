@@ -20,10 +20,10 @@ QDialog( parent )
        mygrid = new QGridLayout(this,2,2,5);
        QPushButton *qhelp = new QPushButton( tr("Help"), this);
        mygrid->addWidget(qhelp,2,1);
-       connect(qhelp, SIGNAL(clicked()), SLOT(SendHelp()));
+       connect( qhelp, &QAbstractButton::clicked, this, &ToolDialog::SendHelp );
        QPushButton *qclose = new QPushButton( tr("Close"), this);
        mygrid->addWidget(qclose,2,2);
-       connect(qclose, SIGNAL(clicked()), SLOT(accept()));
+       connect( qclose, &QAbstractButton::clicked, this, &QDialog::accept );
      */
 }
 

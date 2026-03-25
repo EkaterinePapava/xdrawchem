@@ -69,16 +69,16 @@ PeptDialog::PeptDialog( QWidget *parent )
     bgroup->addButton( b1 );
     b1 = new QPushButton( "Val (&V)" );
     bgroup->addButton( b1 );
-    connect( bgroup, SIGNAL( buttonClicked( int ) ), this, SLOT( buttonPress( int ) ) );
+    connect( bgroup, &QButtonGroup::idClicked, this, &PeptDialog::buttonPress );
 
     mygrid->addLayout( btnBoxLayout, 3, 4, 0, 7 );
     QPushButton *ok, *dismiss;
 
     ok = new QPushButton( tr( "OK" ), this );
-    connect( ok, SIGNAL( clicked() ), SLOT( accept() ) );
+    connect( ok, &QAbstractButton::clicked, this, &QDialog::accept );
     mygrid->addWidget( ok, 5, 5, 0, 1 );
     dismiss = new QPushButton( tr( "Cancel" ), this );
-    connect( dismiss, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( dismiss, &QAbstractButton::clicked, this, &QDialog::reject );
     mygrid->addWidget( dismiss, 5, 5, 6, 7 );
 }
 

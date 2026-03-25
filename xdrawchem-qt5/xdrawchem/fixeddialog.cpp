@@ -36,7 +36,7 @@ FixedDialog::FixedDialog( QWidget *parent )
         decimals = 0;
     unitCombo->setCurrentIndex( prevunit );
     QString ustr = unitCombo->currentText();
-    connect( unitCombo, SIGNAL( activated( int ) ), this, SLOT( setUnits( int ) ) );
+    connect( unitCombo, &QComboBox::activated, this, &FixedDialog::setUnits );
 
     fixedlayout->addWidget( unitCombo, 0, 1, 1, 2 );
 
@@ -152,15 +152,15 @@ FixedDialog::FixedDialog( QWidget *parent )
     buttonHBox->addItem( spacer );
 
     def1 = new QPushButton( tr( "Default" ) );
-    connect( def1, SIGNAL( clicked() ), SLOT( setDefaults() ) );
+    connect( def1, &QAbstractButton::clicked, this, &FixedDialog::setDefaults );
     buttonHBox->addWidget( def1 );
 
     ok = new QPushButton( tr( "OK" ) );
-    connect( ok, SIGNAL( clicked() ), SLOT( onSuccess() ) );
+    connect( ok, &QAbstractButton::clicked, this, &FixedDialog::onSuccess );
     buttonHBox->addWidget( ok );
 
     cancel = new QPushButton( tr( "Cancel" ) );
-    connect( cancel, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( cancel, &QAbstractButton::clicked, this, &QDialog::reject );
     buttonHBox->addWidget( cancel );
 
     fixedlayout->addLayout( buttonHBox, 9, 0, 1, 3 );

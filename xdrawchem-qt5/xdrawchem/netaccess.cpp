@@ -59,12 +59,12 @@ QStringList NetAccess::getChoices( QString server, QString key, QString value, b
   //buffer->open( QIODevice::WriteOnly );
   QString testq = if1.Data();
   //choicesId = http->get( url.path(), buffer );
-  //  QTextStream in1(buffer, QIODevice::ReadOnly);
+  //  QTextStream in1(buffer);
   //progressDialog->setLabelText( tr( "Getting choices" ) );
   //    progressDialog->show();
   //bool saveflag = false;
 
-  QTextStream in1(&testq, QIODevice::ReadOnly);
+  QTextStream in1(&testq);
   QStringList results;
 
   //bool saveflag = false;

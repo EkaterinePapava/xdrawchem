@@ -58,7 +58,7 @@ BondEditDialog::BondEditDialog( QWidget *parent, DPoint * s, DPoint * e, int ty,
     tmp_pm->fill( color );*/
     colorBtn = new ColorButton( color );
 //    colorBtn->setIcon( QIcon( *tmp_pm ) );
-    connect( colorBtn, SIGNAL( pressed() ), SLOT( GetNewColor() ) );
+    connect( colorBtn, &QAbstractButton::pressed, this, &BondEditDialog::GetNewColor );
     mygrid->addWidget( colorBtn, 1, 1 );
 
     if ( type == TYPE_ARROW ) {
@@ -68,7 +68,7 @@ BondEditDialog::BondEditDialog( QWidget *parent, DPoint * s, DPoint * e, int ty,
         arrowBtnBox->setLayout( arrowBtnBoxLayout );
         QButtonGroup *arrowBtnGroup = new QButtonGroup( this );
         arrowBtnGroup->setExclusive( true );
-        connect( arrowBtnGroup, SIGNAL( buttonClicked( int ) ), SLOT( styleChanged( int ) ) );
+        connect( arrowBtnGroup, &QButtonGroup::idClicked, this, &BondEditDialog::styleChanged );
 
         QRadioButton *plainArrowBtn = new QRadioButton( tr( "Plain arrow" ) );
         if ( style == ARROW_REGULAR )
@@ -123,7 +123,7 @@ BondEditDialog::BondEditDialog( QWidget *parent, DPoint * s, DPoint * e, int ty,
         ltList->addItem( QIcon( QPixmap( line3 ) ), "3" );
         ltList->addItem( QIcon( QPixmap( line4 ) ), "4" );
         ltList->addItem( QIcon( QPixmap( line5 ) ), "5" );
-        connect( ltList, SIGNAL( activated( int ) ), SLOT( setThick( int ) ) );
+        connect( ltList, &QComboBox::activated, this, &BondEditDialog::setThick );
         ltList->setCurrentIndex( th - 1 );
         mygrid->addWidget( ltList, 2, 1 );
 
@@ -134,7 +134,7 @@ BondEditDialog::BondEditDialog( QWidget *parent, DPoint * s, DPoint * e, int ty,
         bondBtnBox->setLayout( bondBtnBoxLayout );
         QButtonGroup *bondBtnGroup = new QButtonGroup( this );
         bondBtnGroup->setExclusive( true );
-        connect( bondBtnGroup, SIGNAL( buttonClicked( int ) ), SLOT( orderChanged( int ) ) );
+        connect( bondBtnGroup, &QButtonGroup::idClicked, this, &BondEditDialog::orderChanged );
 
         QRadioButton *dashedBondBtn = new QRadioButton( tr( "Dashed line" ) );
         if ( ( order == 1 ) && ( dash == 1 ) )
@@ -208,7 +208,7 @@ BondEditDialog::BondEditDialog( QWidget *parent, DPoint * s, DPoint * e, int ty,
         ltList->addItem( QIcon ( QPixmap( line3 ) ), "3" );
         ltList->addItem( QIcon ( QPixmap( line4 ) ), "4" );
         ltList->addItem( QIcon ( QPixmap( line5 ) ), "5" );
-        connect( ltList, SIGNAL( activated( int ) ), this, SLOT( setThick( int ) ) );
+        connect( ltList, &QComboBox::activated, this, &BondEditDialog::setThick );
 
         mygrid->addWidget( ltList, 2, 1 );
         ltList->setCurrentIndex( th - 1 );
@@ -221,7 +221,7 @@ BondEditDialog::BondEditDialog( QWidget *parent, DPoint * s, DPoint * e, int ty,
         dbList->addItem( tr( "Left" ) );
         dbList->addItem( tr( "Center" ) );
         dbList->addItem( tr( "Right" ) );
-        connect( dbList, SIGNAL( activated( int ) ), this, SLOT( setDoubleBond( int ) ) );
+        connect( dbList, &QComboBox::activated, this, &BondEditDialog::setDoubleBond );
 
         mygrid->addWidget( dbList, 3, 1 );
 
@@ -232,7 +232,7 @@ BondEditDialog::BondEditDialog( QWidget *parent, DPoint * s, DPoint * e, int ty,
         bracketBtnBox->setLayout( bracketBtnBoxLayout );
         QButtonGroup *bracketBtnGroup = new QButtonGroup( this );
         bracketBtnGroup->setExclusive( true );
-        connect( bracketBtnGroup, SIGNAL( buttonClicked( int ) ), SLOT( styleChanged( int ) ) );
+        connect( bracketBtnGroup, &QButtonGroup::idClicked, this, &BondEditDialog::styleChanged );
 
         QRadioButton *squareBracketBtn =  new QRadioButton( tr( "Square bracket" ) );
         if ( style == BRACKET_SQUARE )
@@ -273,7 +273,7 @@ BondEditDialog::BondEditDialog( QWidget *parent, DPoint * s, DPoint * e, int ty,
         curveArrowBtnBox->setLayout( curveArrowBtnBoxLayout );
         QButtonGroup *curveArrowBtnGroup = new QButtonGroup( this );
         curveArrowBtnGroup->setExclusive( true );
-        connect( curveArrowBtnGroup, SIGNAL( buttonClicked( int ) ), SLOT( styleChanged( int ) ) );
+        connect( curveArrowBtnGroup, &QButtonGroup::idClicked, this, &BondEditDialog::styleChanged );
 
         QRadioButton *cw90ArrowBtn = new QRadioButton( tr( "90 degree clockwise" ) );
         if ( style == CA_CW90 )
@@ -320,7 +320,7 @@ BondEditDialog::BondEditDialog( QWidget *parent, DPoint * s, DPoint * e, int ty,
         symbolBtnBox->setLayout( symbolBtnBoxLayout );
         QButtonGroup *symbolBtnGroup = new QButtonGroup( this );
         symbolBtnGroup->setExclusive( true );
-        connect( symbolBtnGroup, SIGNAL( buttonClicked( int ) ), SLOT( styleChanged( int ) ) );
+        connect( symbolBtnGroup, &QButtonGroup::idClicked, this, &BondEditDialog::styleChanged );
 
         QRadioButton *plusSymbolBtn = new QRadioButton( tr( "Positive charge" ) );
         if ( style == SYM_PLUS )
@@ -393,10 +393,10 @@ BondEditDialog::BondEditDialog( QWidget *parent, DPoint * s, DPoint * e, int ty,
     QPushButton *okBtn, *dismissBtn;
 
     okBtn = new QPushButton( tr( "OK" ), this );
-    connect( okBtn, SIGNAL( clicked() ), SLOT( accept() ) );
+    connect( okBtn, &QAbstractButton::clicked, this, &QDialog::accept );
     btnLayout->addWidget( okBtn );
     dismissBtn = new QPushButton( tr( "Cancel" ), this );
-    connect( dismissBtn, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( dismissBtn, &QAbstractButton::clicked, this, &QDialog::reject );
     btnLayout->addWidget( dismissBtn );
 
     mygrid->addLayout(btnLayout, 4, 0, 1, 2);

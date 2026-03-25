@@ -894,7 +894,7 @@ bool Render2D::SaveEPS( QString fn )
     Print( tmpEpsFile );
     // shell (ps2epsi tmp_fn fn)
     QProcess *proc1 = new QProcess( this );
-    connect( proc1, SIGNAL( finished( int, QProcess::ExitStatus ) ), SLOT( saveEPSFinished( int, QProcess::ExitStatus ) ) );
+    connect( proc1, &QProcess::finished, this, &Render2D::saveEPSFinished );
 
     QStringList arguments1;
     arguments1 << tmpEpsFile << fn;

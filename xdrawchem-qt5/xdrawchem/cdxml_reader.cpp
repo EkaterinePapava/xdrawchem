@@ -343,7 +343,7 @@ void CDXML_Reader::ParseGraphic( QString gtag )
         if ( a1.toUpper() == "BOUNDINGBOX" ) {
             s1 = new DPoint;
             e1 = new DPoint;
-            QTextStream coords( &v1, QIODevice::ReadOnly );
+            QTextStream coords( &v1);
 
             coords >> s1->x >> s1->y >> e1->x >> e1->y;
             //qDebug() << s1->x << " ";

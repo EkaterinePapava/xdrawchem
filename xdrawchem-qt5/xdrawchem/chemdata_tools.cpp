@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <QClipboard>
 #include <QApplication>
 
@@ -123,7 +124,7 @@ void ChemData::Tool( DPoint *target, int mode )
             mi->setPCC( na->spccompound );
         }
 
-        connect( mi, SIGNAL( MIDClose() ), this, SLOT( returnFromMID() ) );
+        connect( mi, &MolInfoDialog::MIDClose, this, &ChemData::returnFromMID );
 
         mi->show();
         //if ( !mi->exec() ) return;
@@ -516,7 +517,7 @@ void ChemData::fromSMILES( QString sm )
 void ChemData::SmartPlace( QString sf, DPoint * t1 )
 {
     if ( sf.contains( "cyclopentadiene" ) > 0 )
-        sf.replace( QRegExp( "diene" ), "diene-sp" );
+        sf.replace( QRegularExpression( "diene" ), "diene-sp" );
     double ang1 = -CalculateRingAttachAngle( t1 ) + 1.5708;
 
     load( sf );

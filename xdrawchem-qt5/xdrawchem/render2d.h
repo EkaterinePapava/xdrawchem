@@ -15,6 +15,7 @@
 #include "prefs.h"
 #include "clipboard.h"
 #include "xdc_event.h"
+#include "xdc_textedit.h"
 
 class ChemData;
 class Text;
@@ -281,7 +282,7 @@ private:
     QPainter *painter;
     // Text object, temp string to use when creating/editing text
     Text *localtext;
-    QTextEdit *localtexteditor;
+    XdcTextEdit *localtexteditor;
     QString localstring;
     bool text_exists;  // does this text object exist?
     bool text_drag, super_set, sub_set;

@@ -2,9 +2,9 @@
 #define NETACCESS_H
 
 #include <QDialog>
+#include <QStringList>
 
 class QString;
-class QStringList;
 class QProgressDialog;
 class QBuffer;
 

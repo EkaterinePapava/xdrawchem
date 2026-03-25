@@ -27,7 +27,7 @@ TextShapeDialog::TextShapeDialog( QWidget * parent )
     bbutton = new QPushButton( this );
     bbutton->setText( tr( "Border color" ) );
     tsgl->addWidget( bbutton, 1, 1 );
-    connect( bbutton, SIGNAL( clicked() ), SLOT( editBorderColor() ) );
+    connect( bbutton, &QAbstractButton::clicked, this, &TextShapeDialog::editBorderColor );
 
     fillCheck = new QCheckBox();
     fillCheck->setText( tr( "Fill" ) );
@@ -35,7 +35,7 @@ TextShapeDialog::TextShapeDialog( QWidget * parent )
     fbutton = new QPushButton( this );
     fbutton->setText( tr( "Fill color" ) );
     tsgl->addWidget( fbutton, 2, 1 );
-    connect( fbutton, SIGNAL( clicked() ), SLOT( editFillColor() ) );
+    connect( fbutton, &QAbstractButton::clicked, this, &TextShapeDialog::editFillColor );
 
     QLabel *lw1, *lh1;
 
@@ -56,10 +56,10 @@ TextShapeDialog::TextShapeDialog( QWidget * parent )
 
     ok = new QPushButton( tr( "OK" ) );
     tsgl->addWidget( ok, 5, 0 );
-    connect( ok, SIGNAL( clicked() ), SLOT( accept() ) );
+    connect( ok, &QAbstractButton::clicked, this, &QDialog::accept );
     dismiss = new QPushButton( tr( "Cancel" ) );
     tsgl->addWidget( dismiss, 5, 1 );
-    connect( dismiss, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( dismiss, &QAbstractButton::clicked, this, &QDialog::reject );
 }
 
 void TextShapeDialog::editBorderColor()

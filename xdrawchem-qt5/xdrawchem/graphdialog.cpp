@@ -26,19 +26,19 @@ GraphDialog::GraphDialog( QWidget *parent, const QString &name )
     //showhide->setGeometry(20,320,150,40);
     //showhide->setPalette(QPalette(QPalette::Midlight));
     QPushButton *qprint = new QPushButton( tr( "Print" ), this );
-    connect( qprint, SIGNAL( clicked() ), g, SLOT( Print() ) );
+    connect( qprint, &QAbstractButton::clicked, g, &GraphWidget::Print );
     dialogLayout->addWidget( qprint, 1, 0 );
 
     QPushButton *qexport = new QPushButton( tr( "Export Peak List" ), this );
-    connect( qexport, SIGNAL( clicked() ), g, SLOT( Export() ) );
+    connect( qexport, &QAbstractButton::clicked, g, &GraphWidget::Export );
     dialogLayout->addWidget( qexport, 1, 1 );
 
     QPushButton *qhelp = new QPushButton( tr( "Help" ), this );
-    connect( qhelp, SIGNAL( clicked() ), SLOT( SendHelp() ) );
+    connect( qhelp, &QAbstractButton::clicked, this, &GraphDialog::SendHelp );
     dialogLayout->addWidget( qhelp, 2, 0 );
 
     QPushButton *qclose = new QPushButton( tr( "Close" ), this );
-    connect( qclose, SIGNAL( clicked() ), SLOT( accept() ) );
+    connect( qclose, &QAbstractButton::clicked, this, &QDialog::accept );
     dialogLayout->addWidget( qclose, 2, 1 );
 
     if ( name.contains( "13C-NMR" ) > 0 )

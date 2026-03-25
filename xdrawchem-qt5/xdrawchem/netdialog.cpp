@@ -49,7 +49,7 @@ NetDialog::NetDialog( QWidget * parent )
 
     searchkey = new QLineEdit();
     mygrid->addWidget( searchkey, 2, 4, 1, 4 );
-    connect( searchkey, SIGNAL( returnPressed() ), SLOT( accept() ) );
+    connect( searchkey, &QLineEdit::returnPressed, this, &QDialog::accept );
     searchkey->setFocus();
 
     emcheck = new QCheckBox( tr( "Exact matches only" ) );
@@ -63,11 +63,11 @@ NetDialog::NetDialog( QWidget * parent )
     QPushButton *ok, *dismiss;
 
     ok = new QPushButton( tr( "Search" ) );
-    connect( ok, SIGNAL( clicked() ), SLOT( accept() ) );
+    connect( ok, &QAbstractButton::clicked, this, &QDialog::accept );
     buttonHBox->addWidget( ok );
 
     dismiss = new QPushButton( tr( "Cancel" ) );
-    connect( dismiss, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( dismiss, &QAbstractButton::clicked, this, &QDialog::reject );
     buttonHBox->addWidget( dismiss );
 
     mygrid->addLayout( buttonHBox, 4, 0, 1, 8 );

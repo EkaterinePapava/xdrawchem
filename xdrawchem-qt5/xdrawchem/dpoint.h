@@ -12,6 +12,7 @@
 #include <QTextStream>
 #include <QTextDocument>
 #include <QDebug>
+#include <QRegularExpression>
 
 class Bond;
 
@@ -218,7 +219,7 @@ public:
         xml_tag.remove( i2, 999 );
         xml_tag.remove( i1, 7 );
 
-        QTextStream ts( &xml_tag, QIODevice::ReadOnly );
+        QTextStream ts( &xml_tag);
 
         ts >> d1 >> d2 >> d3;
 
@@ -235,7 +236,7 @@ public:
         xml_tag.remove( i2, 999 );
         xml_tag.remove( i1, 13 );
 
-        QTextStream ts( &xml_tag, QIODevice::ReadOnly );
+        QTextStream ts( &xml_tag);
 
         ts >> x >> y;
     }
@@ -373,7 +374,7 @@ public:
         bele.remove("+");
         bele.remove("-");
         bele.remove("H");
-        bele.remove( QRegExp("\\d+") );
+        bele.remove( QRegularExpression("\\d+") );
         return bele;
         }
         return "X";

@@ -59,7 +59,7 @@ PageSetupDialog::PageSetupDialog( QWidget * parent )
     if ( preferences.getPageOrientation() == PAGE_LANDSCAPE )
         paperOrient->setCurrentIndex( 1 );
     po_set = paperOrient->currentIndex();
-    connect( paperOrient, SIGNAL( activated( int ) ), SLOT( SwapWH( int ) ) );
+    connect( paperOrient, &QComboBox::activated, this, &PageSetupDialog::SwapWH );
 
     mygrid->addWidget( paperOrient, 1, 2, 1, 2 );
 
@@ -117,11 +117,11 @@ PageSetupDialog::PageSetupDialog( QWidget * parent )
     QPushButton *ok, *dismiss;
 
     ok = new QPushButton( tr( "OK" ) );
-    connect( ok, SIGNAL( clicked() ), SLOT( accept() ) );
+    connect( ok, &QAbstractButton::clicked, this, &QDialog::accept );
     buttonHBox->addWidget( ok );
 
     dismiss = new QPushButton( tr( "Cancel" ) );
-    connect( dismiss, SIGNAL( clicked() ), SLOT( reject() ) );
+    connect( dismiss, &QAbstractButton::clicked, this, &QDialog::reject );
     buttonHBox->addWidget( dismiss );
 
     mygrid->addLayout( buttonHBox, 4, 0, 1, 4 );

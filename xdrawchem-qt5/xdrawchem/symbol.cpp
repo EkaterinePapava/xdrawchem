@@ -1,6 +1,7 @@
 // symbol.cpp - Symbol's implementation of functions
 
 #include <QPainterPath>
+#include <QTransform>
 
 #include "render2d.h"
 #include "drawable.h"
@@ -104,7 +105,7 @@ void Symbol::SetRotate( double d )
     if ( which == QString( "bead" ) )
         return;
     // rotate symbol
-    QMatrix rm;
+    QTransform rm;
 
     rm.rotate( d );
     rotateRegular = originalRegular.transformed( rm );
