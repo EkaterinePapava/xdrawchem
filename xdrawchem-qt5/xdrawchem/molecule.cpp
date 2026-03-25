@@ -1083,17 +1083,21 @@ QString Molecule::ToMDLMolfile( int coords )
             tmpline.append( ' ' );
         if ( coords == 0 ) {    // 2D
             t.setFieldWidth( 10 );
+            t.setRealNumberPrecision( 4 );
+            t.setRealNumberNotation( QTextStream::FixedNotation );
             t << tmp_pt->x;
-            t.setFieldWidth( 10 );
-            t << -tmp_pt->y << "    0.0000 " << tmpline;
+            t << -tmp_pt->y;
+            t.setFieldWidth( 0 );  // reset — keep element at correct MDL column
+            t << "    0.0000 " << tmpline;
         } else {                // 3D
             t.setFieldWidth( 10 );
+            t.setRealNumberPrecision( 4 );
+            t.setRealNumberNotation( QTextStream::FixedNotation );
             t << tmp_pt->x;
-            t.setFieldWidth( 10 );
             t << tmp_pt->y;
-            t.setFieldWidth( 10 );
             t << tmp_pt->z;
-            t << tmpline;
+            t.setFieldWidth( 0 );
+            t << " " << tmpline;
         }
         t << " 0  0  0  0  0  0  0  0  0  0  0  0" << Qt::endl;
     }

@@ -49,17 +49,36 @@ xdc_test(tst_bondgeometry
 )
 
 # ── Test: CML parser — atom/bond parsing, stereo bonds, ring file fixtures ────
-# Links against the full xdrawchem OBJECT library.
-# globals_stub.cpp provides Preferences preferences; QString RingDir, HomeDir;
-# which are normally defined in main.cpp (excluded from the object lib to
-# avoid a main() collision with QTEST_APPLESS_MAIN).
 xdc_test(tst_cmlparser
     tst_cmlparser.cpp
     globals_stub.cpp
 )
 target_link_libraries(tst_cmlparser PRIVATE xdrawchem_obj)
-
-# Pass ring directory so file-fixture tests can locate benzene.cml etc.
 target_compile_definitions(tst_cmlparser PRIVATE
     RING_DIR="${CMAKE_SOURCE_DIR}/ring"
+)
+
+# ── Test: SSSR ring-detection algorithm ──────────────────────────────────────
+# Pure graph algorithm — DPoint neighbors lists, no Render2D.
+# Needs xdrawchem_obj because molecule_sssr.cpp includes bond.h→render2d.h
+# (transitive header dep), but never dereferences Render2D at runtime.
+xdc_test(tst_sssr
+    tst_sssr.cpp
+    globals_stub.cpp
+)
+target_link_libraries(tst_sssr PRIVATE xdrawchem_obj)
+
+# ── Test: SMILES round-trip via OpenBabel ─────────────────────────────────────
+# Uses QTEST_MAIN (needs QApplication); run with offscreen platform to avoid
+# requiring a physical display in CI environments.
+# Uses QTEST_MAIN (not APPLESS) because ToMDLMolfile creates QTextDocument.
+# Links xdrawchem_obj for the full Molecule/Bond stack + OpenBabel.
+xdc_test(tst_smiles
+    tst_smiles.cpp
+    globals_stub.cpp
+)
+target_link_libraries(tst_smiles PRIVATE xdrawchem_obj)
+# QApplication requires a display — use offscreen platform in headless environments
+set_tests_properties(tst_smiles PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
 )

@@ -179,7 +179,7 @@ int SSSR::CommonPoints( QList < DPoint * >*r1, QList < DPoint * >*r2 )
     int ol = 0;
 
     for (auto *tmp_r1 : *r1) {
-        if ( r2->count( tmp_r1 ) >= 0 )
+        if ( r2->count( tmp_r1 ) > 0 )
             ol++;
     }
     return ol;
@@ -194,7 +194,7 @@ bool SSSR::CheckRing( QList < DPoint * >*r )
     for (QList<DPoint *> *tmp_ring : sssr) {
         l2 = r->count();
         for (DPoint *tmp_pt : *tmp_ring) {
-            if ( r->count( tmp_pt ) >= 0 )
+            if ( r->count( tmp_pt ) > 0 )
                 l2--;
         }
         if ( l2 <= 0 ) {
