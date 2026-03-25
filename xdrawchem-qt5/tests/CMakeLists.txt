@@ -96,3 +96,17 @@ xdc_test(tst_aromaticity
     globals_stub.cpp
 )
 target_link_libraries(tst_aromaticity PRIVATE xdrawchem_obj)
+
+# ── Test: XML_Reader string-parsing utilities ─────────────────────────────────
+# Pure QString manipulation — no Qt widget, file, or OpenBabel dependency.
+xdc_test(tst_xml_reader
+    tst_xml_reader.cpp
+    ../xdrawchem/xml_reader.cpp
+)
+
+# ── Test: Bond::Enthalpy, Bond::Length, Molecule::OrderOfBond / SumBondEnthalpy
+xdc_test(tst_bond_enthalpy
+    tst_bond_enthalpy.cpp
+    globals_stub.cpp
+)
+target_link_libraries(tst_bond_enthalpy PRIVATE xdrawchem_obj)

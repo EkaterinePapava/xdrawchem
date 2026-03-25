@@ -355,19 +355,24 @@ double Bond::Enthalpy()
         atom2 = swp;
     }
     // special cases (functional groups, etc.)
+    double oh_bonus = 0.0;
     if ( atom1 == "OH" ) {
-        dh += 463.0;
+        oh_bonus += 463.0;
         atom1 = "O";
     }
     if ( atom2 == "OH" ) {
-        dh += 463.0;
+        oh_bonus += 463.0;
         atom2 = "O";
+    }
+    // re-sort after OH substitution
+    if ( QString::compare( atom1, atom2 ) > 0 ) {
+        QString swp2 = atom1; atom1 = atom2; atom2 = swp2;
     }
 
     if ( ( order == 1 ) || ( order == 5 ) || ( order == 7 ) ) {
         if ( ( atom1 == "Br" ) && ( atom2 == "H" ) )
             dh = 366.0;
-        if ( ( atom1 == "C" ) && ( atom2 == "Br" ) )
+        if ( ( atom1 == "Br" ) && ( atom2 == "C" ) )
             dh = 276.0;
         if ( ( atom1 == "C" ) && ( atom2 == "C" ) )
             dh = 348.0;
@@ -433,7 +438,7 @@ double Bond::Enthalpy()
             dh = 945.0;
     }
 
-    return dh;
+    return dh + oh_bonus;
 }
 
 double Bond::Length()
