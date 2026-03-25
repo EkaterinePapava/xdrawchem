@@ -8,6 +8,14 @@
 #include <sstream>
 #include <map>
 
+#include <openbabel/atom.h>
+#include <openbabel/bond.h>
+#include <openbabel/elements.h>
+#include <openbabel/math/vector3.h>
+#include <openbabel/mol.h>
+#include <openbabel/obconversion.h>
+using namespace OpenBabel;
+
 #include "render2d.h"
 #include "drawable.h"
 #include "molecule.h"
@@ -54,7 +62,7 @@ void Molecule::SDG( bool coord )
     QVector < Atom * >atoms( up.count() );
 
     // clear "hit" flag on all atoms
-    foreach ( tmp_pt, up )
+    for (DPoint *tmp_pt : up)
         tmp_pt->hit = false;
     // find rings (esp. find aromaticity) - do after CopyTextToDPoint()
     MakeSSSR();
@@ -62,9 +70,9 @@ void Molecule::SDG( bool coord )
 
     // convert "up" to JMDraw-friendly Qlist<Atom>
     // rebuild neighbors list (usually mangled by MakeSSSR)
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         tmp_pt->neighbors.clear();
-        foreach ( tmp_bond, bonds ) {
+        for (Bond *tmp_bond : bonds) {
             if ( tmp_bond->Find( tmp_pt ) == true ) {
                 tmp_pt->neighbors.append( tmp_bond->otherPoint( tmp_pt ) );
                 tmp_pt->bondorder[( tmp_pt->neighbors.count() - 1 )] = tmp_bond->Order();
@@ -147,7 +155,7 @@ void Molecule::SDG( bool coord )
         if ( bb1.top() < 10 )
             ymove = 10 - bb1.top();
     }
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         tmp_pt->x += xmove;
         tmp_pt->y += ymove;
     }
@@ -160,21 +168,21 @@ void Molecule::SDG( bool coord )
 QString Molecule::ToInChI() {
   std::istringstream istream( ToMDLMolfile().toLatin1().constData() );
   std::ostringstream ostream;
-  
+
   OBConversion Conv( &istream, &ostream );
-  OBFormat *pInFormat = 0, *pOutFormat = 0;
-  
+  OBFormat *pInFormat = nullptr, *pOutFormat = 0;
+
   pInFormat = Conv.FindFormat( "mol" );
   pOutFormat = Conv.FindFormat( "inchi" );
-  
+
   Conv.SetInAndOutFormats( pInFormat, pOutFormat );
   //Conv.Convert();
   OBMol mol;
   Conv.Read(&mol);
   Conv.Write(&mol);
-  
+
   // convert the string into a terminated c string
-  
+
   std::string s = ostream.str();
   s[s.length() - 1] = '\0';
   return ( QString( s.c_str() ) );
@@ -201,7 +209,7 @@ QString Molecule::ToSMILES()
      */
 
     OBConversion Conv( &istream, &ostream );
-    OBFormat *pInFormat = 0, *pOutFormat = 0;
+    OBFormat *pInFormat = nullptr, *pOutFormat = 0;
 
     pInFormat = Conv.FindFormat( "mol" );
     pOutFormat = Conv.FindFormat( "smi" );
@@ -375,10 +383,10 @@ void Molecule::FromSMILES(QString sm) {
       tmp_token = sm.left(i1);
       smilesTokens.append(tmp_token);
     }
-    //qInfo() << "token: " << tmp_token << endl << "left: " << sm ;
+    //qInfo() << "token: " << tmp_token << Qt::endl << "left: " << sm ;
   } while (sm.length() > 0);
 
-  DPoint *prev_pt = 0, *new_pt = 0;
+  DPoint *prev_pt = nullptr, *new_pt = 0;
   QString tmp_element, tmp_element_mask;
   tmp_token = "";
   prev_token = "";

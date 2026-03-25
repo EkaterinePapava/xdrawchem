@@ -15,7 +15,7 @@ class Arrow : public Drawable
     Q_OBJECT
 
 public:
-    Arrow( Render2D *, QObject *parent = 0 );
+    Arrow( Render2D *, QObject *parent = nullptr );
     void Render();  // draw this object
     void Edit();  // edit this object
     int Type();  // return type of object

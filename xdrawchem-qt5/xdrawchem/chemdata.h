@@ -34,7 +34,7 @@ public:
     void saved() { notSaved = false; }
 
     // defined in chemdata.cpp
-    ChemData( QObject *parent = 0 );
+    ChemData( QObject *parent = nullptr );
     void drawAll();
     Molecule *firstMolecule();
     void addMolecule( Molecule * );
@@ -70,7 +70,7 @@ public:
     void Cut();
     void Copy();
     bool Paste();
-    void StartUndo( int fn = 0, DPoint *s1 = 0 );
+    void StartUndo( int fn = 0, DPoint *s1 = nullptr );
     bool Undo();
     void ScaleAll( double bond_length = -1.0 );
 

@@ -3,7 +3,7 @@
 	$Revision: 1.1.1.1 $
 	$Date: 2004/01/24 17:15:47 $
 	Copyright:	 1986-2001 CambridgeSoft Corp., all rights reserved.
-	
+
 	Description:	Constants defined by the CDX file format Specification
 */
 
@@ -81,7 +81,7 @@ enum CDXDatumID {
 	kCDXProp_ColorTable = 0x0300,			// 0x0300 The color palette used throughout the document. (CDXColorTable)
 	kCDXProp_ForegroundColor,				// 0x0301 The foreground color of an object represented as the two-based index into the object's color table. (UINT16)
 	kCDXProp_BackgroundColor,				// 0x0302 The background color of an object represented as the two-based index into the object's color table. (INT16)
-	
+
 	// Atom properties.
 	kCDXProp_Node_Type = 0x0400,			// 0x0400 The type of a node object. (INT16)
 	kCDXProp_Node_LabelDisplay,				// 0x0401 The characteristics of node label display. (INT8)
@@ -98,10 +98,10 @@ enum CDXDatumID {
 	kCDXProp_Atom_RestrictRxnChange,		// 0x0427 If present, signifies that the reaction change of an atom must be as specified. (CDXBooleanImplied)
 	kCDXProp_Atom_RestrictRxnStereo,		// 0x0428 The change of stereochemistry of an atom during a reaction. (INT8)
 	kCDXProp_Atom_AbnormalValence,			// 0x0429 Signifies that an abnormal valence for an atom is permitted. (CDXBooleanImplied)
-	kCDXProp_Unused3,						// 0x042A 
+	kCDXProp_Unused3,						// 0x042A
 	kCDXProp_Atom_NumHydrogens,				// 0x042B The number of (explicit) hydrogens in a labeled atom consisting of one heavy atom and (optionally) the symbol H (e.g., CH<sub>3</sub>). (UINT16)
-	kCDXProp_Unused4,						// 0x042C 
-	kCDXProp_Unused5,						// 0x042D 
+	kCDXProp_Unused4,						// 0x042C
+	kCDXProp_Unused5,						// 0x042D
 	kCDXProp_Atom_HDot,						// 0x042E Signifies the presence of an implicit hydrogen with stereochemistry specified equivalent to an explicit H atom with a wedged bond. (CDXBooleanImplied)
 	kCDXProp_Atom_HDash,					// 0x042F Signifies the presence of an implicit hydrogen with stereochemistry specified equivalent to an explicit H atom with a hashed bond. (CDXBooleanImplied)
 	kCDXProp_Atom_Geometry,					// 0x0430 The geometry of the bonds about this atom. (INT8)
@@ -196,7 +196,7 @@ enum CDXDatumID {
 	kCDXProp_Window_IsZoomed = 0x0900,		// 0x0900 Signifies whether the main viewing window is zoomed (maximized). (CDXBooleanImplied)
 	kCDXProp_Window_Position,				// 0x0901 The top-left position of the main viewing window. (CDXPoint2D)
 	kCDXProp_Window_Size,					// 0x0902 Height and width of the document window. (CDXPoint2D)
-	
+
 	// Graphic object properties.
 	kCDXProp_Graphic_Type = 0x0A00,			// 0x0A00 The type of graphical object. (INT16)
 	kCDXProp_Line_Type,						// 0x0A01 The type of a line object. (INT16)
@@ -440,8 +440,8 @@ enum CDXBondDoublePosition {
 	kCDXBondDoublePosition_UserCenter	= 0x0100,
 	kCDXBondDoublePosition_UserRight	= 0x0101,
 	kCDXBondDoublePosition_UserLeft		= 0x0102
-};	
-		
+};
+
 enum CDXBondTopology {
 	kCDXBondTopology_Unspecified	= 0,
 	kCDXBondTopology_Ring			= 1,
@@ -575,7 +575,7 @@ enum CDXOrbitalType
 	kCDXOrbitalType_ovalShaded,			// shaded Oval-shaped sigma or pi orbital
 	kCDXOrbitalType_lobeShaded,			// shaded single lobe of a p orbital
 	kCDXOrbitalType_pShaded,			// shaded Complete p orbital
-	
+
 	kCDXOrbitalType_sFilled = 0x0200,	// filled s orbital
 	kCDXOrbitalType_ovalFilled,			// filled Oval-shaped sigma or pi orbital
 	kCDXOrbitalType_lobeFilled,			// filled single lobe of a p orbital
@@ -591,10 +591,10 @@ enum CDXOrbitalType
 enum CDXSpectrumYType
 {
 	kCDXSpectrumYType_Unknown,
-	kCDXSpectrumYType_Absorbance, 
-	kCDXSpectrumYType_Transmittance, 
-	kCDXSpectrumYType_PercentTransmittance, 
-	kCDXSpectrumYType_Other, 
+	kCDXSpectrumYType_Absorbance,
+	kCDXSpectrumYType_Transmittance,
+	kCDXSpectrumYType_PercentTransmittance,
+	kCDXSpectrumYType_Other,
 	kCDXSpectrumYType_ArbitraryUnits
 };
 

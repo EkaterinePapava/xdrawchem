@@ -1544,7 +1544,7 @@ void ApplicationWindow::support()
 {
     QMessageBox::information( 0, tr( "How to get help" ),
                               tr
-                              ( "Current information on XDrawChem can always be found at\nhttp://xdrawchem.sourceforge.net/\nThe latest release will be posted here, as well as links to mailing lists and the bug tracker.\n\nPlease submit bugs using the SourceForge tracker: http://www.sourceforge.net/tracker/?group_id=34518\n\nThere are two mailing lists:  xdrawchem-announce, where new releases will be announced,\nand xdrawchem-user, for open discussion among XDrawChem users.\nSubscribe by sending a blank e-mail with subject \"subscribe\" to \n\"xdrawchem-announce-request@lists.sourceforge.net\" or\n\"xdrawchem-user-request@lists.sourceforge.net\"\n\nYou can contact the author directly at\nbherger@users.sourceforge.net" ) );
+                              ( "Current information on XDrawChem can always be found at\nhttps://xdrawchem.sourceforge.net/\nThe latest release will be posted here, as well as links to mailing lists and the bug tracker.\n\nPlease submit bugs using the SourceForge tracker: http://www.sourceforge.net/tracker/?group_id=34518\n\nThere are two mailing lists:  xdrawchem-announce, where new releases will be announced,\nand xdrawchem-user, for open discussion among XDrawChem users.\nSubscribe by sending a blank e-mail with subject \"subscribe\" to \n\"xdrawchem-announce-request@lists.sourceforge.net\" or\n\"xdrawchem-user-request@lists.sourceforge.net\"\n\nYou can contact the author directly at\nbherger@users.sourceforge.net" ) );
 }
 
 void ApplicationWindow::whatsThis()
@@ -1639,9 +1639,9 @@ void ApplicationWindow::MakeNetDialog()
 void ApplicationWindow::MakeNetDialog() {
   NetDialog n(this);
   if ( !n.exec() ) return;
-  //cout << "Server:" << n.getServer() << endl;
-  //cout << "Key   :" << n.getKey() << endl;
-  //cout << "Value :" << n.getValue() << endl;
+  //cout << "Server:" << n.getServer() << Qt::endl;
+  //cout << "Key   :" << n.getKey() << Qt::endl;
+  //cout << "Value :" << n.getValue() << Qt::endl;
   NetAccess na;
   setCursor(Qt::WaitCursor);
   m_renderer->setWaitCursor();
@@ -1667,7 +1667,7 @@ void ApplicationWindow::MakeNetDialog() {
   */
   NetChooseDialog nc(this, choices);
   if ( !nc.exec() ) return;
-  //cout << nc.getFile() << endl;
+  //cout << nc.getFile() << Qt::endl;
   // TODO: insert SMILES string returned by database
   m_chemData->fromSMILES(nc.getFile());
   m_renderer->Inserted();
@@ -2177,7 +2177,5 @@ void ApplicationWindow::setFontPoints( int fn1 )
 {
   qDebug() << "FontPoints: " << fn1;
 }
-
-//cmake#include "application.moc"
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

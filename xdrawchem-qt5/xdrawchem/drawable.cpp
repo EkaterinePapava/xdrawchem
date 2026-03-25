@@ -471,6 +471,4 @@ bool Drawable::DPointInRect( DPoint * d, QRect r )
     return r.contains( QPoint( ( int ) d->x, ( int ) d->y ), true );
 }
 
-//cmake#include "drawable.moc"
-
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

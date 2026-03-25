@@ -91,6 +91,4 @@ void TextShapeDialog::setFillColor( QColor c1 )
     fc = c1;
 }
 
-//cmake#include "textshapedialog.moc"
-
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

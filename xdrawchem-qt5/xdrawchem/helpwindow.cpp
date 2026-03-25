@@ -182,6 +182,4 @@ void HelpWindow::pathSelected( const QString & _path )
     browser->setSource( _path );
 }
 
-//cmake#include "helpwindow.moc"
-
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

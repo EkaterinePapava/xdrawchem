@@ -159,42 +159,42 @@ public:
 
         QTextStream tout(&fout);
         if (fixed_arrow)
-            tout << "FIXED_ARROW true" << endl;
+            tout << "FIXED_ARROW true" << Qt::endl;
         else
-            tout << "FIXED_ARROW false" << endl;
+            tout << "FIXED_ARROW false" << Qt::endl;
 
         if (fixed_bond)
-            tout << "FIXED_BOND true" << endl;
+            tout << "FIXED_BOND true" << Qt::endl;
         else
-            tout << "FIXED_BOND false" << endl;
+            tout << "FIXED_BOND false" << Qt::endl;
 
         if (fix_hydrogens)
-            tout << "FIX_HYDROGENS true" << endl;
+            tout << "FIX_HYDROGENS true" << Qt::endl;
         else
-            tout << "FIX_HYDROGENS false" << endl;
+            tout << "FIX_HYDROGENS false" << Qt::endl;
 
         if (dyk)
-            tout << "DYK_TF true" << endl;
+            tout << "DYK_TF true" << Qt::endl;
         else
-            tout << "DYK_TF false" << endl;
+            tout << "DYK_TF false" << Qt::endl;
 
-        tout << "DYKCOUNT " << dykcount << endl;
-        tout << "ARROW_LENGTH " << arrow_fixedlength << endl;
-        tout << "ARROW_ANGLE " << arrow_fixedangle << endl;
-        tout << "BOND_LENGTH " << bond_fixedlength << endl;
-        tout << "BOND_ANGLE " << bond_fixedangle << endl;
-        tout << "DBOND_OFFSET " << dbond_offset << endl;
-        tout << "PAPER_SIZE " << paper_size << endl;
-        tout << "PAPER_ORIENT " << paper_orient << endl;
-        tout << "PAPER_WIDTH " << paper_width << endl;
-        tout << "PAPER_HEIGHT " << paper_height << endl;
-        tout << "UNITS " << units << endl;
-        tout << "DRAWGRID " << drawgrid << endl;
-        tout << "SNAPGRID " << snapgrid << endl;
-        tout << "GRIDMODE " << gridmode << endl;
-        tout << "GRIDSPACE " << gridspace << endl;
-        tout << "MAINFONT " << mainFont.toString() << endl;
-        tout << "RULERFONT " << rulerFont.toString() << endl;
+        tout << "DYKCOUNT " << dykcount << Qt::endl;
+        tout << "ARROW_LENGTH " << arrow_fixedlength << Qt::endl;
+        tout << "ARROW_ANGLE " << arrow_fixedangle << Qt::endl;
+        tout << "BOND_LENGTH " << bond_fixedlength << Qt::endl;
+        tout << "BOND_ANGLE " << bond_fixedangle << Qt::endl;
+        tout << "DBOND_OFFSET " << dbond_offset << Qt::endl;
+        tout << "PAPER_SIZE " << paper_size << Qt::endl;
+        tout << "PAPER_ORIENT " << paper_orient << Qt::endl;
+        tout << "PAPER_WIDTH " << paper_width << Qt::endl;
+        tout << "PAPER_HEIGHT " << paper_height << Qt::endl;
+        tout << "UNITS " << units << Qt::endl;
+        tout << "DRAWGRID " << drawgrid << Qt::endl;
+        tout << "SNAPGRID " << snapgrid << Qt::endl;
+        tout << "GRIDMODE " << gridmode << Qt::endl;
+        tout << "GRIDSPACE " << gridspace << Qt::endl;
+        tout << "MAINFONT " << mainFont.toString() << Qt::endl;
+        tout << "RULERFONT " << rulerFont.toString() << Qt::endl;
 
         fout.close();
 

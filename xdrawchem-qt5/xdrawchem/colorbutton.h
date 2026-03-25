@@ -12,7 +12,7 @@ class ColorButton : public QPushButton
     Q_OBJECT
 
 public:
-    ColorButton( QColor color = Qt::black, QWidget *parent = 0 );
+    ColorButton( QColor color = Qt::black, QWidget *parent = nullptr );
     // default destructor
 
     void setColor( QColor color );

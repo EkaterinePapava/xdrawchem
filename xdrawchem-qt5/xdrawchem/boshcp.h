@@ -101,7 +101,7 @@ public:
 
     HOSECodeShiftRange get( QString n )
     {
-        foreach ( tmp_key, table ) {
+        for (HashKey *tmp_key : table) {
             if ( tmp_key->key == n )
                 return tmp_key->data;
         }
@@ -120,7 +120,7 @@ public:
 
     bool containsKey(QString n)
     {
-        foreach (tmp_key, table) {
+        for (HashKey *tmp_key : table) {
             if (tmp_key->key == n)
                 return true;
         }

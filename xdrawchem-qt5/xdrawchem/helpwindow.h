@@ -22,7 +22,7 @@ class HelpWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    HelpWindow( const QString& home_,  const QString& path, QWidget* parent = 0 );
+    HelpWindow( const QString& home_,  const QString& path, QWidget* parent = nullptr );
     ~HelpWindow();
 
 private slots:

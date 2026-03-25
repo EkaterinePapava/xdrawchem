@@ -21,7 +21,7 @@
 #include "prefs.h"
 #include "dyk.h"
 
-#include <stdio.h>
+#include <cstdio>
 #include <execinfo.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -60,7 +60,7 @@ int main( int argc, char **argv )
         cmds.append( argv[c1] );
     }
     if ( cmds.count() > 1 ) {
-        foreach ( QString arg, cmds ) {
+        for (const auto &arg : cmds) {
             qDebug() << arg << ":";
             if ( arg == "-h" ) {
                 helpflag = true;
@@ -100,7 +100,7 @@ int main( int argc, char **argv )
     if ( helpflag )
         usage();
     if ( versionflag ) {
-        out << XDC_VERSION << endl;
+        out << XDC_VERSION << Qt::endl;
         exit( 0 );
     }
 
@@ -209,15 +209,15 @@ int main( int argc, char **argv )
 
 void usage()
 {
-    out << XDC_VERSION << endl;
-    out << "Usage:" << endl;
-    out << "  xdrawchem [input file] [options]" << endl;
-    out << "Command line options:" << endl;
-    out << "-png <output file>: Create a PNG image of input file and exit" << endl;
-    out << "-t: Make transparent PNG (also specify -png)" << endl;
-    out << "-3d: Make 3D model of input file (output MDL mofile)" << endl;
-    out << "-h, --help:  Display this help" << endl;
-    out << "-v, --version:  Display the version information" << endl;
+    out << XDC_VERSION << Qt::endl;
+    out << "Usage:" << Qt::endl;
+    out << "  xdrawchem [input file] [options]" << Qt::endl;
+    out << "Command line options:" << Qt::endl;
+    out << "-png <output file>: Create a PNG image of input file and exit" << Qt::endl;
+    out << "-t: Make transparent PNG (also specify -png)" << Qt::endl;
+    out << "-3d: Make 3D model of input file (output MDL mofile)" << Qt::endl;
+    out << "-h, --help:  Display this help" << Qt::endl;
+    out << "-v, --version:  Display the version information" << Qt::endl;
 
     exit( 0 );
 }

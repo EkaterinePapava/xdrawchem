@@ -22,7 +22,7 @@ void Molecule::Scale( double bond_length )
     int nbonds = 0;
 
     // calculate current average bond length
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         bond_sum += tmp_bond->Length();
         nbonds++;
     }
@@ -35,13 +35,13 @@ void Molecule::Scale( double bond_length )
     double topedge = 9999.0, leftedge = 9999.0;
 
     up = AllPoints();
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         if ( tmp_pt->x < leftedge )
             leftedge = tmp_pt->x;
         if ( tmp_pt->y < topedge )
             topedge = tmp_pt->y;
     }
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         tmp_pt->x = ( ( tmp_pt->x - leftedge ) * sf ) + ( leftedge * sf );
         tmp_pt->y = ( ( tmp_pt->y - topedge ) * sf ) + ( topedge * sf );
     }
@@ -51,7 +51,7 @@ QList < DPoint * >Molecule::BreakRingBonds( DPoint * target1 )
 {
     QList < DPoint * >bb;
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         if ( tmp_bond->Find( target1 ) == true ) {
             tmp_pt = tmp_bond->otherPoint( target1 );
             tmp_pt->new_order = tmp_bond->Order();
@@ -68,14 +68,14 @@ DPoint *Molecule::GetAttachPoint( QString sf )
 {
     if ( ( sf.contains( "fmoc" ) > 0 ) || ( sf.contains( "boc" ) > 0 ) || ( sf.contains( "dabcyl" ) > 0 ) || ( sf.contains( "dabsyl" ) > 0 ) || ( sf.contains( "dansyl" ) > 0 ) ) {
         up = AllPoints();
-        foreach ( tmp_pt, up ) {
+        for (DPoint *tmp_pt : up) {
             if ( tmp_pt->element == "Cl" ) {
                 qDebug() << "Point:Cl";
                 tmp_pt->element = "C";
                 break;
             }
         }
-        foreach ( tmp_text, labels ) {
+        for (Text *tmp_text : labels) {
             if ( tmp_text->Start() == tmp_pt ) {
                 qDebug() << "removed";
                 labels.removeAll( tmp_text );
@@ -87,14 +87,14 @@ DPoint *Molecule::GetAttachPoint( QString sf )
     }
     if ( ( sf.contains( "edans" ) > 0 ) ) {
         up = AllPoints();
-        foreach ( tmp_pt, up ) {
+        for (DPoint *tmp_pt : up) {
             if ( tmp_pt->element == "NH2" ) {
                 qDebug() << "Point:NH2";
                 tmp_pt->element = "C";
                 break;
             }
         }
-        foreach ( tmp_text, labels ) {
+        for (Text *tmp_text : labels) {
             if ( tmp_text->Start() == tmp_pt ) {
                 qDebug() << "removed";
                 labels.removeAll( tmp_text );
@@ -106,14 +106,14 @@ DPoint *Molecule::GetAttachPoint( QString sf )
     }
     if ( ( sf.contains( "biotin" ) > 0 ) ) {
         up = AllPoints();
-        foreach ( tmp_pt, up ) {
+        for (DPoint *tmp_pt : up) {
             if ( tmp_pt->element == "OH" ) {
                 qDebug() << "Biotin-Point:OH";
                 tmp_pt->element = "C";
                 break;
             }
         }
-        foreach ( tmp_text, labels ) {
+        for (Text *tmp_text : labels) {
             if ( tmp_text->Start() == tmp_pt ) {
                 qDebug() << "removed";
                 labels.removeAll( tmp_text );
@@ -130,7 +130,7 @@ DPoint *Molecule::GetAttachPoint( QString sf )
     DPoint *ymaxpt = 0;
 
     up = AllPoints();
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         if ( tmp_pt->element.contains( "N" ) > 0 ) {
             qDebug() << "Point:NH2";
             if ( tmp_pt->y > ymax ) {
@@ -140,7 +140,7 @@ DPoint *Molecule::GetAttachPoint( QString sf )
         }
     }
     ymaxpt->element = "C";
-    foreach ( tmp_text, labels ) {
+    for (Text *tmp_text : labels) {
         if ( tmp_text->Start() == ymaxpt ) {
             qDebug() << "removed";
             labels.removeAll( tmp_text );
@@ -157,7 +157,7 @@ DPoint *Molecule::GetRingAttachPoint()
     DPoint *yminpt = 0;
 
     up = AllPoints();
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         if ( tmp_pt->y < ymin ) {
             yminpt = tmp_pt;
             ymin = tmp_pt->y;
@@ -171,7 +171,7 @@ double Molecule::CalculateRingAttachAngle( DPoint * t1 )
 {
     double dx = 0.0, dy = 0.0;
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         if ( tmp_bond->Find( t1 ) == true ) {
             tmp_pt = tmp_bond->otherPoint( t1 );
             dx = dx + ( tmp_pt->x - t1->x );
@@ -193,7 +193,7 @@ double Molecule::SumBondEnthalpy()
 {
     double dh = 0.0;
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         dh += tmp_bond->Enthalpy();
     }
 
@@ -213,14 +213,14 @@ void Molecule::AllNeighbors()
 
     QList < DPoint * >groupAtoms = AllPoints();
 
-    foreach ( tmp_pt, groupAtoms ) {
+    for (DPoint *tmp_pt : groupAtoms) {
         n1 = 0;
         n2 = 0;
         n3 = 0;
         tmp_pt->neighbors.clear();
         tmp_pt->aromatic = false;
         tmp_pt->inring = false;
-        foreach ( tmp_bond, bonds ) {
+        for (Bond *tmp_bond : bonds) {
             if ( tmp_bond->Find( tmp_pt ) == true ) {
                 if ( tmp_bond->Order() == 1 )
                     n1++;
@@ -282,7 +282,7 @@ Text *Molecule::CalcEmpiricalFormula( bool from_mw )
 
     up = AllPoints();
     // Split all labels into allatoms (one atom per entry)
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         // parse this string
         QString x = tmp_pt->plainElement();
         QString iso;            // isotope MW
@@ -347,12 +347,12 @@ Text *Molecule::CalcEmpiricalFormula( bool from_mw )
     // need to find implicit hydrogens here!
     int num_c = 0, num_h = 0, num_n = 0, num_o = 0, num_p = 0, num_s = 0;
 
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         int possible_h = 0;
 
         //qDebug() << "CalcEF:" << tmp_pt->element;
         possible_h = MolData::Hydrogens( tmp_pt->plainElement() );
-        foreach ( tmp_bond, bonds ) {
+        for (Bond *tmp_bond : bonds) {
             if ( tmp_bond->Find( tmp_pt ) )
                 possible_h -= tmp_bond->Order();
         }
@@ -599,7 +599,7 @@ void Molecule::AddPeak( double d1, QString s1, QString s2 )
     if ( s2.contains( "narrow" ) > 0 )
         tmp_peak->intensity = 120;
     tmp_peak->comment = s2;
-    foreach ( Peak * tpeak, peaklist ) {
+    for (auto *tpeak : peaklist) {
         if ( ( tpeak->value == tmp_peak->value ) && ( tpeak->multiplicity == tmp_peak->multiplicity ) ) {
             tpeak->intensity += 1;
             delete tmp_peak;
@@ -623,10 +623,10 @@ void Molecule::AddHydrogens( bool to_carbon )
     int least_hindered_side;
 
     // calculate hindrance first
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         // find order of bonds
         least_hindered_side = 0; sumbonds = 0;
-        foreach ( tmp_bond, bonds ) {
+        for (Bond *tmp_bond : bonds) {
             if ( tmp_bond->Find( tmp_pt ) ) {
                 dx = tmp_pt->x - tmp_bond->otherPoint( tmp_pt )->x;
                 if ( dx > 0.5 )
@@ -640,7 +640,7 @@ void Molecule::AddHydrogens( bool to_carbon )
         tmp_pt->substituents = sumbonds;
         tmp_pt->C13_shift = least_hindered_side;
         // update Text, if it exists, with least hindered side
-        foreach ( tmp_text, labels ) {
+        for (Text *tmp_text : labels) {
             if ( tmp_text->Start() == tmp_pt ) {
                 if ( least_hindered_side < 0 )
                     tmp_text->CheckAlignment( 2 );      // left hindered
@@ -652,7 +652,7 @@ void Molecule::AddHydrogens( bool to_carbon )
     // add hydrogens if user requested
     if ( preferences.getFixHydrogens() == false )
         return;
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         orig_element = tmp_pt->element;
         if ( tmp_pt->element == "" )
             tmp_pt->element = "C";
@@ -701,7 +701,7 @@ void Molecule::AddHydrogens( bool to_carbon )
             tmp_pt->element = "S";
         // retrieve # of bonds found
         sumbonds = 0;//tmp_pt->substituents;
-        foreach ( tmp_bond, bonds ) {
+        for (Bond *tmp_bond : bonds) {
             if ( tmp_bond->Find( tmp_pt ) ) {
                 if (tmp_bond->Order() < 4) sumbonds += tmp_bond->Order();
                 if (tmp_bond->Order() >= 4) sumbonds += 1;
@@ -727,7 +727,7 @@ void Molecule::AddHydrogens( bool to_carbon )
         QString elbackup;
 
         if ( orig_element != tmp_pt->element ) {
-            foreach ( tmp_text, labels ) {
+            for (Text *tmp_text : labels) {
                 if ( tmp_text->Start() == tmp_pt ) {
                     elbackup = tmp_pt->element;
                     qDebug() << tmp_pt->element;
@@ -772,7 +772,7 @@ void Molecule::Reactivity( int react_type )
 
     atomRxns.clear();
     bondRxns.clear();
-    foreach ( DPoint * tmp_atomrxniter, up ) {
+    for (auto *tmp_atomrxniter : up) {
         localatomtype = RetroAtomName( tmp_atomrxniter );
         atomRxns.append( localatomtype );
         // set partial charges here
@@ -782,7 +782,7 @@ void Molecule::Reactivity( int react_type )
     }
     qDebug() << "Calc total charge: " << sumcharge;
     qDebug() << "Atom count: " << atomRxns.count();
-    foreach ( Bond * tmp_bondRxns, bonds ) {
+    for (auto *tmp_bondRxns : bonds) {
         if ( tmp_bondRxns->isCHBond() == false ) {
             bondRxns.append( RetroBondName( tmp_bondRxns ) );
             tmp_bondRxns->setCName( RetroBondName( tmp_bondRxns ) );

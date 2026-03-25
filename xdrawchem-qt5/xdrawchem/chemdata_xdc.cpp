@@ -233,7 +233,7 @@ bool ChemData::save_native( QString fn )
     t << bc1.green() << " ";
     t << bc1.blue() << "</bgcolor>";
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         n1.setNum( n );
         nfull = QString( "obj" ) + n1;
         t << tmp_draw->ToXML( nfull );

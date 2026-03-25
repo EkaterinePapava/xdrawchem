@@ -14,7 +14,7 @@ class DYKDialog : public QDialog
     Q_OBJECT
 
 public:
-    DYKDialog( QWidget *parent = 0 );
+    DYKDialog( QWidget *parent = nullptr );
 
 public slots:
     void nextTip();

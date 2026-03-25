@@ -40,7 +40,7 @@ void Tool_13CNMR_Dialog::process()
     peaklist = this_mol->peaklist;
     qDebug() << "got peak list";
     if ( product_mol == 0 ) {
-        foreach ( tmp_peak, peaklist ) {
+        for (Peak *tmp_peak : peaklist) {
             ngw->AddPeak( tmp_peak, QColor( 0, 0, 0 ) );
             n1.setNum( tmp_peak->intensity );
             peaktext->append( tmp_peak->comment + tr( ", intensity " ) + n1 );
@@ -50,7 +50,7 @@ void Tool_13CNMR_Dialog::process()
     }
     peaktext->setTextColor( QColor( 255, 0, 0 ) );
     peaktext->insertPlainText( tr( "Peaks of reactant:\n" ) );
-    foreach ( tmp_peak, peaklist ) {
+    for (Peak *tmp_peak : peaklist) {
         ngw->AddPeak( tmp_peak, QColor( 255, 0, 0 ) );
         n1.setNum( tmp_peak->intensity );
         peaktext->insertPlainText( tmp_peak->comment + tr( ", intensity " ) + n1 );
@@ -60,7 +60,7 @@ void Tool_13CNMR_Dialog::process()
     peaklist = product_mol->peaklist;
     peaktext->setTextColor( QColor( 0, 0, 255 ) );
     peaktext->insertPlainText( tr( "Peaks of product:\n" ) );
-    foreach ( tmp_peak, peaklist ) {
+    for (Peak *tmp_peak : peaklist) {
         ngw->AddPeak( tmp_peak, QColor( 0, 0, 255 ) );
         n1.setNum( tmp_peak->intensity );
         peaktext->insertPlainText( tmp_peak->comment + tr( ", intensity " ) + n1 );

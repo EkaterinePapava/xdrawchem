@@ -4,22 +4,23 @@
 #include <QString>
 #include <QList>
 
-#include <openbabel/mol.h>
 #include "molecule.h"
 #include "peak.h"
 
-using namespace OpenBabel;
+// Forward-declare OBMol to avoid pulling all OpenBabel headers into every
+// translation unit that includes this header.
+namespace OpenBabel { class OBMol; }
 
 class ToolDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    ToolDialog( QWidget *parent = 0 );
+    ToolDialog( QWidget *parent = nullptr );
     void setMolecule( Molecule * );
-    void setMolecule( OBMol * );
+    void setMolecule( OpenBabel::OBMol * );
     void setProductMolecule( Molecule * );
-    void setProductMolecule( OBMol * );
+    void setProductMolecule( OpenBabel::OBMol * );
     virtual void process();
 
 public slots:

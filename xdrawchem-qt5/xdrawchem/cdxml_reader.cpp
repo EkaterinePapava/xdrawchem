@@ -26,13 +26,13 @@ CDXML_Reader::CDXML_Reader( ChemData * c1 )
 
 bool CDXML_Reader::ReadFile( QString fn )
 {
-    qDebug() << endl << "New and improved CDXML parser" << endl;
+    qDebug() << Qt::endl << "New and improved CDXML parser" << Qt::endl;
     int i1 = fn.indexOf( "<CDXML" );
     int i2 = fn.indexOf( "</CDXML>" ) + 8;
 
     ParseDocument( fn.mid( i1, i2 - i1 ) );
     Build();
-    qDebug() << endl << "Done parsing!" << endl;
+    qDebug() << Qt::endl << "Done parsing!" << Qt::endl;
     return false;
 }
 
@@ -221,8 +221,8 @@ void CDXML_Reader::ParsePage( QString ptag )
 void CDXML_Reader::ParseFragment( QString ftag )
 {
     fragdepth++;
-    qDebug() << endl << "<--frag-->";
-    qDebug() << ftag << endl << endl;
+    qDebug() << Qt::endl << "<--frag-->";
+    qDebug() << ftag << Qt::endl << Qt::endl;
 
     int i1, i2;
     bool flag;
@@ -269,8 +269,8 @@ void CDXML_Reader::ParseFragment( QString ftag )
 // note this reads <t> and the contained <s>
 QString CDXML_Reader::ParseText( QString ttag )
 {
-    qDebug() << endl << "<--text-->";
-    qDebug() << ttag << endl;
+    qDebug() << Qt::endl << "<--text-->";
+    qDebug() << ttag << Qt::endl;
 
     int i1, i2, i3;
     QString a1, v1;
@@ -393,8 +393,8 @@ void CDXML_Reader::ParseNode( QString ntag )
     tmp_node = new DPoint;
 
     nodedepth++;
-    qDebug() << endl << "<--node-->";
-    qDebug() << ntag << endl << endl;
+    qDebug() << Qt::endl << "<--node-->";
+    qDebug() << ntag << Qt::endl << Qt::endl;
 
     int i1, i2;
     bool flag;
@@ -489,7 +489,7 @@ void CDXML_Reader::ParseBond( QString btag )
 
 DPoint *CDXML_Reader::FindNode( QString key )
 {
-    foreach ( tmp_node, nodelist ) {
+    for (DPoint *tmp_node : nodelist) {
         if ( tmp_node->id == key )
             return tmp_node;
     }
@@ -509,7 +509,7 @@ void CDXML_Reader::Build()
     qDebug() << "objects: " << objectlist.count();
 
     // add all non-text objects
-    foreach ( tmp_obj, objectlist ) {
+    for (CDXML_Object *tmp_obj : objectlist) {
         if ( tmp_obj->type == TYPE_BOND ) {
             s1 = FindNode( tmp_obj->start_id );
             e1 = FindNode( tmp_obj->end_id );
@@ -539,7 +539,7 @@ void CDXML_Reader::Build()
         }
     }
     // add text
-    foreach ( tmp_node, nodelist ) {
+    for (DPoint *tmp_node : nodelist) {
         if ( tmp_node->element != "C" ) {
             nt = new Text( c->getRender2D() );
             nt->setPoint( tmp_node );
@@ -558,7 +558,7 @@ void CDXML_Reader::Build()
         }
     }
     // clear "hit" flag
-    foreach ( tmp_node, nodelist ) {
+    for (DPoint *tmp_node : nodelist) {
         tmp_node->hit = false;
     }
     // scale drawing
@@ -570,7 +570,7 @@ void CDXML_Reader::Build()
     //sf = 1.0;
     double sl = 9999.0, sr = -9999.0, st = 9999.0, sb = -9999.0;
 
-    foreach ( tmp_node, up ) {
+    for (DPoint *tmp_node : up) {
         tmp_node->x *= sf;
         tmp_node->y *= sf;
         if ( tmp_node->x < sl )
@@ -585,7 +585,7 @@ void CDXML_Reader::Build()
     double tx = 50 - sl;
     double ty = 50 - st;
 
-    foreach ( tmp_node, up ) {
+    for (DPoint *tmp_node : up) {
         tmp_node->x += tx;
         tmp_node->y += ty;
     }

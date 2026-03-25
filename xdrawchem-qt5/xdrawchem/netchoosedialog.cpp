@@ -119,6 +119,4 @@ void NetChooseDialog::cellDoubleClicked(int row, int col)
     accept();
 }
 
-//cmake#include "netchoosedialog.moc"
-
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

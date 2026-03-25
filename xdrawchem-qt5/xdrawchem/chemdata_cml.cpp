@@ -1,6 +1,5 @@
 #include <QDateTime>
-#include <QXmlInputSource>
-#include <QXmlSimpleReader>
+#include <QFile>
 
 #include "defs.h"
 #include "chemdata.h"
@@ -16,12 +15,10 @@ bool ChemData::NewLoadCMLFile( QString fn )
 
     if ( !xmlFile.open( QIODevice::ReadOnly ) )
         return false;
-    QXmlInputSource source( &xmlFile );
-    QXmlSimpleReader reader;
-
-    reader.setFeature( "http://trolltech.com/xml/features/report-whitespace-only-CharData", false );
-    reader.setContentHandler( &handler );
-    reader.parse( source );
+    if ( !handler.parse( &xmlFile ) ) {
+        qWarning() << "CML parse error in" << fn;
+        return false;
+    }
 
     qDebug() << "done parsing";
 
@@ -40,7 +37,7 @@ bool ChemData::NewLoadCMLFile( QString fn )
     Bond *tbond;
 
     parsedBonds = handler.getBonds();
-    foreach ( tbond, parsedBonds ) {
+    for (Bond *tbond : parsedBonds) {
         addBond( tbond->Start(), tbond->End(), th1, tbond->Order(), QColor( 0, 0, 0 ), true );
         if ( tbond->Start()->x < dx )
             dx = tbond->Start()->x;
@@ -57,7 +54,7 @@ bool ChemData::NewLoadCMLFile( QString fn )
     parsedPoints = handler.getPoints();
     QString makesub, ms2;
 
-    foreach ( tmp_pt, parsedPoints ) {
+    for (DPoint *tmp_pt : parsedPoints) {
         if ( tmp_pt->element != "C" ) {
             Text *nt = new Text( r );
 
@@ -89,7 +86,7 @@ bool ChemData::NewLoadCMLFile( QString fn )
     double sf = curfixed / avglen;
 
     qDebug() << sf;
-    foreach ( tmp_pt, parsedPoints ) {
+    for (DPoint *tmp_pt : parsedPoints) {
         tmp_pt->x *= sf;
         tmp_pt->y *= sf;
     }
@@ -432,22 +429,22 @@ void ChemData::Convert_CML_Lists_To_Native()
 
     // convert CML_Atoms to DPoints
     QList < DPoint * >points;
-    foreach ( tmp_atom, CML_Atoms ) {
+    for (CML_Atom *tmp_atom : CML_Atoms) {
         points.append( tmp_atom->toDPoint() );
     }
     // add Bonds
     DPoint *end1, *end2;        // Bond endpoints
 
-    foreach ( tmp_bond, CML_Bonds ) {
+    for (CML_Bond *tmp_bond : CML_Bonds) {
         // find first atom
-        foreach ( tmp_pt, points ) {
+        for (DPoint *tmp_pt : points) {
             if ( tmp_bond->a1 == tmp_pt->id ) {
                 end1 = tmp_pt;
                 break;
             }
         }
         // find second atom
-        foreach ( tmp_pt, points ) {
+        for (DPoint *tmp_pt : points) {
             if ( tmp_bond->a2 == tmp_pt->id ) {
                 end2 = tmp_pt;
                 break;
@@ -458,7 +455,7 @@ void ChemData::Convert_CML_Lists_To_Native()
         n++;
     }
     // add Text labels
-    foreach ( tmp_pt, points ) {
+    for (DPoint *tmp_pt : points) {
         if ( tmp_pt->element != QString( "C" ) ) {
             qDebug() << tmp_pt->element;
             Text *nt = new Text( r );
@@ -490,15 +487,15 @@ void ChemData::Convert_CML_Lists_To_Native()
     double sf = curfixed / avglen;
 
     qDebug() << sf;
-    foreach ( tmp_draw, CDXML_Objects ) {
+    for (Drawable *tmp_draw : CDXML_Objects) {
         points.append( tmp_draw->Start() );
         points.append( tmp_draw->End() );
     }
-    foreach ( tmp_pt, points ) {
+    for (DPoint *tmp_pt : points) {
         tmp_pt->x *= sf;
         tmp_pt->y *= sf;
     }
-    foreach ( tmp_draw, CDXML_Objects ) {
+    for (Drawable *tmp_draw : CDXML_Objects) {
         drawlist.append( tmp_draw );
     }
 
@@ -547,10 +544,10 @@ bool ChemData::save_cml( QString fn )
     t << "id=\"" << MoleculeId.toLatin1() << "\">";
     // add miscellaneous info, a la JChemPaint
     t << "<string title=\"GenerationDate\">" << QDateTime::currentDateTime().toString() << "</string>";
-    t << "<string title=\"GenerationSoftware\">" << XDC_VERSION << "</string>" << endl;
+    t << "<string title=\"GenerationSoftware\">" << XDC_VERSION << "</string>" << Qt::endl;
 
     // Copy text from Text objects to element field in DPoint
-    foreach ( tmp_draw, uo ) {
+    for (Drawable *tmp_draw : uo) {
         if ( tmp_draw->Type() == TYPE_TEXT ) {
             tmp_text = ( Text * ) tmp_draw;     // is this cheating?
             tmp_text->Start()->element = tmp_text->getText();
@@ -558,7 +555,7 @@ bool ChemData::save_cml( QString fn )
     }
     // Add XML ID's to DPoint's, write as we go
     t << "<atomArray>";
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         n1.setNum( n );
         nfull = QString( "a" ) + n1;
         tmp_pt->id = nfull;
@@ -568,7 +565,7 @@ bool ChemData::save_cml( QString fn )
         t << tmp_pt->element << "</string>";
         t << "<float builtin=\"x2\">";
         t << tmp_pt->x;
-        t << "</float>" << endl << "<float builtin=\"y2\">";
+        t << "</float>" << Qt::endl << "<float builtin=\"y2\">";
         t << tmp_pt->y;
         t << "</float>";
         //t << "<integer builtin=\"formalCharge\">0</integer>" ;
@@ -579,7 +576,7 @@ bool ChemData::save_cml( QString fn )
     // add XML ID's to Bond's, write as we go
     n = 0;
     t << "<bondArray>";
-    foreach ( tmp_draw, uo ) {
+    for (Drawable *tmp_draw : uo) {
         if ( tmp_draw->Type() == TYPE_BOND ) {
             tmp_bond = ( Bond * ) tmp_draw;     // I ask again, is this cheating?
             n1.setNum( n );

@@ -21,7 +21,7 @@ class NewGraphWidget : public QWidget
     Q_OBJECT
 
 public:
-    NewGraphWidget( QWidget *parent = 0 );
+    NewGraphWidget( QWidget *parent = nullptr );
     void setDataType(int x) { datatype = x; }
     void AddPeak( double, QColor, QString l1 = QString(), QString t1 = QString() );
     void AddPeak( double, int, QColor, QString l1 = QString(), QString t1 = QString() );

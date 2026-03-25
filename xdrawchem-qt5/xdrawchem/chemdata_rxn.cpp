@@ -23,7 +23,7 @@ void ChemData::ReactionAnalysis( int flags )
 
     Molecule *tmp_mol;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_MOLECULE ) {
             tmp_mol = ( Molecule * ) tmp_draw;
             if ( tmp_mol->groupType() == GROUP_REACTANT )
@@ -46,14 +46,14 @@ void ChemData::ReactionAnalysis( int flags )
         double this_dh, reactant_dh = 0.0, product_dh = 0.0;
         int x = 1;
 
-        foreach ( tmp_mol, reactantList ) {
+        for (Molecule *tmp_mol : reactantList) {
             this_dh = tmp_mol->SumBondEnthalpy();
             reactant_dh += this_dh;
             x++;
         }
         summary_report.append( tr( "Reactants = %1 kJ/mol\n" ).arg( reactant_dh ) );
         x = 1;
-        foreach ( tmp_mol, productList ) {
+        for (Molecule *tmp_mol : productList) {
             this_dh = tmp_mol->SumBondEnthalpy();
             product_dh += this_dh;
             x++;

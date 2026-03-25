@@ -53,7 +53,7 @@ void NewGraphWidget::paintEvent( QPaintEvent *pe )
         }
 
         // draw spectrum
-        foreach ( tmp_data, peaks ) {
+        for (GraphData *tmp_data : peaks) {
             peakplace = width() - 20 - qRound( tmp_data->value * tick_spacing );
             p.setPen( tmp_data->pcolor );
             p.drawLine( peakplace, height() - 40, peakplace, height() - 40 - ( 15 * tmp_data->intensity ) );
@@ -74,7 +74,7 @@ void NewGraphWidget::paintEvent( QPaintEvent *pe )
         }
 
         // draw spectrum
-        foreach ( tmp_data, peaks ) {
+        for (GraphData *tmp_data : peaks) {
             peakplace = width() - 20 - tick_spacing - ( ( tmp_data->value / 20.0 ) * tick_spacing );
             p.setPen( tmp_data->pcolor );
             p.drawLine( peakplace, height() - 40, peakplace, height() - 40 - qRound( 15.0 * tmp_data->intensity ) );
@@ -95,7 +95,7 @@ void NewGraphWidget::paintEvent( QPaintEvent *pe )
         }
 
         // draw spectrum
-        foreach ( tmp_data, peaks ) {
+        for (GraphData *tmp_data : peaks) {
             peakplace = width() - 20 - ( qRound( tmp_data->value / 300.0 ) * tick_spacing );
             p.setPen( tmp_data->pcolor );
             p.drawLine( peakplace, 40, peakplace, 40 + tmp_data->intensity );
@@ -142,7 +142,7 @@ void NewGraphWidget::AddPeak( double v1, QColor c1, QString l1, QString t1 )
         g1->drawlabel = true;
     }
     // check for duplicate peaks
-    foreach ( GraphData * tg, peaks ) {
+    for (auto *tg : peaks) {
         if ( tg->value == v1 ) {
             tg->intensity++;
             return;
@@ -160,7 +160,7 @@ void NewGraphWidget::AddPeak( Peak * tmp_peak, QColor c1 )
     g1->intensity = tmp_peak->intensity;
     g1->pcolor = c1;
     // check for duplicate peaks
-    foreach ( GraphData * tg, peaks ) {
+    for (auto *tg : peaks) {
         if ( ( tg->value == g1->value ) && ( tg->pcolor == g1->pcolor ) ) {
             qDebug() << "found existing peak";
             tg->intensity += g1->intensity;
@@ -186,7 +186,5 @@ void NewGraphWidget::AddPeak( double v1, int m1, QColor c1, QString l1, QString 
     }
     peaks.append( g1 );
 }
-
-//cmake#include "ngw.moc"
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

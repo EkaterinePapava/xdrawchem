@@ -40,7 +40,7 @@ void Tool_1HNMR_Dialog::process()
     peaklist = this_mol->peaklist;
     qDebug() << "got peak list";
     if ( product_mol == 0 ) {
-        foreach ( tmp_peak, peaklist ) {
+        for (Peak *tmp_peak : peaklist) {
             ngw->AddPeak( tmp_peak, QColor( 0, 0, 0 ) );
             peaktext->append( tmp_peak->comment );
             //peaktext->append("\n");
@@ -49,7 +49,7 @@ void Tool_1HNMR_Dialog::process()
     }
     peaktext->setTextColor( QColor( 255, 0, 0 ) );
     peaktext->insertPlainText( tr( "Peaks of reactant:\n" ) );
-    foreach ( tmp_peak, peaklist ) {
+    for (Peak *tmp_peak : peaklist) {
         ngw->AddPeak( tmp_peak, QColor( 255, 0, 0 ) );
         peaktext->insertPlainText( tmp_peak->comment );
         peaktext->insertPlainText( "\n" );
@@ -59,7 +59,7 @@ void Tool_1HNMR_Dialog::process()
     peaklist = product_mol->peaklist;
     peaktext->setTextColor( QColor( 0, 0, 255 ) );
     peaktext->insertPlainText( tr( "Peaks of product:\n" ) );
-    foreach ( tmp_peak, peaklist ) {
+    for (Peak *tmp_peak : peaklist) {
         ngw->AddPeak( tmp_peak, QColor( 0, 0, 255 ) );
         peaktext->insertPlainText( tmp_peak->comment );
         peaktext->insertPlainText( "\n" );

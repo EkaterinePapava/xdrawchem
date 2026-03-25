@@ -33,7 +33,7 @@ class CustomRingWidget : public QWidget
     Q_OBJECT
 
 public:
-    CustomRingWidget( QWidget* parent=0 );
+    CustomRingWidget( QWidget* parent= nullptr );
     ~CustomRingWidget();
 
     QString getTitle() { return title->text(); }
@@ -63,7 +63,7 @@ class CustomRingDialog : public QDialog
     Q_OBJECT
 
 public:
-    CustomRingDialog( QWidget *parent=0 );
+    CustomRingDialog( QWidget *parent= nullptr );
     ~CustomRingDialog();
 
     void setMolecule( Molecule *m ) { m_widget->setMolecule(m); }

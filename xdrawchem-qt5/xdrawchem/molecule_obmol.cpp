@@ -1,3 +1,11 @@
+#include <openbabel/atom.h>
+#include <openbabel/bond.h>
+#include <openbabel/elements.h>
+#include <openbabel/math/vector3.h>
+#include <openbabel/mol.h>
+#include <openbabel/obconversion.h>
+using namespace OpenBabel;
+
 #include <vector>
 #include <map>
 #include <algorithm>
@@ -209,7 +217,7 @@ OBMol *Molecule::convertToOBMol()
     vector3 v;
     OBAtom atom;
 
-    foreach ( tmp_atom, allpoints ) {
+    for (DPoint *tmp_atom : allpoints) {
         v.SetX( tmp_atom->x );
         v.SetY( tmp_atom->y );
         v.SetZ( tmp_atom->z );
@@ -225,7 +233,7 @@ OBMol *Molecule::convertToOBMol()
 
     int start, end, order, flag, bst;
 
-    foreach ( tmp_bond, allbonds ) {
+    for (Bond *tmp_bond : allbonds) {
         flag = 0;
         start = allpoints.indexOf( tmp_bond->Start() ) + 1;
         end = allpoints.indexOf( tmp_bond->End() ) + 1;

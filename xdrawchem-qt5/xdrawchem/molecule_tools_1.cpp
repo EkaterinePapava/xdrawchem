@@ -34,7 +34,7 @@ void Molecule::MakeSSSR()
 
 int Molecule::OrderOfBond( DPoint * e1, DPoint * e2 )
 {
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         if ( tmp_bond->Find( e1 ) == true ) {
             tmp_pt = tmp_bond->otherPoint( e1 );
             if ( tmp_pt == e2 )
@@ -47,7 +47,7 @@ int Molecule::OrderOfBond( DPoint * e1, DPoint * e2 )
 
 Bond *Molecule::FindBond( DPoint * e1, DPoint * e2 )
 {
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         if ( tmp_bond->Find( e1 ) == true ) {
             tmp_pt = tmp_bond->otherPoint( e1 );
             if ( tmp_pt == e2 )
@@ -97,9 +97,9 @@ QStringList Molecule::Calc13CNMR( bool show_dialog )
     peaklist.clear();
 
     // Scan for keto groups
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         tmp_pt->ketos = 0;
-        foreach ( tmp_bond, bonds ) {
+        for (Bond *tmp_bond : bonds) {
             if ( tmp_bond->Find( tmp_pt ) == true ) {
                 tmp_pt2 = tmp_bond->otherPoint( tmp_pt );
                 if ( ( tmp_pt2->element == "O" ) && ( tmp_bond->Order() == 2 ) )
@@ -108,9 +108,9 @@ QStringList Molecule::Calc13CNMR( bool show_dialog )
         }
     }
     // Determine atoms surrounding each atom and build HOSE code list
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         if ( tmp_pt->element == "C" ) { // only look at carbons
-            foreach ( tmp_bond, bonds ) {
+            for (Bond *tmp_bond : bonds) {
                 if ( tmp_bond->Find( tmp_pt ) == true ) {
                     tmp_str = "";
                     hs = 0;
@@ -224,7 +224,7 @@ QStringList Molecule::Calc13CNMR( bool show_dialog )
             tmp_str = "";
             do {
                 hsmax = -1;
-                foreach ( tmp_pt3, sphere1 ) {
+                for (DPoint *tmp_pt3 : sphere1) {
                     if ( tmp_pt3->hosescore > hsmax ) {
                         hsmax = tmp_pt3->hosescore;
                         ts = tmp_pt3->tmphose;
@@ -259,7 +259,7 @@ QStringList Molecule::Calc13CNMR( bool show_dialog )
             tmp_peak->multiplicity = 4;
         tmp_peak->comment = boshcp.predictFull( *it );
         // check for existing peak
-        foreach ( Peak * tpeak, peaklist ) {
+        for (auto *tpeak : peaklist) {
             if ( ( tpeak->value == tmp_peak->value ) && ( tpeak->multiplicity == tmp_peak->multiplicity ) ) {
                 tpeak->intensity += 1;
                 delete tmp_peak;
@@ -313,7 +313,7 @@ void Molecule::CalcIR()
     GraphDialog *g = new GraphDialog( r, tr( "Predicted IR" ) );
 
     // iterate thru all Bonds in Molecule
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         // check for 'obvious' cases
         // rules for atoms and groups
         lorder = tmp_bond->Order();
@@ -394,7 +394,7 @@ void Molecule::CalcIR()
          */
     }
     // iterate thru unique atoms, look for functional groups
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         qDebug() << "|" << tmp_pt->element << "|";
         if ( ( tmp_pt->element == "C" ) && ( tmp_pt->substituents < 4 ) )
             AddPeak( 3000.0, QString( "CH" ), QString( tr( "~3000 (broad), C-H" ) ) );
@@ -482,7 +482,7 @@ double Molecule::CalcKOW()
     DPoint *alt_pt1, *alt_pt2, *alt_pt3;
     //int testcount;
 
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         if ( tmp_pt->hit )
             continue;           // skip atoms already considered
         if ( tmp_pt->baseElement() == "H" )
@@ -679,7 +679,7 @@ void Molecule::CalcpKa()
     int testcount;
 
     // first thing to do is scan for large patterns (e.g. guanidino, rings)
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         if ( tmp_pt->hit )
             continue;           // skip atoms already considered
         if ( tmp_pt->baseElement() == "C" ) {
@@ -699,7 +699,7 @@ void Molecule::CalcpKa()
         }
     }
 
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         //qDebug() << tmp_pt->serial << "," << tmp_pt->baseElement();
         if ( tmp_pt->hit )
             continue;           // skip atoms already considered
@@ -808,7 +808,7 @@ void Molecule::CalcpKa()
                     if ( alt_pt1->substituents >= 4 ) {
                         int c_count = 0, o_count = 0;
 
-                        foreach ( alt_pt2, alt_pt1->neighbors ) {
+                        for (DPoint *alt_pt2 : alt_pt1->neighbors) {
                             //qDebug() << "-" << alt_pt2->baseElement();
                             if ( alt_pt2->baseElement() == "O" ) {
                                 alt_pt2->hit = true;
@@ -825,7 +825,7 @@ void Molecule::CalcpKa()
                 if ( alt_pt1->baseElement() == "C" ) {
                     if ( alt_pt1->hosecode == "=OCO(//)" ) {    // R-COOH
                         //qDebug() << "carboxylic acid " << alt_pt1->neighbors.count();
-                        foreach ( alt_pt2, alt_pt1->neighbors ) {
+                        for (DPoint *alt_pt2 : alt_pt1->neighbors) {
                             //qDebug() << "-" << alt_pt2->baseElement();
                             if ( alt_pt2->baseElement() == "O" ) {
                                 alt_pt2->hit = true;

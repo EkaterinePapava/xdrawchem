@@ -1,3 +1,6 @@
+#include <openbabel/mol.h>
+using namespace OpenBabel;
+
 #include "tooldialog.h"
 #include "render2d.h"
 #include "helpwindow.h"
@@ -68,7 +71,5 @@ void ToolDialog::SendHelp()
     help->setWindowTitle( QString( XDC_VERSION ) + " - Help viewer" );
     help->show();
 }
-
-//cmake#include "tooldialog.moc"
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

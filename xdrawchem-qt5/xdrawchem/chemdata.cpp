@@ -20,7 +20,7 @@ ChemData::ChemData( QObject *parent )
 void ChemData::drawAll()
 {
     // draw all objects in ChemData
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         tmp_draw->Render();
     }
 }
@@ -30,7 +30,7 @@ void ChemData::FinishMove()
 {
     Molecule *tmp_mol;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_MOLECULE ) {
             tmp_mol = ( Molecule * ) tmp_draw;
             tmp_mol->Changed();
@@ -44,7 +44,7 @@ Molecule *ChemData::firstMolecule()
 {
     Molecule *tmp_mol;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_MOLECULE ) {
             tmp_mol = ( Molecule * ) tmp_draw;
             return tmp_mol;
@@ -115,7 +115,7 @@ void ChemData::addText( Text * t )
     if ( t->Justify() == JUSTIFY_TOPLEFT ) {  // add to drawing
         drawlist.append( t );
     } else {                    // add label to specific Molecule
-        foreach ( tmp_draw, drawlist ) {
+        for (Drawable *tmp_draw : drawlist) {
             if ( tmp_draw->Find( t->Start() ) == true ) {
                 Molecule *tm = ( Molecule * ) tmp_draw; // this is cheating, I know!
 
@@ -137,9 +137,9 @@ void ChemData::addGraphicObject( GraphicObject * t )
 void ChemData::addBond( DPoint * s, DPoint * e, int thick, int order, QColor c, bool hl )
 {
     //qInfo() << "Request to add bond:" << s->element << "(" << s->x << "," << s->y << ")-" << e->element << "(" << e->x << "," << e->y << "), order " << order;
-    Drawable *m1 = 0, *m2 = 0;
+    Drawable *m1 = nullptr, *m2 = 0;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Find( s ) == true )
             m1 = tmp_draw;
         if ( tmp_draw->Find( e ) == true )
@@ -188,7 +188,7 @@ void ChemData::addSymbol( DPoint * a, QString symbolfile, bool hl )
     if ( hl )
         s1->Highlight( true );
     // determine whether point exists or not; if exists, add to Molecule
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( ( tmp_draw->Find( a ) == true ) && ( tmp_draw->Type() == TYPE_MOLECULE ) ) {
             m1 = ( Molecule * ) tmp_draw;
             m1->addSymbol( s1 );
@@ -204,7 +204,7 @@ Molecule *ChemData::insideMolecule( DPoint * t1 )
     Molecule *m1;
 
     //qDebug() << t1->x << "," << t1->y;
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_MOLECULE ) {
             m1 = ( Molecule * ) tmp_draw;
             //QRect tr1 = m1->BoundingBoxAll();
@@ -219,10 +219,10 @@ Molecule *ChemData::insideMolecule( DPoint * t1 )
 
 DPoint *ChemData::FindNearestPoint( DPoint * target, double &dist )
 {
-    DPoint *nearest = 0, *d1;
+    DPoint *nearest = nullptr, *d1;
     double mindist = 9999.0, d1dist = 999999.0;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         d1 = tmp_draw->FindNearestPoint( target, d1dist );
         if ( d1dist < mindist ) {
             mindist = d1dist;
@@ -235,10 +235,10 @@ DPoint *ChemData::FindNearestPoint( DPoint * target, double &dist )
 
 Drawable *ChemData::FindNearestObject( DPoint * target, double &dist )
 {
-    Drawable *nearest = 0, *d1;
+    Drawable *nearest = nullptr, *d1;
     double mindist = 2000.0, d1dist = 999999.0;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         d1 = tmp_draw->FindNearestObject( target, d1dist );
         if ( d1dist < mindist ) {
             mindist = d1dist;
@@ -255,7 +255,7 @@ void ChemData::Erase( Drawable * d )
     bool erased = false;
 
     if ( drawlist.removeAll( d ) == false ) {
-        foreach ( tmp_draw, drawlist ) {
+        for (Drawable *tmp_draw : drawlist) {
             erased = tmp_draw->Erase( d );
             // collect empty Molecules for removal
             if ( tmp_draw->Members() == 0 )
@@ -268,7 +268,7 @@ void ChemData::Erase( Drawable * d )
         delete d;
     }
     // remove empty Molecules
-    foreach ( tmp_draw, removelist ) {
+    for (Drawable *tmp_draw : removelist) {
         drawlist.removeAll( tmp_draw );
         delete tmp_draw;
     }
@@ -283,7 +283,7 @@ void ChemData::EraseSelected()
 
     QList < Drawable * >removelist;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_MOLECULE ) {
             m = ( Molecule * ) tmp_draw;
             m->EraseSelected();
@@ -296,7 +296,7 @@ void ChemData::EraseSelected()
             }
         }
     }
-    foreach ( tmp_draw, removelist ) {
+    for (Drawable *tmp_draw : removelist) {
         /*
            if (tmp_draw->Type() == TYPE_TEXT) {
            Text *tmp_text = (Text *)tmp_draw;
@@ -324,14 +324,14 @@ void ChemData::DetectSplit()
     Molecule *tmp_mol;
     Drawable *td2;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_MOLECULE ) {
             tmp_mol = ( Molecule * ) tmp_draw;
             split_list = tmp_mol->MakeSplit();
             if ( split_list.count() > 1 ) {
                 qDebug() << "Split needed";
                 removelist.append( tmp_draw );
-                foreach ( td2, split_list ) {
+                for (Drawable *td2 : split_list) {
                     drawlist.append( td2 );
                 }
                 split_list.clear();
@@ -339,7 +339,7 @@ void ChemData::DetectSplit()
         }
     }
     // remove old Molecules
-    foreach ( tmp_draw, removelist ) {
+    for (Drawable *tmp_draw : removelist) {
         drawlist.removeAll( tmp_draw );
         delete tmp_draw;
     }
@@ -349,10 +349,10 @@ void ChemData::SelectAll()
 {
     QList < DPoint * >allpts = UniquePoints();
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         tmp_draw->SelectAll();
     }
-    foreach ( tmp_pt, allpts ) {
+    for (DPoint *tmp_pt : allpts) {
         tmp_pt->setHighlighted( true );
     }
 }
@@ -361,44 +361,44 @@ void ChemData::DeselectAll()
 {
     QList < DPoint * >allpts = UniquePoints();
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         tmp_draw->DeselectAll();
     }
-    foreach ( tmp_pt, allpts ) {
+    for (DPoint *tmp_pt : allpts) {
         tmp_pt->setHighlighted( false );
     }
 }
 
 void ChemData::SetColorIfHighlighted( QColor c )
 {
-    foreach ( tmp_draw, drawlist )
+    for (Drawable *tmp_draw : drawlist)
         tmp_draw->SetColorIfHighlighted( c );
 }
 
 void ChemData::Move( double dx, double dy )
 {
-    foreach ( tmp_draw, drawlist )
+    for (Drawable *tmp_draw : drawlist)
         tmp_draw->Move( dx, dy );
     notSaved = true;
 }
 
 void ChemData::Resize( DPoint * d1, double dy )
 {
-    foreach ( tmp_draw, drawlist )
+    for (Drawable *tmp_draw : drawlist)
         tmp_draw->Resize( d1, dy );
     notSaved = true;
 }
 
 void ChemData::Rotate( DPoint * d1, double dy )
 {
-    foreach ( tmp_draw, drawlist )
+    for (Drawable *tmp_draw : drawlist)
         tmp_draw->Rotate( d1, dy );
     notSaved = true;
 }
 
 void ChemData::Flip( DPoint * d1, int dy )
 {
-    foreach ( tmp_draw, drawlist )
+    for (Drawable *tmp_draw : drawlist)
         tmp_draw->Flip( d1, dy );
     notSaved = true;
 }
@@ -409,7 +409,7 @@ QRect ChemData::selectionBox()
     int top = 99999, bottom = 0, left = 99999, right = 0;
     QRect tmprect;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         tmprect = tmp_draw->BoundingBox();
         qDebug() << tmprect.width() << "X" << tmprect.height();
         if ( tmprect.isValid() ) {
@@ -443,7 +443,7 @@ void ChemData::NewSelectRect( QRect n, bool shiftdown )
 {
     QList < DPoint * >allpts = UniquePoints();
 
-    foreach ( tmp_pt, allpts ) {
+    for (DPoint *tmp_pt : allpts) {
         if ( n.contains( tmp_pt->toQPoint() ) == true ) {
             tmp_pt->setHighlighted( true );
         } else {
@@ -451,7 +451,7 @@ void ChemData::NewSelectRect( QRect n, bool shiftdown )
         }
     }
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         tmp_draw->isWithinRect( n, shiftdown );
     }
 }
@@ -461,9 +461,9 @@ QList < DPoint * >ChemData::UniquePoints()
 {
     QList < DPoint * >up, tp;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         tp = tmp_draw->AllPoints();
-        foreach ( tmp_pt, tp )
+        for (DPoint *tmp_pt : tp)
             up.append( tmp_pt );
     }
 
@@ -476,16 +476,14 @@ QList < Drawable * >ChemData::UniqueObjects()
     QList < Drawable * >uo, to;
     Drawable *td2;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         to = tmp_draw->AllObjects();
-        foreach ( td2, to )
+        for (Drawable *td2 : to)
             uo.append( td2 );
     }
 
     qDebug() << uo.count();
     return uo;
 }
-
-//cmake#include "chemdata.moc"
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

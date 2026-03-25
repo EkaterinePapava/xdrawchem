@@ -13,7 +13,7 @@
 class CurveArrow : public Drawable
 {
 public:
-    CurveArrow( Render2D *, QObject *parent = 0 );
+    CurveArrow( Render2D *, QObject *parent = nullptr );
     void Render();  // draw this object
     void Edit();
     int Type();  // return type of object

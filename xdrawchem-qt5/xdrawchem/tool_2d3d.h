@@ -5,12 +5,11 @@
 #include "peak.h"
 #include "tooldialog.h"
 
-using namespace OpenBabel;
 
 class Tool_2D3D : public ToolDialog
 {
 public:
-    Tool_2D3D( QWidget *parent = 0 );
+    Tool_2D3D( QWidget *parent = nullptr );
     void process();
     void save3DFile();
 

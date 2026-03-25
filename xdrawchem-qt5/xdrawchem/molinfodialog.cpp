@@ -85,7 +85,7 @@ void MolInfoDialog::doPubChem()
 {
     QString ffurl, ffcmd;
 
-    ffurl = "http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=" + pcc;
+    ffurl = "https://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=" + pcc;
     QDesktopServices::openUrl(QUrl(ffurl, QUrl::TolerantMode));
 
     /*ffcmd = "firefox " + ffurl + " &";
@@ -112,7 +112,5 @@ void MolInfoDialog::SendHelp()
     help->setWindowTitle( QString( XDC_VERSION ) + " - Help viewer" );
     help->show();
 }
-
-//cmake#include "molinfodialog.moc"
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

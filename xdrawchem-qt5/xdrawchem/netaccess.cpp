@@ -13,7 +13,7 @@ NetAccess::NetAccess():QDialog()
     siupacname = "unknown";
     scas = "unknown";
     spccompound = "unknown";
-    buffer = 0;
+    buffer = nullptr;
     //http = new QNetworkAccessManager( this );
     //progressDialog = new QProgressDialog( this );
     //connect( http, SIGNAL( dataReadProgress( int, int ) ), SLOT( slotUpdateDataReadProgress( int, int ) ) );
@@ -51,7 +51,7 @@ QStringList NetAccess::getChoices( QString server, QString key, QString value, b
   if1.exec();
   //httpRequestAborted = false;
   //http->setHost( url.host(), url.port() != -1 ? url.port() : 80 );
-  qDebug() << endl << "Results:" << endl << if1.Data() ;
+  qDebug() << Qt::endl << "Results:" << Qt::endl << if1.Data() ;
 
   //connect( progressDialog, SIGNAL( canceled() ), this, SLOT( slotCancelDownload() ) );
 
@@ -91,7 +91,7 @@ QString NetAccess::getFile( QString server, QString fn )
 {
   QString cmd, wholefile;
 
-  cmd.append("http://");
+  cmd.append("https://");
   cmd.append(server);
   cmd.append("/cgi-bin/getfile?name=");
   cmd.append(fn);
@@ -109,13 +109,13 @@ bool NetAccess::runBuild3D( QString buildfile )
 {
   QString cmd, wholefile;
 
-  cmd.append("http://xdrawchem.sourceforge.net/cgi-bin/runbuild?buildfile=");
+  cmd.append("https://xdrawchem.sourceforge.net/cgi-bin/runbuild?buildfile=");
   cmd.append(buildfile);
 
   HTTP if1(cmd);
   if1.exec();
 
-  //qDebug() << endl << "Results:" << endl << if1.Data() ;
+  //qDebug() << Qt::endl << "Results:" << Qt::endl << if1.Data() ;
 
   s3dmol = if1.Data();
 
@@ -231,7 +231,7 @@ void NetAccess::slotFinished( int httpId, bool )
     emit( choicesFinished( results ) );
     delete buffer;
 
-    buffer = 0;
+    buffer = nullptr;
   }
 }
 

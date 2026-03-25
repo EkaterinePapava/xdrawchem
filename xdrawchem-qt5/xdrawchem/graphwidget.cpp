@@ -57,7 +57,7 @@ void GraphWidget::paintEvent( QPaintEvent *pe )
         p.drawText( QPoint( 140, cy + 15 ), "120" );
         p.drawLine( QPoint( 80, cy ), QPoint( 80, cy + 3 ) );
         p.drawText( QPoint( 80, cy + 15 ), "140" );
-        foreach ( GraphData * tg, peaks ) {
+        for (auto *tg : peaks) {
             int cx = 500 - ( int ) ( tg->value * 3.0 );
             int intense = tg->intensity * 30;
 
@@ -90,7 +90,7 @@ void GraphWidget::paintEvent( QPaintEvent *pe )
         p.drawText( QPoint( 140, cy + 15 ), "10" );
         p.drawLine( QPoint( 80, cy ), QPoint( 80, cy + 3 ) );
         p.drawText( QPoint( 80, cy + 15 ), "12" );
-        foreach ( GraphData * tg, peaks ) {
+        for (auto *tg : peaks) {
             int cx = 440 - ( int ) ( tg->value * 30.0 );
             int intense = tg->intensity * 10;
 
@@ -102,7 +102,7 @@ void GraphWidget::paintEvent( QPaintEvent *pe )
         cy = cy + 45;
     }
 
-    foreach ( GraphData *tg, peaks ) {
+    for (GraphData *tg : peaks) {
         s.setNum( tg->intensity );
         ft = tg->fulltext;
         if ( datatype == 1 ) {  // 13C-NMR
@@ -163,7 +163,7 @@ void GraphWidget::AddPeak( double v1, QColor c1, QString l1, QString t1 )
         g1->drawlabel = true;
     }
     // check for duplicate peaks
-    foreach ( GraphData *tg, peaks ) {
+    for (GraphData *tg : peaks) {
         if ( tg->value == v1 ) {
             tg->intensity++;
             return;
@@ -194,8 +194,6 @@ void GraphWidget::Export()
     if ( m_toclip != "" )
         clip->setText( m_toclip );
 }
-
-//cmake#include "graphwidget.moc"
 
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

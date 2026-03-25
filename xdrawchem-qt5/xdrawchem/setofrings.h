@@ -145,7 +145,7 @@ class setOfRings : public QVector<Ring *>
 
   void makeNodeRingLists(QVector<Atom *> thisAtomSet){
 	qInfo() << "makeNodeRingLists: size = " << thisAtomSet.size();
-    Ring *ring = 0;
+    Ring *ring = nullptr;
     int nodeNo = -1;
     for (int f = 0; f < size(); f++){
       ring = at(f);

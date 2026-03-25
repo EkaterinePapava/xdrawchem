@@ -20,7 +20,7 @@
 class Bond : public Drawable
 {
 public:
-    Bond( Render2D *, QObject *parent = 0 );
+    Bond( Render2D *, QObject *parent = nullptr );
     void Render();  // draw this object
     void Edit();  // open edit window
 
@@ -99,7 +99,7 @@ public:
     {
         double dx, dy;
         dx = ( end->x + start->x ) / 2.0;
-        dy = ( end->x + start->x ) / 2.0;
+        dy = ( end->y + start->y ) / 2.0;
         QPoint mp1( (int)dx, (int)dy );
         return mp1;
     }
@@ -110,18 +110,12 @@ public:
      * @return The angle between the bonds in radians
      */
     double getAngleBetween(Bond* bond) {
-        Vector2D* thisVector = this->toVector();
-        Vector2D* otherVector = bond->toVector();
+        Vector2D thisVector  = this->toVector();
+        Vector2D otherVector = bond->toVector();
 
-        thisVector->normalize();
-        otherVector->normalize();
-
-        thisVector->normalize();
-        otherVector->normalize();
-        double angle = acos(thisVector->dotProduct(otherVector));
-
-        delete thisVector;
-        delete otherVector;
+        thisVector.normalize();
+        otherVector.normalize();
+        double angle = acos(thisVector.dotProduct(&otherVector));
 
         return angle;
     }
@@ -133,21 +127,18 @@ public:
      * @return The respective angle
      */
     double getAngleBetweenDirectional(Bond* bond) {
-        Vector2D* thisVector = this->toVector();
-        Vector2D* otherVector = bond->toVector();
+        Vector2D thisVector  = this->toVector();
+        Vector2D otherVector = bond->toVector();
 
         if (this->start != bond->start) {
-            thisVector->reverse();
+            thisVector.reverse();
         }
 
-        thisVector->normalize();
-        otherVector->normalize();
+        thisVector.normalize();
+        otherVector.normalize();
 
-        double angle = atan2(thisVector->x * otherVector->y - thisVector->y * otherVector->x,
-                             thisVector->x * otherVector->x + thisVector->y * otherVector->y);
-
-        delete thisVector;
-        delete otherVector;
+        double angle = atan2(thisVector.x * otherVector.y - thisVector.y * otherVector.x,
+                             thisVector.x * otherVector.x + thisVector.y * otherVector.y);
 
         return angle < 0 ? 2 * M_PI + angle : angle;
     }
@@ -160,31 +151,27 @@ public:
      * @return The respective angle
      */
     double getAngleBetweenDirectionalLeftHanded(Bond* bond) {
-        Vector2D* thisVector = this->toVector();
-        Vector2D* otherVector = bond->toVector();
+        Vector2D thisVector  = this->toVector();
+        Vector2D otherVector = bond->toVector();
 
         if (this->start != bond->start) {
-            thisVector->reverse();
+            thisVector.reverse();
         }
 
-        thisVector->normalize();
-        otherVector->normalize();
+        thisVector.normalize();
+        otherVector.normalize();
 
         // minus because of left-handed coordinate system
-        double angle = atan2(- thisVector->crossProduct(otherVector), thisVector->dotProduct(otherVector));
-
-        delete thisVector;
-        delete otherVector;
+        double angle = atan2(- thisVector.crossProduct(&otherVector), thisVector.dotProduct(&otherVector));
 
         return angle < 0 ? 2 * M_PI + angle : angle;
     }
 
     /**
-     * @brief toVector Transforms this bond into a vector pointing from the starting point to the end point
-     * @return The respective vector
+     * @brief toVector Returns a Vector2D from start to end (by value — no heap allocation).
      */
-    Vector2D* toVector() {
-        return new Vector2D(end->x - start->x, end->y - start->y);
+    Vector2D toVector() const {
+        return Vector2D(end->x - start->x, end->y - start->y);
     }
 
     /**

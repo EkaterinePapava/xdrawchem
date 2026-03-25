@@ -1,3 +1,10 @@
+#include <openbabel/atom.h>
+#include <openbabel/bond.h>
+#include <openbabel/math/vector3.h>
+#include <openbabel/mol.h>
+#include <openbabel/obconversion.h>
+using namespace OpenBabel;
+
 #include <cstdio>
 #include <fstream>
 #include <cstring>

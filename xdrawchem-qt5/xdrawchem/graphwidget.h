@@ -15,7 +15,7 @@ class GraphWidget : public QWidget
 {
     Q_OBJECT
 public:
-    GraphWidget( QWidget *parent = 0 );
+    GraphWidget( QWidget *parent = nullptr );
     void setDataType( int x ) { datatype = x; }
     void AddPeak( double, QColor, QString l1 = QString(), QString t1 = QString() );
     void AddPeak( double, int, QColor, QString l1 = QString(), QString t1 = QString() );

@@ -39,11 +39,11 @@ void Molecule::Render()
     int nleft = 0, nright = 0;
     double ang;
 
-    foreach ( tb2, bonds ) {
+    for (Bond *tb2 : bonds) {
         if ( tb2->Order() == 2 ) {
             nleft = 0;
             nright = 0;
-            foreach ( tmp_bond, bonds ) {
+            for (Bond *tmp_bond : bonds) {
                 if ( tmp_bond == tb2 )
                     continue;
                 if ( tmp_bond->Find( tb2->Start() ) ) {
@@ -87,16 +87,16 @@ void Molecule::Render()
         r->drawString( label1, tl1, QColor( 0, 0, 0 ), QFont( "times", 8 ) );
     }
 
-    foreach ( tmp_bond, bonds )
+    for (Bond *tmp_bond : bonds)
         tmp_bond->Render();
 
-    foreach ( tmp_text, labels ) {
+    for (Text *tmp_text : labels) {
         // ignore if just "C"
         //if (tmp_text->getText() == "C") continue;
         tmp_text->Render();
     }
     CalcOffsets();
-    foreach ( tmp_sym, symbols )
+    for (Symbol *tmp_sym : symbols)
         tmp_sym->Render();
 }
 
@@ -107,13 +107,13 @@ void Molecule::CalcOffsets()
     DPoint *op;
     double ang;
 
-    foreach ( tmp_sym, symbols ) {
+    for (Symbol *tmp_sym : symbols) {
         top = true;
         bottom = true;
         left = true;
         right = true;
         tmp_pt = tmp_sym->Start();
-        foreach ( tmp_bond, bonds ) {
+        for (Bond *tmp_bond : bonds) {
             if ( tmp_bond->Find( tmp_pt ) ) {
                 op = tmp_bond->otherPoint( tmp_pt );
                 ang = tmp_bond->getAngle( tmp_pt, op );
@@ -158,7 +158,7 @@ int Molecule::Type()
 
 bool Molecule::Find( DPoint * target )
 {
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         if ( tmp_bond->Find( target ) == true )
             return true;
     }
@@ -171,7 +171,7 @@ bool Molecule::isWithinRect( QRect qr, bool shiftdown )
         qDebug() << "shiftdown";
     bool ret = false;
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         if ( tmp_bond->isWithinRect( qr, false ) )
             ret = true;
     }
@@ -180,47 +180,47 @@ bool Molecule::isWithinRect( QRect qr, bool shiftdown )
         SelectAll();
         return false;
     }
-    foreach ( tmp_text, labels )
+    for (Text *tmp_text : labels)
         tmp_text->isWithinRect( qr, false );
 
-    foreach ( tmp_sym, symbols )
+    for (Symbol *tmp_sym : symbols)
         tmp_sym->isWithinRect( qr, false );
     return false;
 }
 
 void Molecule::SelectAll()
 {
-    foreach ( tmp_bond, bonds )
+    for (Bond *tmp_bond : bonds)
         tmp_bond->SelectAll();
 
-    foreach ( tmp_text, labels )
+    for (Text *tmp_text : labels)
         tmp_text->SelectAll();
 
-    foreach ( tmp_sym, symbols )
+    for (Symbol *tmp_sym : symbols)
         tmp_sym->SelectAll();
 }
 
 void Molecule::DeselectAll()
 {
-    foreach ( tmp_bond, bonds )
+    for (Bond *tmp_bond : bonds)
         tmp_bond->DeselectAll();
 
-    foreach ( tmp_text, labels )
+    for (Text *tmp_text : labels)
         tmp_text->DeselectAll();
 
-    foreach ( tmp_sym, symbols )
+    for (Symbol *tmp_sym : symbols)
         tmp_sym->DeselectAll();
 }
 
 void Molecule::SetColorIfHighlighted( QColor c )
 {
-    foreach ( tmp_bond, bonds )
+    for (Bond *tmp_bond : bonds)
         tmp_bond->SetColorIfHighlighted( c );
 
-    foreach ( tmp_text, labels )
+    for (Text *tmp_text : labels)
         tmp_text->SetColorIfHighlighted( c );
 
-    foreach ( tmp_sym, symbols )
+    for (Symbol *tmp_sym : symbols)
         tmp_sym->SetColorIfHighlighted( c );
 }
 
@@ -228,7 +228,7 @@ void Molecule::SetColorIfHighlighted( QColor c )
 // NMR prediction...)
 void Molecule::CopyTextToDPoint()
 {
-    foreach ( tmp_text, labels ) {
+    for (Text *tmp_text : labels) {
         tmp_pt = tmp_text->Start();
         tmp_pt->element = tmp_text->getText();
         // clear aromaticity here
@@ -279,14 +279,14 @@ QList < Molecule * >Molecule::MakeSplit()
         do {
             current = pointqueue.first();
             pointqueue.removeFirst();
-            foreach ( tmp_bond, uo ) {
+            for (Bond *tmp_bond : uo) {
                 if ( tmp_bond->Find( current ) ) {
                     pointqueue.append( tmp_bond->otherPoint( current ) );
                     nm->addBond( tmp_bond );
                     removequeue.append( tmp_bond );
                 }
             }
-            foreach ( tmp_bond, removequeue ) {
+            for (Bond *tmp_bond : removequeue) {
                 uo.removeAll( tmp_bond );
             }
             removequeue.clear();
@@ -308,14 +308,14 @@ QList < Molecule * >Molecule::MakeSplit()
     qDebug() << nm->Members();
     // Now split Text and Symbol lists
     if ( molecules.count() > 1 ) {
-        foreach ( tmp_text, labels ) {
-            foreach ( nm, molecules ) {
+        for (Text *tmp_text : labels) {
+            for (Molecule *nm : molecules) {
                 if ( nm->Find( tmp_text->Start() ) )
                     nm->addText( tmp_text );
             }
         }
-        foreach ( tmp_sym, symbols ) {
-            foreach ( nm, molecules ) {
+        for (Symbol *tmp_sym : symbols) {
+            for (Molecule *nm : molecules) {
                 if ( nm->Find( tmp_sym->Start() ) )
                     nm->addSymbol( tmp_sym );
             }
@@ -329,7 +329,7 @@ QList < DPoint * >Molecule::AllPoints()
 {
     QList < DPoint * >pl;
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         tmp_pt = tmp_bond->Start();
         if ( pl.contains( tmp_pt ) == 0 )
             pl.append( tmp_pt );
@@ -337,7 +337,7 @@ QList < DPoint * >Molecule::AllPoints()
         if ( pl.contains( tmp_pt ) == 0 )
             pl.append( tmp_pt );
     }
-    foreach ( tmp_text, labels ) {
+    for (Text *tmp_text : labels) {
         tmp_pt = tmp_text->Start();
         if ( pl.contains( tmp_pt ) == 0 )
             pl.append( tmp_pt );
@@ -347,12 +347,12 @@ QList < DPoint * >Molecule::AllPoints()
     // Determine number of substituents at each point
     int c1 = 0;
 
-    foreach ( tmp_pt, pl ) {
+    for (DPoint *tmp_pt : pl) {
         tmp_pt->serial = c1;    // serialize atoms
         c1++;
         tmp_pt->hit = false;    // also reset "hit"
         tmp_pt->substituents = 0;
-        foreach ( tmp_bond, bonds ) {
+        for (Bond *tmp_bond : bonds) {
             if ( tmp_bond->Find( tmp_pt ) )
                 tmp_pt->substituents = tmp_pt->substituents + tmp_bond->Order();
         }
@@ -374,13 +374,13 @@ QList < Drawable * >Molecule::AllObjects()
 
     up = AllPoints();
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         dl.append( ( Drawable * ) tmp_bond );
     }
-    foreach ( tmp_text, labels ) {
+    for (Text *tmp_text : labels) {
         dl.append( ( Drawable * ) tmp_text );
     }
-    foreach ( tmp_sym, symbols ) {
+    for (Symbol *tmp_sym : symbols) {
         dl.append( ( Drawable * ) tmp_sym );
     }
     return dl;
@@ -402,7 +402,7 @@ void Molecule::MakeTomoveList()
 {
     tomove.clear();
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         if ( tmp_bond->Highlighted() ) {
             tmp_pt = tmp_bond->Start();
             if ( tomove.contains( tmp_pt ) == 0 )
@@ -412,14 +412,14 @@ void Molecule::MakeTomoveList()
                 tomove.append( tmp_pt );
         }
     }
-    foreach ( tmp_text, labels ) {
+    for (Text *tmp_text : labels) {
         if ( tmp_text->Highlighted() ) {
             tmp_pt = tmp_text->Start();
             if ( tomove.contains( tmp_pt ) == 0 )
                 tomove.append( tmp_pt );
         }
     }
-    foreach ( tmp_sym, symbols ) {
+    for (Symbol *tmp_sym : symbols) {
         if ( tmp_sym->Highlighted() ) {
             tmp_pt = tmp_sym->Start();
             if ( tomove.contains( tmp_pt ) == 0 )
@@ -432,7 +432,7 @@ void Molecule::Move( double dx, double dy )
 {
     MakeTomoveList();
 
-    foreach ( tmp_pt, tomove ) {
+    for (DPoint *tmp_pt : tomove) {
         tmp_pt->x += dx;
         tmp_pt->y += dy;
     }
@@ -442,7 +442,7 @@ void Molecule::Rotate( DPoint * origin, double angle )
 {
     MakeTomoveList();
 
-    foreach ( tmp_pt, tomove ) {
+    for (DPoint *tmp_pt : tomove) {
         double thisx = tmp_pt->x - origin->x;
         double thisy = tmp_pt->y - origin->y;
         double newx = thisx * cos( angle ) + thisy * sin( angle );
@@ -462,7 +462,7 @@ void Molecule::Rotate( double angle )
     double centerx = 0.0, centery = 0.0;
     int n = 0;
 
-    foreach ( tmp_pt, tomove ) {
+    for (DPoint *tmp_pt : tomove) {
         centerx += tmp_pt->x;
         centery += tmp_pt->y;
         n++;
@@ -470,7 +470,7 @@ void Molecule::Rotate( double angle )
     centerx /= ( double ) n;
     centery /= ( double ) n;
 
-    foreach ( tmp_pt, tomove ) {
+    for (DPoint *tmp_pt : tomove) {
         double thisx = tmp_pt->x - centerx;
         double thisy = tmp_pt->y - centery;
         double newx = thisx * cos( angle ) + thisy * sin( angle );
@@ -487,7 +487,7 @@ void Molecule::Flip( DPoint * origin, int direction )
     MakeTomoveList();
     double delta;
 
-    foreach ( tmp_pt, tomove ) {
+    for (DPoint *tmp_pt : tomove) {
         if ( direction == FLIP_H ) {
             delta = tmp_pt->x - origin->x;
             tmp_pt->x = tmp_pt->x - 2 * delta;
@@ -504,7 +504,7 @@ void Molecule::Resize( DPoint * origin, double scale )
 
     MakeTomoveList();
 
-    foreach ( tmp_pt, tomove ) {
+    for (DPoint *tmp_pt : tomove) {
         dx = tmp_pt->x - origin->x;
         dy = tmp_pt->y - origin->y;
         dx *= scale;
@@ -519,7 +519,7 @@ QRect Molecule::BoundingBox()
     int top = 99999, bottom = 0, left = 99999, right = 0;
     QRect tmprect;
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         tmprect = tmp_bond->BoundingBox();
         if ( tmprect.isValid() ) {
             if ( tmprect.left() < left )
@@ -532,7 +532,7 @@ QRect Molecule::BoundingBox()
                 bottom = tmprect.bottom();
         }
     }
-    foreach ( tmp_text, labels ) {
+    for (Text *tmp_text : labels) {
         tmprect = tmp_text->BoundingBox();
         if ( tmprect.isValid() ) {
             if ( tmprect.left() < left )
@@ -551,10 +551,10 @@ QRect Molecule::BoundingBox()
 
 DPoint *Molecule::FindNearestPoint( DPoint * target, double &dist )
 {
-    DPoint *nearest = 0, *d1;
+    DPoint *nearest = nullptr, *d1;
     double mindist = 99999.0, d1dist = 999999.0;
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         d1 = tmp_bond->FindNearestPoint( target, d1dist );
         if ( d1dist < mindist ) {
             mindist = d1dist;
@@ -567,7 +567,7 @@ DPoint *Molecule::FindNearestPoint( DPoint * target, double &dist )
     nearest->other = 0;
     bool already_found = false;
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         if ( tmp_bond->Find( nearest ) == true ) {
             if ( already_found == true ) {
                 nearest->other = 0;
@@ -589,10 +589,10 @@ DPoint *Molecule::FindNearestPoint( DPoint * target, double &dist )
 
 Drawable *Molecule::FindNearestObject( DPoint * target, double &dist )
 {
-    Drawable *nearest = 0, *d1;
+    Drawable *nearest = nullptr, *d1;
     double mindist = 999999.0, d1dist = 999999.0;
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         d1 = tmp_bond->FindNearestObject( target, d1dist );
         if ( d1dist < mindist ) {
             mindist = d1dist;
@@ -600,7 +600,7 @@ Drawable *Molecule::FindNearestObject( DPoint * target, double &dist )
         }
     }
     // if on Text label, highlight it...
-    foreach ( tmp_text, labels ) {
+    for (Text *tmp_text : labels) {
         if ( tmp_text->WithinBounds( target ) ) {
             nearest = tmp_text;
             dist = 0.01;
@@ -608,7 +608,7 @@ Drawable *Molecule::FindNearestObject( DPoint * target, double &dist )
         }
     }
     // if on Symbol, highlight it...
-    foreach ( tmp_sym, symbols ) {
+    for (Symbol *tmp_sym : symbols) {
         if ( tmp_sym->WithinBounds( target ) ) {
             nearest = tmp_sym;
             dist = 0.01;
@@ -644,7 +644,7 @@ void Molecule::addBond( DPoint * s, DPoint * e, int thick, int order, QColor c, 
     if ( hl )
         b->Highlight( true );
     /// check if bond exists before adding
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         if ( tmp_bond->Equals( b ) ) {
             o = tmp_bond->Order();
             p = tmp_bond->Dash();
@@ -675,7 +675,7 @@ void Molecule::addText( Text * t )
     // remove Text associated with this point, if any
     DPoint *findpt = t->Start();
 
-    foreach ( tmp_text, labels ) {
+    for (Text *tmp_text : labels) {
         if ( tmp_text->Start() == findpt ) {
             labels.removeAll( tmp_text );
             break;
@@ -770,30 +770,30 @@ void Molecule::EraseSelected()
     QList < Text * >removetext;
     QList < Symbol * >removesym;
 
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         if ( tmp_bond->Highlighted() == true ) {
             removebonds.append( tmp_bond );
         }
     }
-    foreach ( tmp_bond, removebonds ) {
+    for (Bond *tmp_bond : removebonds) {
         bonds.removeAll( tmp_bond );
         delete tmp_bond;
     }
-    foreach ( tmp_text, labels ) {
+    for (Text *tmp_text : labels) {
         if ( tmp_text->Highlighted() == true ) {
             removetext.append( tmp_text );
         }
     }
-    foreach ( tmp_text, removetext ) {
+    for (Text *tmp_text : removetext) {
         labels.removeAll( tmp_text );
         delete tmp_text;
     }
-    foreach ( tmp_sym, symbols ) {
+    for (Symbol *tmp_sym : symbols) {
         if ( tmp_sym->Highlighted() == true ) {
             removesym.append( tmp_sym );
         }
     }
-    foreach ( tmp_sym, removesym ) {
+    for (Symbol *tmp_sym : removesym) {
         symbols.removeAll( tmp_sym );
         delete tmp_sym;
     }
@@ -820,7 +820,7 @@ QString Molecule::ToXML( QString xml_id )
 
     // Copy text from Text objects to element field in DPoint
     // also copy Symbol descriptions
-    foreach ( tmp_draw, uo ) {
+    for (Drawable *tmp_draw : uo) {
         tmp_draw->Start()->hit = false;
         if ( tmp_draw->Type() == TYPE_TEXT ) {
             tmp_text = ( Text * ) tmp_draw;     // is this cheating?
@@ -850,7 +850,7 @@ QString Molecule::ToXML( QString xml_id )
         s.append( "</grouptype>\n" );
     }
     // Add XML ID's to DPoint's, write as we go
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         n1.setNum( n );
         nfull = QString( "a" ) + n1;
         tmp_pt->id = nfull;
@@ -904,7 +904,7 @@ QString Molecule::ToXML( QString xml_id )
 
     // add XML ID's to Bond's, write as we go
     n = 0;
-    foreach ( tmp_draw, uo ) {
+    for (Drawable *tmp_draw : uo) {
         if ( tmp_draw->Type() == TYPE_BOND ) {
             tmp_bond = ( Bond * ) tmp_draw;     // I ask again, is this cheating?
             n1.setNum( n );
@@ -968,7 +968,7 @@ QString Molecule::ToCDXML( QString xml_id )
         return s;               // don't write an empty file
 
     // also copy Symbol descriptions
-    foreach ( tmp_draw, uo ) {
+    for (Drawable *tmp_draw : uo) {
         if ( tmp_draw->Type() == TYPE_SYMBOL ) {
             tmp_sym = ( Symbol * ) tmp_draw;
             tmp_sym->Start()->symbol = tmp_sym->GetSymbol();
@@ -981,7 +981,7 @@ QString Molecule::ToCDXML( QString xml_id )
     s.append( "\">\n" );
 
     // Add XML ID's to DPoint's, write as we go
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         n1.setNum( n );
         tmp_pt->id = n1;
         n++;
@@ -1004,7 +1004,7 @@ QString Molecule::ToCDXML( QString xml_id )
     }
 
     // add XML ID's to Bond's, write as we go
-    foreach ( tmp_draw, uo ) {
+    for (Drawable *tmp_draw : uo) {
         if ( tmp_draw->Type() == TYPE_BOND ) {
             tmp_bond = ( Bond * ) tmp_draw;     // I ask again, is this cheating?
             n1.setNum( n );
@@ -1053,10 +1053,10 @@ QString Molecule::ToMDLMolfile( int coords )
     QTextStream t( &molfile, QIODevice::WriteOnly );
 
     /// write first three lines -- blank, unless we want to add comments etc.
-    t << endl << endl << endl;
+    t << Qt::endl << Qt::endl << Qt::endl;
 
     /// find counts...
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         acount++;
     }
 
@@ -1065,10 +1065,10 @@ QString Molecule::ToMDLMolfile( int coords )
     t.setFieldWidth( 3 );
     t << acount;
     t.setFieldWidth( 3 );
-    t << bcount << "  0  0  0  0  0  0  0  0  1" << endl;
+    t << bcount << "  0  0  0  0  0  0  0  0  1" << Qt::endl;
 
     // Write atom list
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
       localtextdocument.setHtml(tmp_pt->element);
       tmpline = localtextdocument.toPlainText();
         // probably should strip H here, since it confuses OB
@@ -1095,10 +1095,10 @@ QString Molecule::ToMDLMolfile( int coords )
             t << tmp_pt->z;
             t << tmpline;
         }
-        t << " 0  0  0  0  0  0  0  0  0  0  0  0" << endl;
+        t << " 0  0  0  0  0  0  0  0  0  0  0  0" << Qt::endl;
     }
     // write bond list
-    foreach ( tmp_bond, bonds ) {
+    for (Bond *tmp_bond : bonds) {
         t.setFieldWidth( 3 );
         t << up.indexOf( tmp_bond->Start() ) + 1;
         t.setFieldWidth( 3 );
@@ -1111,7 +1111,7 @@ QString Molecule::ToMDLMolfile( int coords )
             t << "  1  0  0  0";
         if ( tmp_bond->Order() == 7 )
             t << "  6  0  0  0";
-	t << endl;
+	t << Qt::endl;
     }
 
     t << "M  END";
@@ -1167,7 +1167,7 @@ void Molecule::FromXML( QString xml_tag )
             i2 = subtag.indexOf( "</Start>" );
             subtag.remove( i2, 999 );
             subtag.remove( i1, 7 );
-            foreach ( tmp_pt, points ) {
+            for (DPoint *tmp_pt : points) {
                 if ( tmp_pt->id == subtag ) {
                     s1 = tmp_pt;
                     break;
@@ -1181,7 +1181,7 @@ void Molecule::FromXML( QString xml_tag )
             i2 = subtag.indexOf( "</End>" );
             subtag.remove( i2, 999 );
             subtag.remove( i1, 5 );
-            foreach ( tmp_pt, points ) {
+            for (DPoint *tmp_pt : points) {
                 if ( tmp_pt->id == subtag ) {
                     e1 = tmp_pt;
                     break;
@@ -1227,7 +1227,7 @@ void Molecule::FromXML( QString xml_tag )
         }
     } while ( 1 );
     // add Text and Symbol as needed
-    foreach ( tmp_pt, points ) {
+    for (DPoint *tmp_pt : points) {
         if ( ( tmp_pt->element != QString( "C" ) ) || ( tmp_pt->hit == true ) ) {
             tmp_text = new Text( r );
             tmp_text->setPoint( tmp_pt );

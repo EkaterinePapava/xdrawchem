@@ -35,7 +35,7 @@ public:
     void Move( double x, double y )
     {
         qDebug() << "MOVE:" << x << " " << y;
-        foreach ( tmp_draw, items )
+        for (Drawable *tmp_draw : items)
         {
             tmp_draw->SelectAll();
             tmp_draw->Move( x, y );
@@ -47,7 +47,7 @@ public:
         int top = 99999, bottom = 0, left = 99999, right = 0;
         QRect tmprect;
 
-        foreach ( tmp_draw, items ) {
+        for (Drawable *tmp_draw : items) {
             tmp_draw->SelectAll();
             tmprect = tmp_draw->BoundingBox();
             tmp_draw->DeselectAll();
@@ -89,7 +89,7 @@ void ChemData::Tool( DPoint *target, int mode )
     Bond *tmp_bond;
     //int dret;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_MOLECULE ) {
             m = ( Molecule * ) tmp_draw;
 	    if ( m->BoundingBoxAll().contains( target->toQPoint(), false ) )
@@ -242,7 +242,7 @@ void ChemData::Save3D( QString fn3d )
     // save 3D image of first molecule
     Molecule *m = 0;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_MOLECULE ) {
             m = ( Molecule * ) tmp_draw;
             break;
@@ -277,7 +277,7 @@ void ChemData::clearAllGroups()
     Molecule *m = 0;
     QString tmpname;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_MOLECULE ) {
             m = ( Molecule * ) tmp_draw;
             m->setGroupType( GROUP_NONE );
@@ -297,7 +297,7 @@ void ChemData::AutoLayout()
     Drawable *td2;
 
     // first, put Arrows and Molecules into LayoutGroups
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_ARROW ) {
             tmp_lo = new LayoutGroup;
             tmp_lo->items.append( tmp_draw );
@@ -320,11 +320,11 @@ void ChemData::AutoLayout()
         }
     }
     // now, attach Text to Arrows as needed
-    foreach ( tmp_lo, layout ) {
+    for (LayoutGroup *tmp_lo : layout) {
         td2 = tmp_lo->items.first();
         if ( td2->Type() == TYPE_ARROW ) {
             tmp_arrow = ( Arrow * ) td2;
-            foreach ( tmp_draw, drawlist ) {
+            for (Drawable *tmp_draw : drawlist) {
                 if ( tmp_draw->Type() == TYPE_TEXT ) {
                     tmp_text = ( Text * ) tmp_draw;
                     int ns;
@@ -362,7 +362,7 @@ void ChemData::AutoLayout()
         }                       // if (...TYPE_ARROW)
     }                           // for(...)
     // Now determine position of LayoutGroups
-    foreach ( tmp_lo, layout ) {
+    for (LayoutGroup *tmp_lo : layout) {
         QRect box = tmp_lo->BoundingBox();
         QPoint l1( box.left(), box.center().y() );
         QPoint r1( box.right(), box.center().y() );
@@ -379,7 +379,7 @@ void ChemData::AutoLayout()
         tr = 0;
         ta = 0;
         tb = 0;
-        foreach ( tl1, layout ) {
+        for (LayoutGroup *tl1 : layout) {
             QRect box1 = tl1->BoundingBox();
             QPoint l2( box1.left(), box1.center().y() );
             QPoint r2( box1.right(), box1.center().y() );
@@ -431,7 +431,7 @@ void ChemData::AutoLayout()
     }
     // Place everything
     // Start with things near arrows
-    foreach ( tmp_lo, layout ) {
+    for (LayoutGroup *tmp_lo : layout) {
         if ( tmp_lo->items.first()->Type() == TYPE_ARROW ) {
             tmp_lo->placed = true;
             tmp_arrow = ( Arrow * ) ( tmp_lo->items.first() );
@@ -539,7 +539,7 @@ void ChemData::SmartPlace( QString sf, DPoint * t1 )
     dy = t1->y - tmp_pt->y;
     m1->Move( dx, dy );
     QList < DPoint * >nb = m1->BreakRingBonds( tmp_pt );
-    foreach ( tmp_pt, nb ) {
+    for (DPoint *tmp_pt : nb) {
         addBond( tmp_pt, t1, 1, tmp_pt->new_order, QColor( 0, 0, 0 ), true );
         qDebug() << "added a bond";
     }
@@ -563,7 +563,7 @@ void ChemData::SmartPlaceToo( QString sf, DPoint * t1 )
     dy = t1->y - tmp_pt->y;
     m1->Move( dx, dy );
     QList < DPoint * >nb = m1->BreakRingBonds( tmp_pt );
-    foreach ( tmp_pt, nb ) {
+    for (DPoint *tmp_pt : nb) {
         addBond( tmp_pt, t1, 1, tmp_pt->new_order, QColor( 0, 0, 0 ), true );
         qDebug() << "added a bond";
     }
@@ -598,7 +598,7 @@ void ChemData::SmartPlaceThree( QString sf, DPoint * t1 )
     dy = t1->y - tmp_pt->y;
     m1->Move( dx, dy );
     QList < DPoint * >nb = m1->BreakRingBonds( tmp_pt );
-    foreach ( tmp_pt, nb ) {
+    for (DPoint *tmp_pt : nb) {
         addBond( tmp_pt, t1, 1, tmp_pt->new_order, QColor( 0, 0, 0 ), true );
         qDebug() << "added a bond";
     }
@@ -618,7 +618,7 @@ double ChemData::CalculateRingAttachAngle( DPoint * t1 )
     double a1;
     Molecule *m = 0;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( ( tmp_draw->Type() == TYPE_MOLECULE ) && ( tmp_draw->Find( t1 ) == true ) ) {
             m = ( Molecule * ) tmp_draw;
             break;
@@ -648,7 +648,7 @@ bool ChemData::SelectWithinLoop( QVector<QPoint> tmp_lasso )
     QList<Drawable *> obj_list = UniqueObjects();
     retval = false;
 
-    foreach ( tmp_draw, obj_list ) {
+    for (Drawable *tmp_draw : obj_list) {
         side_up = 0;
         side_down = 0;
         side_left = 0;

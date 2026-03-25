@@ -78,7 +78,7 @@ void CustomRingWidget::slotTitle( QString & string )
 {
 
     data->save( string );
-    qDebug() << "saved: " << string << endl << "done with crwidget";
+    qDebug() << "saved: " << string << Qt::endl << "done with crwidget";
     string.truncate( string.length() - 4 );
     string.append( ".png" );
     qDebug() << "png: " << string;
@@ -193,7 +193,5 @@ void CustomRingDialog::slotOk()
 
     accept();
 }
-
-//cmake#include "crings_dialog.moc"
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

@@ -7,12 +7,11 @@
 #include "tooldialog.h"
 #include "ngw.h"
 
-using namespace OpenBabel;
 
 class Tool_IR_Dialog : public ToolDialog
 {
 public:
-    Tool_IR_Dialog( QWidget *parent = 0 );
+    Tool_IR_Dialog( QWidget *parent = nullptr );
     void process();
 
 private:

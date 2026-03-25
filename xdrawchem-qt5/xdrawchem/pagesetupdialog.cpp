@@ -236,6 +236,4 @@ int PageSetupDialog::getOrientation()
     return PAGE_PORTRAIT;
 }
 
-//cmake#include "pagesetupdialog.moc"
-
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

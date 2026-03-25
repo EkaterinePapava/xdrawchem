@@ -156,7 +156,7 @@ void Molecule::Make3DVersion( QString fn3d )
     srand( ( int ) time( 0 ) );
 
     i = 1;                      // BUILD3D expects the first atom to be 1
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         tmp_pt->serial = i;
         i++;                    // serialize
         tmp_pt->new_order = 0;  // we'll use this as a status flag
@@ -168,7 +168,7 @@ void Molecule::Make3DVersion( QString fn3d )
 
     int an, nc = 0, nh = 0, nn = 0, no = 0, np = 0, ns = 0, atypes = 0;
 
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         an = tmp_pt->getAtomicNumber();
         if ( an == 1 ) {
             if ( nh == 0 )
@@ -222,7 +222,7 @@ void Molecule::Make3DVersion( QString fn3d )
     // connection table
     DPoint *n_pt;
 
-    foreach ( tmp_pt, up ) {
+    for (DPoint *tmp_pt : up) {
         if ( tmp_pt->getAtomicNumber() == 6 ) {
             if ( tmp_pt->neighbors.count() == 4 ) {
                 // NO chirality.
@@ -234,7 +234,7 @@ void Molecule::Make3DVersion( QString fn3d )
         } else {
             tout << tmp_pt->baseElement() << " -1 1 ";
         }
-        foreach ( n_pt, tmp_pt->neighbors ) {
+        for (DPoint *n_pt : tmp_pt->neighbors) {
             tout << n_pt->serial << " ";
         }
         tout << "Z";

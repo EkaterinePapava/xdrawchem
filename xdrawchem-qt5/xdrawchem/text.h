@@ -17,7 +17,7 @@ class Molecule;
 class Text : public Drawable
 {
 public:
-    Text( Render2D *, QObject *parent = 0 );
+    Text( Render2D *, QObject *parent = nullptr );
     void Render();  // draw this object
     void setRenderer(Render2D *r1) { r = r1; }
     int Type();  // return type of object

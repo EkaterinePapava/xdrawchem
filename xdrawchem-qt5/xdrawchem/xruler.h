@@ -12,7 +12,7 @@ class XRuler : public QWidget
   Q_OBJECT
 
 public:
-    XRuler( QWidget *parent = 0 );
+    XRuler( QWidget *parent = nullptr );
 
 public slots:
     void setHV( int );

@@ -14,7 +14,7 @@ void ChemData::ScaleAll( double bond_length )
 {
     Molecule *tmp_mol;
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() == TYPE_MOLECULE ) {
             tmp_mol = ( Molecule * ) tmp_draw;
             tmp_mol->Scale( bond_length );
@@ -37,7 +37,7 @@ void ChemData::Copy()
 
     clip->clear();
 
-    foreach ( tmp_draw, drawlist ) {
+    for (Drawable *tmp_draw : drawlist) {
         if ( tmp_draw->Type() != TYPE_MOLECULE ) {
             // Copy to clipboard if selected
             if ( tmp_draw->Highlighted() == true )
@@ -48,13 +48,13 @@ void ChemData::Copy()
             oldPoints = tmp_draw->AllPoints();
             // make new DPoint's which correspond to old DPoint's
             newPoints.clear();
-            foreach ( tmp_pt, oldPoints ) {
+            for (DPoint *tmp_pt : oldPoints) {
                 n = new DPoint( tmp_pt );
                 newPoints.append( n );
             }
             qDebug() << "unique:" << unique.count();
             qDebug() << "newPoints:" << newPoints.count();
-            foreach ( td2, unique ) {
+            for (Drawable *td2 : unique) {
                 if ( td2->Highlighted() == true ) {
                     tdx = td2;
                     tdx->setStart( newPoints.at( oldPoints.indexOf( td2->Start() ) ) );
@@ -78,7 +78,7 @@ bool ChemData::Paste()
 
     // need to deep copy stuff coming off the Clipboard
     // first, find all unique DPoint's
-    foreach ( tmp_draw, clip->objects ) {
+    for (Drawable *tmp_draw : clip->objects) {
         if ( oldPoints.contains( tmp_draw->Start() ) == 0 )
             oldPoints.append( tmp_draw->Start() );
         if ( tmp_draw->End() != 0 ) {
@@ -91,14 +91,14 @@ bool ChemData::Paste()
         return false;
 
     // make new DPoint's which correspond to old DPoint's
-    foreach ( tmp_pt, oldPoints ) {
+    for (DPoint *tmp_pt : oldPoints) {
         n = new DPoint( tmp_pt );
         newPoints.append( n );
     }
     // now add all non-TYPE_TEXT objects back to current
     Drawable *td1;
 
-    foreach ( td1, clip->objects ) {
+    for (Drawable *td1 : clip->objects) {
         if ( td1->Type() == TYPE_ARROW ) {
             Arrow *tmp_arrow = ( Arrow * ) td1;
 
@@ -125,7 +125,7 @@ bool ChemData::Paste()
         }
     }
     //add all TYPE_TEXT objects (ensures bonds and molecules exist before labels)
-    foreach ( td1, clip->objects ) {
+    for (Drawable *td1 : clip->objects) {
         if ( td1->Type() == TYPE_TEXT ) {
             ot = ( Text * ) td1;
             t = new Text( r );

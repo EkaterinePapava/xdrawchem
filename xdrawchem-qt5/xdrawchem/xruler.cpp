@@ -125,6 +125,4 @@ void XRuler::zoomEvent()
     update();
 }
 
-//cmake#include "xruler.moc"
-
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

@@ -529,7 +529,7 @@ void Text::Render()
     linewidth += b1.width();
   }
   // end for?
- 
+
   if ( lineheight > textheight )
     textheight = lineheight;
   if ( linewidth > textwidth )
@@ -624,7 +624,7 @@ void Text::Render()
   int lw1 = 1;
 
   r->resetTextOrigin();
-  foreach ( currentElement, renderList ) {
+  for (const auto &currentElement : renderList) {
     if ( currentElement == "</span>" ) {
       boldFlag = false, italicFlag = false, underlineFlag = false, superFlag = false, subFlag = false;
       continue;

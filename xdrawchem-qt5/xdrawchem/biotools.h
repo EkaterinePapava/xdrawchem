@@ -13,7 +13,7 @@ class Molecule;
 class BioTools : public Drawable
 {
 public:
-  BioTools( Render2D *, QObject *parent = 0 );
+  BioTools( Render2D *, QObject *parent = nullptr );
   void Render();  // draw this object
   int Type();  // return type of object
   void SetWhich( QString );

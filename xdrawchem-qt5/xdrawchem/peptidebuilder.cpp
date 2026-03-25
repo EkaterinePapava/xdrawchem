@@ -161,6 +161,4 @@ void PeptDialog::buttonPress( int b1 )
     }
 }
 
-//cmake#include "peptidebuilder.moc"
-
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

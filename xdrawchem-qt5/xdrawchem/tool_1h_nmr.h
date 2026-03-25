@@ -7,12 +7,11 @@
 #include "tooldialog.h"
 #include "ngw.h"
 
-using namespace OpenBabel;
 
 class Tool_1HNMR_Dialog : public ToolDialog
 {
 public:
-    Tool_1HNMR_Dialog( QWidget *parent = 0 );
+    Tool_1HNMR_Dialog( QWidget *parent = nullptr );
     void process();
 
 private:

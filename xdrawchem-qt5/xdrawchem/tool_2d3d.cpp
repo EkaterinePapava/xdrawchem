@@ -1,3 +1,6 @@
+#include <openbabel/mol.h>
+using namespace OpenBabel;
+
 #include <QList>
 
 #include "tool_2d3d.h"
@@ -32,7 +35,7 @@ void Tool_2D3D::process()
 
     // need to deep copy stuff coming off the Clipboard
     // first, find all unique DPoint's
-    foreach ( tmp_draw, objs ) {
+    for (Drawable *tmp_draw : objs) {
         if ( oldPoints.contains( tmp_draw->Start() ) == 0 )
             oldPoints.append( tmp_draw->Start() );
         if ( tmp_draw->End() != 0 ) {
@@ -44,7 +47,7 @@ void Tool_2D3D::process()
         return;
 
     // make new DPoint's which correspond to old DPoint's
-    foreach ( tmp_pt, oldPoints ) {
+    for (DPoint *tmp_pt : oldPoints) {
         n = new DPoint( tmp_pt );
         newPoints.append( n );
     }
@@ -52,7 +55,7 @@ void Tool_2D3D::process()
     // no need to copy TEXT or SYMBOL
     Drawable *td1;
 
-    foreach ( td1, objs ) {
+    for (Drawable *td1 : objs) {
         if ( td1->Type() == TYPE_BOND ) {
             b = ( Bond * ) td1;
             new3dmol->addBond( newPoints.at( oldPoints.indexOf( td1->Start() ) ), newPoints.at( oldPoints.indexOf( td1->End() ) ), b->Thick(), b->Order(), td1->GetColor(), true );

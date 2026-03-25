@@ -22,7 +22,7 @@ const QString XDC_VERSION = QString::fromLatin1("MacDrawChem ") + VERSION;
 #endif
 
 // define XDC_SERVER default URL
-//#define XDC_SERVER "http://www.woodsidelabs.com/chemistry"
+//#define XDC_SERVER "https://www.woodsidelabs.com/chemistry"
 
 // units
 #define PIXELS 0

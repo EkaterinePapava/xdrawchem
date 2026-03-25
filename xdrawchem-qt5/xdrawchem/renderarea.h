@@ -9,7 +9,7 @@ class RenderArea : public QScrollArea
     Q_OBJECT
 
 public:
-    RenderArea( QWidget *parent = 0 );
+    RenderArea( QWidget *parent = nullptr );
     void scrollContentsBy ( int dx, int dy );
 
 signals:

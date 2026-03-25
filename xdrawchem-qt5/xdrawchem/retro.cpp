@@ -68,7 +68,7 @@ int Molecule::Retro()
         resultString = "";
         for ( it2 = rxnfile.begin(); it2 != rxnfile.end(); ++it2 ) {
             line = *it2;
-            i1 = line.indexOf( ";;" );
+            i1 = line.indexOf( ";" );
             pat = line.left( i1 );
             rxn = line.mid( i1 + 2 );
             if ( RetroMatch( thisbond, pat ) ) {
@@ -299,7 +299,7 @@ QString Molecule::RetroTraverseBonds( DPoint * parentNode, DPoint * thisNode, Bo
 ///TODO: check, is this right?
 /*  while ( (inner_tmp_bond = innerIter.current()) != 0 ) {
     ++innerIter;*/
-    foreach ( inner_tmp_bond, bonds ) {
+    for (Bond *inner_tmp_bond : bonds) {
         if ( inner_tmp_bond->Find( outer1 ) == true ) {
             inner1 = inner_tmp_bond->otherPoint( outer1 );
             if ( inner1 != parentNode ) {

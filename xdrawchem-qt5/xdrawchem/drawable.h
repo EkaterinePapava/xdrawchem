@@ -18,7 +18,7 @@ class Drawable : public QObject
     Q_OBJECT
 
 public:
-    Drawable(QObject *parent = 0);
+    Drawable(QObject *parent = nullptr);
     virtual void Render();  // draw this object
     virtual void Edit();  // edit this object
     virtual int Type();  // return type of object

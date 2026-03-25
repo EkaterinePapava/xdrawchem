@@ -20,30 +20,28 @@
 
 #include "chemdata.h"
 
-#include <openbabel/atom.h>
-#include <openbabel/bond.h>
-#include <openbabel/math/vector3.h>
-#include <openbabel/mol.h>
+// Forward-declare OBMol to avoid pulling all OpenBabel headers into every
+// translation unit that includes this header.
+namespace OpenBabel { class OBMol; }
 
-using namespace OpenBabel;
 
 class IOIface {
 
   public:
-    IOIface(ChemData* cd=0, OBMol* mol=0);
+    IOIface(ChemData* cd= nullptr, OpenBabel::OBMol* mol= nullptr);
     ~IOIface();
 
     static const char symbol[110][4];
 
     void setChemData(ChemData* cd);
-    void setOBMol(OBMol* mol);
+    void setOBMol(OpenBabel::OBMol* mol);
     void convertToChemData();
     bool convertToOBMol();
 
   private:
 
     ChemData* chemdata;
-    OBMol* obmol;
+    OpenBabel::OBMol* obmol;
 
 };
 

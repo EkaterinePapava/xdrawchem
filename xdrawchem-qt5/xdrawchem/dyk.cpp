@@ -95,7 +95,7 @@ void DYKDialog::populateTipList()
                      "amino acids from N-terminal to C-terminal\n"
                      "(but the result isn't always pretty :)" ) );
     tips.append( tr( "Be sure to check for updates at\n"
-                     "http://xdrawchem.sourceforge.net/" ) );
+                     "https://xdrawchem.sourceforge.net/" ) );
     tips.append( tr( "XDrawChem can draw over 100,000 substances using\n"
                      "its Internet database.  Select Find on internet\n"
                      "from the File menu to search for compounds." ) );
@@ -123,7 +123,5 @@ void DYKDialog::prevTip()
     curtip->setText( tips[tipcount] );
     updateGeometry();
 }
-
-//cmake#include "dyk.moc"
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

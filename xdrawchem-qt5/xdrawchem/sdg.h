@@ -77,7 +77,7 @@ class SPoint {
   /** return this SPoint as a QString */
   QString toString() {
 	return QString("(%1,%2)").arg(x).arg(y);
-  }	
+  }
 };
 
 /** Construct that stores the parameters needed for the placement of
@@ -425,7 +425,7 @@ class SDG {
     QVector<int> ilist(10);
     SPoint point, temp2Point, tempPoint;
     int atom, ringCounter, tempRing = -1, atom1 = -1, atom2 = -1, tempAtom = -1, il;
-    int /*alreadyPositioned = -1,*/ stillToPos, j, km, iz1, iz2, igr, /*ib = 0,*/ ik = 0;
+    int /*alreadyPositioned = -1,*/ stillToPos, j, km, iz1, iz2, igr, /*ib = nullptr,*/ ik = 0;
     int isum1, isum2;
 //    int returnRingNumber = -1;
     int size;

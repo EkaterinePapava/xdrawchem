@@ -6,7 +6,6 @@
 class QString;
 class QStringList;
 class QProgressDialog;
-class QHttp;
 class QBuffer;
 
 class NetAccess : public QDialog
@@ -26,7 +25,6 @@ public:
     bool status;
     QString htfile, spccompound, sname, scas, siupacname,
             s3dmol, fullinchi, shortinchi;
-    QHttp *http;
 
 public slots:
     void slotData( const QByteArray & );

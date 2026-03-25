@@ -29,7 +29,7 @@ Q_OBJECT
 public:
     void setChemData(ChemData *c1) { c = c1; }
     // defined in render2d.cpp
-    Render2D(QWidget *parent = 0);
+    Render2D(QWidget *parent = nullptr);
     void CorrectEndpoint_arrow();
     void CorrectEndpoint_bond();
     void CleanUpAfterTextTool();

@@ -180,7 +180,7 @@ void Render2D::DrawText_mousePressEvent( QMouseEvent * e1, QPoint cqp )
     if (highlightobject) {
       if (highlightobject->Type() == TYPE_TEXT) {
 	localtext = (Text *)highlightobject;
-      } 
+      }
     } else {
       localtexteditor->setPlainText( "" );
     }

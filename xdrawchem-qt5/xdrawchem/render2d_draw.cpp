@@ -842,7 +842,7 @@ void Render2D::drawPixmap( QPoint a, QPixmap pix )
             }
             output_ts << hex << sumtotal << dec;
         }
-        output_ts << "end" << endl << "grestore" << endl;
+        output_ts << "end" << Qt::endl << "grestore" << Qt::endl;
         return;
     }
     /*
@@ -927,7 +927,7 @@ void Render2D::drawCurveArrow( QPoint a, QPoint b, QColor c1, QString wh )
       QPoint ce = Midpoint( a, b );
       int d = RoundOff( DistanceBetween( a, ce ) );
       double sa = getAngle( ce, a );
-      
+
       pp.moveTo( a );
       pp.arcTo( ce.x() - d, ce.y() - d, 2 * d, 2 * d, qRound(-sa), 180 );
       painter->drawPath( pp );

@@ -124,6 +124,4 @@ void CharSelDialog::chosenChar( int c1 )
     accept();
 }
 
-//cmake#include "charsel.moc"
-
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

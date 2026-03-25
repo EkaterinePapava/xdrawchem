@@ -20,7 +20,7 @@ int SSSR::IsInRing( DPoint * r1 )
     if ( sssr.count() == 0 ) {
         return 0;
     }
-    foreach ( tmp_ring, sssr ) {
+    for (QList<DPoint *> *tmp_ring : sssr) {
         if ( tmp_ring->contains( r1 ) > 0 )
             retval++;
     }
@@ -34,7 +34,7 @@ int SSSR::InSameRing( DPoint * r1, DPoint * r2, DPoint * r3 )
 {
     int retval;
 
-    foreach ( tmp_ring, sssr ) {
+    for (QList<DPoint *> *tmp_ring : sssr) {
         retval = 0;
         if ( tmp_ring->contains( r1 ) > 0 )
             retval++;
@@ -58,7 +58,7 @@ void SSSR::PrintSSSR()
         return;
     }
     qInfo() << "Yes rings: [";
-    foreach ( tmp_ring, sssr )
+    for (QList<DPoint *> *tmp_ring : sssr)
         qInfo() << tmp_ring->count();
     qInfo() << "]";
 }
@@ -69,16 +69,16 @@ void SSSR::FindAromatic( QList < Bond * >bl )
     Bond *tmp_bond;
     bool o1, o2, goodring;
 
-    foreach ( tmp_ring, sssr ) {
+    for (QList<DPoint *> *tmp_ring : sssr) {
         goodring = true;
         if ( tmp_ring->count() != 6 ) {
             goodring = false;
             continue;
         }
-        foreach ( tmp_pt, *tmp_ring ) {
+        for (DPoint *tmp_pt : *tmp_ring) {
             o1 = false;
             o2 = false;
-            foreach ( tmp_bond, bl ) {
+            for (Bond *tmp_bond : bl) {
                 if ( tmp_bond->Find( tmp_pt ) == true ) {
                     if ( tmp_bond->Order() == 1 )
                         o1 = true;
@@ -93,7 +93,7 @@ void SSSR::FindAromatic( QList < Bond * >bl )
         }
         if ( goodring == true ) {
             qInfo() << "Aromatic ring";
-            foreach ( tmp_pt, *tmp_ring ) {
+            for (DPoint *tmp_pt : *tmp_ring) {
                 tmp_pt->aromatic = true;
             }
         }
@@ -113,7 +113,7 @@ void SSSR::BuildSSSR( QList < DPoint * >alist )
     // eliminate pesky chains by cutting off zero- and one-bond 'atoms'
     do {
         atomsRemoved = 0;
-        foreach ( tmp_pt, structureAtoms ) {
+        for (DPoint *tmp_pt : structureAtoms) {
             if ( tmp_pt->neighbors.count() < 2 ) {
                 qInfo() << tmp_pt->serial << ":" << tmp_pt->neighbors.count();
                 // increment atomsRemoved
@@ -121,7 +121,7 @@ void SSSR::BuildSSSR( QList < DPoint * >alist )
                 // remove this item from structureAtoms
                 structureAtoms.removeAll( tmp_pt );
                 // and remove this item from all neighbor lists
-                foreach ( DPoint * tmp_del, structureAtoms ) {
+                for (auto *tmp_del : structureAtoms) {
                     tmp_del->neighbors.removeAll( tmp_pt );
                 }
             }
@@ -129,7 +129,7 @@ void SSSR::BuildSSSR( QList < DPoint * >alist )
     } while ( atomsRemoved > 0 );
     qInfo() << "There are " << structureAtoms.count() << " ring atoms";
     // now traverse rings
-    foreach ( DPoint * tmp_it, structureAtoms ) {
+    for (auto *tmp_it : structureAtoms) {
         tmp_ring = GetRing( tmp_it );
         if ( tmp_ring->size() > 0 )
             Add( tmp_ring );
@@ -141,10 +141,10 @@ void SSSR::BuildSSSR( QList < DPoint * >alist )
         int neighbors = 0, int1;
         bool bridged = false;
 
-        foreach ( QList < DPoint * >*tmp_sssr1, sssr ) {
+        for (QList<DPoint *> *tmp_sssr1 : sssr) {
             neighbors = 0;
             bridged = false;
-            foreach ( QList < DPoint * >*tmp_sssr2, sssr ) {
+            for (QList<DPoint *> *tmp_sssr2 : sssr) {
                 if ( tmp_sssr1 == tmp_sssr2 )
                     continue;
                 int1 = CommonPoints( tmp_sssr1, tmp_sssr2 );
@@ -166,7 +166,7 @@ void SSSR::Add( QList < DPoint * >*r1 )
     if ( CheckRing( r1 ) == true ) {
         sssr.append( r1 );
         // mark this dpoint as in a ring
-        foreach ( flagpt, *r1 ) {
+        for (DPoint *flagpt : *r1) {
             flagpt->inring = true;
             qInfo() << "flagged";
         }
@@ -178,7 +178,7 @@ int SSSR::CommonPoints( QList < DPoint * >*r1, QList < DPoint * >*r2 )
 {
     int ol = 0;
 
-    foreach ( DPoint * tmp_r1, *r1 ) {
+    for (auto *tmp_r1 : *r1) {
         if ( r2->count( tmp_r1 ) >= 0 )
             ol++;
     }
@@ -191,9 +191,9 @@ bool SSSR::CheckRing( QList < DPoint * >*r )
     int l2;
     bool iflag = true;
 
-    foreach ( tmp_ring, sssr ) {
+    for (QList<DPoint *> *tmp_ring : sssr) {
         l2 = r->count();
-        foreach ( tmp_pt, *tmp_ring ) {
+        for (DPoint *tmp_pt : *tmp_ring) {
             if ( r->count( tmp_pt ) >= 0 )
                 l2--;
         }
@@ -225,8 +225,8 @@ QList < DPoint * >*SSSR::GetRing( DPoint * root )
             qInfo("structureAtoms does not contain thisnode, skipping");
             continue;
         }
-        qInfo() << "this node neighbors: " << thisnode->neighbors.size(); 
-        foreach ( tmp_pt, thisnode->neighbors ) {
+        qInfo() << "this node neighbors: " << thisnode->neighbors.size();
+        for (DPoint *tmp_pt : thisnode->neighbors) {
             if ( thisnode->source == tmp_pt )
                 continue;       // prevent backtrack
             if ( structureAtoms.indexOf( tmp_pt ) < 0 )
@@ -237,15 +237,15 @@ QList < DPoint * >*SSSR::GetRing( DPoint * root )
                 tmp_pt->path.append( thisnode );
                 bfs_queue.append( tmp_pt );
             } else {            // collision
-                qInfo() << "collide" << endl << "thisnode(" << thisnode->serial << "):";
+                qInfo() << "collide" << Qt::endl << "thisnode(" << thisnode->serial << "):";
                 // merge path lists (note overlaps)
-                foreach ( DPoint * tmpPoint, thisnode->path ) {
+                for (auto *tmpPoint : thisnode->path) {
                     qInfo() << tmpPoint->serial;
                     testring->append( tmpPoint );
                 }
-                qInfo() << endl << "tmp_pt(" << tmp_pt->serial << "):";
+                qInfo() << Qt::endl << "tmp_pt(" << tmp_pt->serial << "):";
                 tf = 0;
-                foreach ( DPoint * tmpPoint, tmp_pt->path ) {
+                for (auto *tmpPoint : tmp_pt->path) {
                     qInfo() << tmpPoint->serial;
                     if ( testring->count( tmpPoint ) == 0 )
                         testring->append( tmpPoint );
@@ -277,7 +277,7 @@ QList < DPoint * >*SSSR::GetRing( DPoint * root )
   // clear paths in 'atoms'
 void SSSR::ClearPaths()
 {
-    foreach ( tmp_pt, structureAtoms ) {
+    for (DPoint *tmp_pt : structureAtoms) {
         tmp_pt->source = 0;
         tmp_pt->path.clear();
     }

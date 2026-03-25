@@ -26,7 +26,7 @@ Render2D::Render2D( QWidget * parent )
     dbuffer = QPixmap( renderWidth, renderHeight );
     directdraw = false;
     text_drag = false;
-    start_drag = NULL;
+    start_drag = nullptr;
 
     setBackgroundRole( QPalette::Base );
 
@@ -974,7 +974,5 @@ QPoint Render2D::zoomCorrectReverse( QPoint in1 )
     out1.setY( qRound( dy ) );
     return out1;
 }
-
-//cmake#include "render2d.moc"
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

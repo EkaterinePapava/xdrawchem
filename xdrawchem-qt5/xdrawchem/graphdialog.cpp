@@ -87,6 +87,4 @@ void GraphDialog::SendHelp()
     help->show();
 }
 
-//cmake#include "graphdialog.moc"
-
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;
