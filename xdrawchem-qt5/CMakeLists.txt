@@ -100,7 +100,7 @@ set(XDC_SOURCES
     xdrawchem/helpwindow.cpp
     xdrawchem/http.cpp
     xdrawchem/ioiface.cpp
-    xdrawchem/main.cpp
+    # main.cpp excluded from object lib — linked only into the executable
     xdrawchem/molecule_1h_nmr.cpp
     xdrawchem/molecule.cpp
     xdrawchem/molecule_obmol.cpp
@@ -225,8 +225,28 @@ set(XDC_HEADERS
 )
 
 # ── Target ────────────────────────────────────────────────────────────────────
-qt_add_executable(xdrawchem
+# OBJECT library — lets tests link the same compiled units without relinking
+add_library(xdrawchem_obj OBJECT
     ${XDC_SOURCES}
+    ${XDC_HEADERS}
+)
+target_include_directories(xdrawchem_obj PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/xdrawchem
+    ${OpenBabel_INCLUDE_DIRS}
+)
+target_compile_definitions(xdrawchem_obj PUBLIC
+    UNIX
+    RINGHOME="${RINGHOME}"
+    XDC_SERVER="https://www.woodsidelabs.com/chemistry"
+)
+target_link_libraries(xdrawchem_obj PUBLIC
+    Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::PrintSupport Qt6::Xml
+    ${OpenBabel_LIBRARIES}
+)
+
+qt_add_executable(xdrawchem
+    $<TARGET_OBJECTS:xdrawchem_obj>
+    xdrawchem/main.cpp
     ${XDC_HEADERS}
 )
 
@@ -314,3 +334,7 @@ install(FILES ring/xdrawchem-icon.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/pixmaps
     RENAME xdrawchem.png
 )
+
+# ── Tests ───────────────────────────────────────────────────────────────
+include(CTest)
+add_subdirectory(tests)

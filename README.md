@@ -1,24 +1,36 @@
-# XDrawChem: a two-dimensional molecule drawing program
+# XDrawChem: a 2D molecule drawing program
 
-Welcome to XDrawChem!
+XDrawChem is an open-source application for drawing and editing
+two-dimensional chemical structures. It supports CML, SMILES, MDL Mol,
+CDXML, and its own XDC format, and integrates with OpenBabel for
+cheminformatics calculations (SMILES, InChI, NMR prediction, 3D).
 
-Please visit the project page at http://www.woodsidelabs.com/chemistry/xdrawchem.php
+## Quick start
 
-Current release (1.10.1-1) source tarball, as well as RPM and Mac DMG binaries are available via SourceForge at https://sourceforge.net/projects/xdrawchem/files/xdrawchem/1.10.1/
+```bash
+git clone https://github.com/bryanherger/xdrawchem
+cd xdrawchem/xdrawchem-qt5
+mkdir build && cd build
+cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release
+ninja
+./xdrawchem
+```
 
-### Installation
+Requires **Qt 6.4+**, **OpenBabel 3.x**, and **CMake 3.19+**.
+See `xdrawchem-qt5/README.md` for full build instructions and dependencies.
 
-The current source code is in the xdrawchem-qt5 folder (v1.9.11 onwards).  It requires OpenBabel 3.x and Qt 5.x.  Please see the INSTALL document in xdrawchem-qt5 for installation directions.
+## Repository layout
 
-### Other stuff
+| Directory | Contents |
+|---|---|
+| `xdrawchem-qt5/` | **Current source** — Qt5 (qmake) and Qt6 (CMake) |
+| `legacy-xdrawchem-qt4/` | Historical Qt4 port (not maintained) |
+| `legacy-xdrawchem-qt3/` | Original Qt3 codebase (not maintained) |
 
-This repository conatins two legacy versions of XDrawChem:
+## Links
 
-legacy-xdrawchem-qt3 - this is the legacy Qt3 version (1.9.10 and prior).  It is based on Qt 3.x.
+- Project page: https://www.woodsidelabs.com/chemistry/xdrawchem.php
+- Releases: https://sourceforge.net/projects/xdrawchem/files/xdrawchem/
+- Issues & PRs: https://github.com/bryanherger/xdrawchem
 
-legacy-xdrawchem-qt4 - this is a contributed version.  It is based on Qt 4.
-   However, most distributions are based on Qt 3.  The Qt 4 version is the basis of WinDrawChem.
-
-Enjoy!
-
-Bryan Herger - bherger@users.sf.net
+Bryan Herger — bherger@users.sf.net
