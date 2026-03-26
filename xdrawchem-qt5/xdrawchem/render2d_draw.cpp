@@ -909,15 +909,18 @@ void Render2D::drawCurveArrow( QPoint a, QPoint b, QColor c1, QString wh )
     // calculate arrowhead
     // if curve too small, don't draw arrowhead
     QPoint realb( pp.currentPosition().toPoint() );
-    sa = getAngle(b, a);
-    double newang1 = sa + 60.0;
-    double newang2 = sa + 120.0;
-    QPoint a1( qRound(realb.x() + (cos(newang1/MOL_ARAD) * 10.0)),
-	       qRound(realb.y() + (sin(newang1/MOL_ARAD) * 10.0)) );
-    QPoint a2( qRound(realb.x() + (cos(newang2/MOL_ARAD) * 10.0)),
-	       qRound(realb.y() + (sin(newang2/MOL_ARAD) * 10.0)) );
-    drawLine(realb, a1, 1, c1);
-    drawLine(realb, a2, 1, c1);
+    {
+        double radius_dir = getAngle( ce, realb );
+        double incoming = radius_dir - 90.0;  // CW arc tangent
+        double newang1 = incoming + 30.0;
+        double newang2 = incoming - 30.0;
+        QPoint a1( qRound( realb.x() + cos( newang1 / MOL_ARAD ) * 10.0 ),
+                   qRound( realb.y() + sin( newang1 / MOL_ARAD ) * 10.0 ) );
+        QPoint a2( qRound( realb.x() + cos( newang2 / MOL_ARAD ) * 10.0 ),
+                   qRound( realb.y() + sin( newang2 / MOL_ARAD ) * 10.0 ) );
+        drawLine( realb, a1, 1, c1 );
+        drawLine( realb, a2, 1, c1 );
+    }
     return;
   }
     if ( wh == "CCW180" ) {
@@ -933,15 +936,18 @@ void Render2D::drawCurveArrow( QPoint a, QPoint b, QColor c1, QString wh )
         // calculate arrowhead
         // if curve too small, don't draw arrowhead
       QPoint realb( pp.currentPosition().toPoint() );
-      sa = getAngle(b, a);
-      double newang1 = sa + 240.0;
-      double newang2 = sa + 300.0;
-      QPoint a1( qRound(realb.x() + (cos(newang1/MOL_ARAD) * 10.0)),
-		 qRound(realb.y() + (sin(newang1/MOL_ARAD) * 10.0)) );
-      QPoint a2( qRound(realb.x() + (cos(newang2/MOL_ARAD) * 10.0)),
-		 qRound(realb.y() + (sin(newang2/MOL_ARAD) * 10.0)) );
-      drawLine(realb, a1, 1, c1);
-      drawLine(realb, a2, 1, c1);
+      {
+          double radius_dir = getAngle( ce, realb );
+          double incoming = radius_dir + 90.0;  // CCW arc tangent
+          double newang1 = incoming + 30.0;
+          double newang2 = incoming - 30.0;
+          QPoint a1( qRound( realb.x() + cos( newang1 / MOL_ARAD ) * 10.0 ),
+                     qRound( realb.y() + sin( newang1 / MOL_ARAD ) * 10.0 ) );
+          QPoint a2( qRound( realb.x() + cos( newang2 / MOL_ARAD ) * 10.0 ),
+                     qRound( realb.y() + sin( newang2 / MOL_ARAD ) * 10.0 ) );
+          drawLine( realb, a1, 1, c1 );
+          drawLine( realb, a2, 1, c1 );
+      }
       return;
     }
     if ( wh == "CW90" ) {
@@ -962,23 +968,21 @@ void Render2D::drawCurveArrow( QPoint a, QPoint b, QColor c1, QString wh )
         double sa = getAngle( ce, a );
         int d = RoundOff( d1 );
 
-	pp.moveTo( a );
-	pp.arcTo( ce.x() - d, ce.y() - d, 2 * d, 2 * d, qRound( -sa ), -90 );
-        drawPolyline( pp, c1 );
-        //painter->drawChord( QRect( a, b ), 180 * 16, -90 * 16 );
-        // calculate arrowhead
-        // if curve too small, don't draw arrowhead
-	//     if (pa.count() == 0) return;
-	//QPoint realb(pa.at(pa.count() - 1));
-	sa = getAngle(b, a);
-	double newang1 = sa + 15.0;
-	double newang2 = sa + 75.0;
-	QPoint a1( qRound(b.x() + (cos(newang1/MOL_ARAD) * 10.0)),
-		   qRound(b.y() + (sin(newang1/MOL_ARAD) * 10.0)) );
-	QPoint a2( qRound(b.x() + (cos(newang2/MOL_ARAD) * 10.0)),
-		   qRound(b.y() + (sin(newang2/MOL_ARAD) * 10.0)) );
-	drawLine(b, a1, 1, c1);
-	drawLine(b, a2, 1, c1);
+		pp.moveTo( a );
+		pp.arcTo( ce.x() - d, ce.y() - d, 2 * d, 2 * d, qRound( -sa ), -90 );
+		drawPolyline( pp, c1 );
+		// Arrowhead at actual arc endpoint using tangent direction
+		QPoint realb( pp.currentPosition().toPoint() );
+		double radius_dir = getAngle( ce, realb );
+		double incoming = radius_dir - 90.0;  // CW arc tangent
+		double newang1 = incoming + 30.0;
+		double newang2 = incoming - 30.0;
+		QPoint a1( qRound( realb.x() + cos( newang1 / MOL_ARAD ) * 10.0 ),
+		           qRound( realb.y() + sin( newang1 / MOL_ARAD ) * 10.0 ) );
+		QPoint a2( qRound( realb.x() + cos( newang2 / MOL_ARAD ) * 10.0 ),
+		           qRound( realb.y() + sin( newang2 / MOL_ARAD ) * 10.0 ) );
+		drawLine( realb, a1, 1, c1 );
+		drawLine( realb, a2, 1, c1 );
     }
     if ( wh == "CCW90" ) {
         // first, figure out where middle of circle is
@@ -998,22 +1002,21 @@ void Render2D::drawCurveArrow( QPoint a, QPoint b, QColor c1, QString wh )
         double sa = getAngle( ce, a );
         int d = RoundOff( d1 );
 
-	pp.moveTo( a );
-        pp.arcTo( ce.x() - d, ce.y() - d, 2 * d, 2 * d, qRound( -sa ), 90 );
-        drawPolyline( pp, c1 );
-        // calculate arrowhead
-        // if curve too small, don't draw arrowhead
-	//    if (pa.count() == 0) return;
-	//QPoint realb(pa.at(pa.count() - 1));
-	sa = getAngle(b, a);
-	double newang1 = sa - 15.0;
-	double newang2 = sa - 75.0;
-	QPoint a1( qRound(b.x() + (cos(newang1/MOL_ARAD) * 10.0)),
-		   qRound(b.y() + (sin(newang1/MOL_ARAD) * 10.0)) );
-	QPoint a2( qRound(b.x() + (cos(newang2/MOL_ARAD) * 10.0)),
-		   qRound(b.y() + (sin(newang2/MOL_ARAD) * 10.0)) );
-	drawLine(b, a1, 1, c1);
-	drawLine(b, a2, 1, c1);
+		pp.moveTo( a );
+		pp.arcTo( ce.x() - d, ce.y() - d, 2 * d, 2 * d, qRound( -sa ), 90 );
+		drawPolyline( pp, c1 );
+		// Arrowhead at actual arc endpoint using tangent direction
+		QPoint realb( pp.currentPosition().toPoint() );
+		double radius_dir = getAngle( ce, realb );
+		double incoming = radius_dir + 90.0;  // CCW arc tangent
+		double newang1 = incoming + 30.0;
+		double newang2 = incoming - 30.0;
+		QPoint a1( qRound( realb.x() + cos( newang1 / MOL_ARAD ) * 10.0 ),
+		           qRound( realb.y() + sin( newang1 / MOL_ARAD ) * 10.0 ) );
+		QPoint a2( qRound( realb.x() + cos( newang2 / MOL_ARAD ) * 10.0 ),
+		           qRound( realb.y() + sin( newang2 / MOL_ARAD ) * 10.0 ) );
+		drawLine( realb, a1, 1, c1 );
+		drawLine( realb, a2, 1, c1 );
     }
     if ( wh == "CW270" ) {
         // first, figure out where middle of circle is
@@ -1040,16 +1043,17 @@ void Render2D::drawCurveArrow( QPoint a, QPoint b, QColor c1, QString wh )
         // if curve too small, don't draw arrowhead
 	//    if (pa.count() == 0) return;
 	//QPoint realb(pa.at(pa.count() - 1));
-	QPoint realb( pp.currentPosition().toPoint() );
-	sa = getAngle(b, a);
-	double newang1 = sa + 165.0;
-	double newang2 = sa + 105.0;
-	QPoint a1( qRound(realb.x() + (cos(newang1/MOL_ARAD) * 10.0)),
-		   qRound(realb.y() + (sin(newang1/MOL_ARAD) * 10.0)) );
-	QPoint a2( qRound(realb.x() + (cos(newang2/MOL_ARAD) * 10.0)),
-		   qRound(realb.y() + (sin(newang2/MOL_ARAD) * 10.0)) );
-	drawLine(realb, a1, 1, c1);
-	drawLine(realb, a2, 1, c1);
+		QPoint realb( pp.currentPosition().toPoint() );
+		double radius_dir = getAngle( ce, realb );
+		double incoming = radius_dir - 90.0;  // CW arc tangent
+		double newang1 = incoming + 30.0;
+		double newang2 = incoming - 30.0;
+		QPoint a1( qRound( realb.x() + cos( newang1 / MOL_ARAD ) * 10.0 ),
+		           qRound( realb.y() + sin( newang1 / MOL_ARAD ) * 10.0 ) );
+		QPoint a2( qRound( realb.x() + cos( newang2 / MOL_ARAD ) * 10.0 ),
+		           qRound( realb.y() + sin( newang2 / MOL_ARAD ) * 10.0 ) );
+		drawLine( realb, a1, 1, c1 );
+		drawLine( realb, a2, 1, c1 );
     }
     if ( wh == "CCW270" ) {
         // first, figure out where middle of circle is
@@ -1076,16 +1080,17 @@ void Render2D::drawCurveArrow( QPoint a, QPoint b, QColor c1, QString wh )
         // if curve too small, don't draw arrowhead
 	//    if (pa.count() == 0) return;
 	//QPoint realb(pa.at(pa.count() - 1));
-	QPoint realb( pp.currentPosition().toPoint() );
-	sa = getAngle(b, a);
-	double newang1 = sa - 165.0;
-	double newang2 = sa - 105.0;
-	QPoint a1( qRound(realb.x() + (cos(newang1/MOL_ARAD) * 10.0)),
-		   qRound(realb.y() + (sin(newang1/MOL_ARAD) * 10.0)) );
-	QPoint a2( qRound(realb.x() + (cos(newang2/MOL_ARAD) * 10.0)),
-		   qRound(realb.y() + (sin(newang2/MOL_ARAD) * 10.0)) );
-	drawLine(realb, a1, 1, c1);
-	drawLine(realb, a2, 1, c1);
+		QPoint realb( pp.currentPosition().toPoint() );
+		double radius_dir = getAngle( ce, realb );
+		double incoming = radius_dir + 90.0;  // CCW arc tangent
+		double newang1 = incoming + 30.0;
+		double newang2 = incoming - 30.0;
+		QPoint a1( qRound( realb.x() + cos( newang1 / MOL_ARAD ) * 10.0 ),
+		           qRound( realb.y() + sin( newang1 / MOL_ARAD ) * 10.0 ) );
+		QPoint a2( qRound( realb.x() + cos( newang2 / MOL_ARAD ) * 10.0 ),
+		           qRound( realb.y() + sin( newang2 / MOL_ARAD ) * 10.0 ) );
+		drawLine( realb, a1, 1, c1 );
+		drawLine( realb, a2, 1, c1 );
     }
 }
 
