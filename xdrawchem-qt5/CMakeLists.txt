@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.19)
-project(xdrawchem VERSION 2.0.0 LANGUAGES CXX)
+project(xdrawchem VERSION 2.0 LANGUAGES CXX)
 
 # ── C++ standard ───────────────────────────────────────────────────────────────
 set(CMAKE_CXX_STANDARD 17)

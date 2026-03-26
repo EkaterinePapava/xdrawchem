@@ -6,7 +6,7 @@
 // Ring directories (global, user)
 extern QString RingDir, HomeDir;
 
-const QString VERSION = QString::fromLatin1("1.10.2");
+const QString VERSION = QString::fromLatin1("2.0rc1");
 
 // version string (makes updates easier :)
 #ifdef UNIX
