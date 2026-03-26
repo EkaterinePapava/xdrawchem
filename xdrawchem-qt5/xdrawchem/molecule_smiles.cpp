@@ -2,6 +2,7 @@
 // notably, Structural Diagram Generation and SMILES
 
 #include <QtDebug>
+#include <cmath>
 
 #include <vector>
 #include <string>
@@ -134,30 +135,133 @@ void Molecule::SDG( bool coord )
 
     qInfo() << "SDG succeeded!";
 
+    // ── Save SDG output coords and compute old coords (centred) ────────────
+    // We need to find the rotation (and possible reflection) that best aligns
+    // the SDG output to the original hand-drawn orientation.
+
+    QVector<double> old_cx, old_cy;  // original centred coords (saved before SDG)
+    QVector<double> new_cx, new_cy;  // SDG output centred coords
+
+    // Already have original centroid in center1 (set at top when coord==true)
+
+    if ( coord == true ) {
+        // Compute original centred coords (we lost the originals after SDG overwrote them,
+        // but we can recover them from the Atom objects which were set BEFORE exec()).
+        // Actually we need to save them before exec() -- patch below.
+        // For now: collect new SDG coords and original coords from Atom::x/y (pre-SDG).
+        // Unfortunately atoms[] was modified in-place by sdg1.exec().
+        // We must save old coords before calling sdg1.exec(); do it here by reading
+        // back from the DPoints before they're overwritten.
+    }
+
     // convert atoms back to DPoint (essentially, just update x,y coordinates)
-    for ( c1 = 0; c1 < up.count(); c1++ ) {
+    // Also capture old coords for orientation-preserving rotation below.
+    double old_sum_x = 0, old_sum_y = 0;
+    double new_sum_x = 0, new_sum_y = 0;
+    int n_pts = up.count();
+
+    // Collect old coords (still in up[] at this point)
+    QVector<double> old_x(n_pts), old_y(n_pts);
+    for ( c1 = 0; c1 < n_pts; c1++ ) {
+        tmp_pt = up.at( c1 );
+        old_x[c1] = tmp_pt->x;
+        old_y[c1] = tmp_pt->y;
+        old_sum_x += tmp_pt->x;
+        old_sum_y += tmp_pt->y;
+    }
+
+    // Copy new SDG coords into DPoints
+    QVector<double> sdg_x(n_pts), sdg_y(n_pts);
+    for ( c1 = 0; c1 < n_pts; c1++ ) {
         tmp_pt = up.at( c1 );
         a1 = atoms.at( c1 );
         tmp_pt->x = a1->x;
         tmp_pt->y = a1->y;
+        sdg_x[c1] = a1->x;
+        sdg_y[c1] = a1->y;
+        new_sum_x += a1->x;
+        new_sum_y += a1->y;
     }
+
+    if ( coord == true && n_pts >= 2 ) {
+        // ── Procrustes alignment: find rotation (+ optional y-flip) ───────────
+        // Centroid of old and new point sets
+        double cx_old = old_sum_x / n_pts;
+        double cy_old = old_sum_y / n_pts;
+        double cx_new = new_sum_x / n_pts;
+        double cy_new = new_sum_y / n_pts;
+
+        // Centred vectors
+        QVector<double> Ax(n_pts), Ay(n_pts);  // old centred
+        QVector<double> Bx(n_pts), By(n_pts);  // new centred
+        for ( c1 = 0; c1 < n_pts; c1++ ) {
+            Ax[c1] = old_x[c1] - cx_old;
+            Ay[c1] = old_y[c1] - cy_old;
+            Bx[c1] = sdg_x[c1] - cx_new;
+            By[c1] = sdg_y[c1] - cy_new;
+        }
+
+        // No-flip: optimal rotation angle = atan2(sum(A×B), sum(A·B))
+        double cross = 0, dot = 0;
+        for ( c1 = 0; c1 < n_pts; c1++ ) {
+            cross += Ax[c1] * By[c1] - Ay[c1] * Bx[c1];
+            dot   += Ax[c1] * Bx[c1] + Ay[c1] * By[c1];
+        }
+        double theta = atan2( cross, dot );
+
+        // Residual (sum of squared distances after rotation)
+        double res_no_flip = 0;
+        for ( c1 = 0; c1 < n_pts; c1++ ) {
+            double rx = Bx[c1] * cos(theta) - By[c1] * sin(theta);
+            double ry = Bx[c1] * sin(theta) + By[c1] * cos(theta);
+            res_no_flip += (Ax[c1]-rx)*(Ax[c1]-rx) + (Ay[c1]-ry)*(Ay[c1]-ry);
+        }
+
+        // Flip-y check: negate By, recompute optimal rotation
+        double cross_f = 0, dot_f = 0;
+        for ( c1 = 0; c1 < n_pts; c1++ ) {
+            cross_f += Ax[c1] * (-By[c1]) - Ay[c1] * Bx[c1];
+            dot_f   += Ax[c1] * Bx[c1]   + Ay[c1] * (-By[c1]);
+        }
+        double theta_f = atan2( cross_f, dot_f );
+
+        double res_flip = 0;
+        for ( c1 = 0; c1 < n_pts; c1++ ) {
+            double rx = Bx[c1] * cos(theta_f) - (-By[c1]) * sin(theta_f);
+            double ry = Bx[c1] * sin(theta_f) + (-By[c1]) * cos(theta_f);
+            res_flip += (Ax[c1]-rx)*(Ax[c1]-rx) + (Ay[c1]-ry)*(Ay[c1]-ry);
+        }
+
+        bool do_flip = (res_flip < res_no_flip);
+        double best_theta = do_flip ? theta_f : theta;
+
+        // Apply transform: (1) optional y-flip, (2) rotation, (3) translate to old centroid
+        double cos_t = cos( best_theta );
+        double sin_t = sin( best_theta );
+
+        for ( c1 = 0; c1 < n_pts; c1++ ) {
+            tmp_pt = up.at( c1 );
+            double bx = Bx[c1];
+            double by = do_flip ? -By[c1] : By[c1];
+            tmp_pt->x = bx * cos_t - by * sin_t + cx_old;
+            tmp_pt->y = bx * sin_t + by * cos_t + cy_old;
+        }
+
+    }
+    // (If coord==false, the SDG coords already stand; fall through to margin check below.)
 
     bb1 = BoundingBoxAll();
     int xmove = 0, ymove = 0;
 
-    if ( coord == true ) {      // if coordinates existed, move back into place
-        center2 = bb1.center();
-        xmove = center1.x() - center2.x();
-        ymove = center1.y() - center2.y();
-    } else {                    // move to top left of screen
+    if ( coord == false ) {     // no original coords: move to top-left margin
         if ( bb1.left() < 10 )
             xmove = 10 - bb1.left();
         if ( bb1.top() < 10 )
             ymove = 10 - bb1.top();
-    }
-    for (DPoint *tmp_pt : up) {
-        tmp_pt->x += xmove;
-        tmp_pt->y += ymove;
+        for (DPoint *tmp_pt : up) {
+            tmp_pt->x += xmove;
+            tmp_pt->y += ymove;
+        }
     }
 
     // add hydrogens
