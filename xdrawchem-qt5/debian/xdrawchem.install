@@ -1,0 +1,8 @@
+usr/bin/xdrawchem
+usr/share/xdrawchem/*.cml
+usr/share/xdrawchem/*.png
+usr/share/xdrawchem/*.xpm
+usr/share/xdrawchem/*.txt
+usr/share/xdrawchem/xdrawchemrc
+usr/share/applications/xdrawchem.desktop
+usr/share/pixmaps/xdrawchem.png

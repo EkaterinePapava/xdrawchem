@@ -330,6 +330,11 @@ install(DIRECTORY doc/
         PATTERN "*.png"
 )
 
+# .desktop file for application menu
+install(FILES xdrawchem.desktop
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
+)
+
 # Application icon
 install(FILES ring/xdrawchem-icon.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/pixmaps

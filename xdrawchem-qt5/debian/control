@@ -1,0 +1,65 @@
+Source: xdrawchem
+Section: science
+Priority: optional
+Maintainer: Bryan Herger <bherger@users.sf.net>
+Build-Depends:
+ debhelper-compat (= 13),
+ cmake (>= 3.16),
+ ninja-build,
+ pkg-config,
+ qt6-base-dev,
+ qt6-tools-dev,
+ libopenbabel-dev (>= 3.0),
+ libgl-dev,
+ libegl-dev,
+ desktop-file-utils,
+ libxkbcommon-dev,
+ libxcb-icccm4-dev,
+ libxcb-image0-dev,
+ libxcb-keysyms1-dev,
+ libxcb-randr0-dev,
+ libxcb-render-util0-dev,
+ libxcb-xinerama0-dev,
+ libxcb-xkb-dev,
+Standards-Version: 4.6.2
+Homepage: https://github.com/bryanherger/xdrawchem
+Vcs-Git: https://github.com/bryanherger/xdrawchem.git
+Vcs-Browser: https://github.com/bryanherger/xdrawchem
+Rules-Requires-Root: no
+
+Package: xdrawchem
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ libqt6core6 (>= 6.2),
+ libqt6gui6 (>= 6.2),
+ libqt6widgets6 (>= 6.2),
+ libqt6network6 (>= 6.2),
+ libqt6printsupport6 (>= 6.2),
+ libopenbabel7 (>= 3.0),
+Recommends:
+ xdrawchem-doc,
+Description: two-dimensional chemical structure drawing program
+ XDrawChem is a two-dimensional molecule drawing program for Unix/Linux.
+ It mirrors the abilities of the commercial ChemDraw suite and has file
+ compatibility with it as well as other chemical formats through OpenBabel.
+ .
+ Features include:
+  * Fixed-length, fixed-angle drawing with automatic figure alignment
+  * Automatic detection of structures, text, and arrows
+  * Ring library with all standard amino acids and nucleic acids
+  * Curved arrows, Bezier arrows, and stereo bond drawing
+  * MDL Molfile, CML, and ChemDraw XML format support
+  * OpenBabel integration for 20+ additional file formats
+  * SMILES and InChI string generation
+  * 13C NMR and IR spectrum prediction
+  * PNG, EPS, and SVG image export
+
+Package: xdrawchem-doc
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Description: documentation for XDrawChem
+ HTML user manual and reference documentation for XDrawChem,
+ a two-dimensional chemical structure drawing program.

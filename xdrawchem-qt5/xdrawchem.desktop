@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=XDrawChem
+GenericName=Chemical Structure Editor
+Comment=Draw and analyze chemical structures and reactions
+Exec=xdrawchem %F
+Icon=xdrawchem
+Terminal=false
+Type=Application
+Categories=Science;Chemistry;Education;
+MimeType=chemical/x-mdl-molfile;chemical/x-cml;chemical/x-xdrawchem;
+Keywords=chemistry;molecule;structure;draw;
+StartupNotify=true

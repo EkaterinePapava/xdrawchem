@@ -1,47 +1,96 @@
-Summary: XDrawChem is an application for drawing and analyzing chemical structures and reactions.
-Name: xdrawchem
-Version: 1.10.2
-Release: 1
-License: GPL
-Group: Applications/Productivity
-URL: http://www.woodsidelabs.com/chemistry/xdrawchem.php
-Source0: https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}-%{release}.rpmsrc.tar.gz
-Requires: openbabel qt5-qtbase
-BuildRequires: openbabel openbabel-devel qt5-qtbase qt5-qtbase-devel
-BuildRoot: /var/tmp/%{name}-buildroot
+Name:           xdrawchem
+Version:        2.0
+Release:        0.1.rc1%{?dist}
+Summary:        Two-dimensional chemical structure drawing program
+License:        GPL-2.0-only
+URL:            https://github.com/bryanherger/xdrawchem
+Source0:        https://github.com/bryanherger/%{name}/archive/refs/tags/v%{version}rc1.tar.gz#/%{name}-%{version}rc1.tar.gz
+
+# ── RHEL 8 / CentOS Stream 8 / Rocky 8 / Alma 8 ──────────────────────────────
+# Requires EPEL 8 for:  qt6-qtbase  openbabel  cmake >= 3.16
+# Enable with:  dnf install epel-release
+#
+# ── RHEL 9 / CentOS Stream 9 / Rocky 9 / Alma 9 ──────────────────────────────
+# qt6-qtbase is in AppStream; openbabel is in EPEL 9
+# Enable EPEL 9 with:  dnf install epel-release
+#
+# ── Fedora 38+ ───────────────────────────────────────────────────────────────
+# All dependencies available in the default repos.
+
+BuildRequires:  cmake >= 3.16
+BuildRequires:  ninja-build
+BuildRequires:  gcc-c++
+BuildRequires:  qt6-qtbase-devel
+BuildRequires:  qt6-qttools-devel
+BuildRequires:  openbabel-devel >= 3.0
+BuildRequires:  pkgconfig(openbabel-3)
+BuildRequires:  desktop-file-utils
+BuildRequires:  libGL-devel
+BuildRequires:  libEGL-devel
+
+Requires:       qt6-qtbase%{?_isa}
+Requires:       openbabel-libs%{?_isa} >= 3.0
+
+# Explicit Provides for the ring data directory path compiled in at build time
+Provides:       xdrawchem-data = %{version}-%{release}
 
 %description
-XDrawChem is an application for drawing and analyzing chemical structures and reactions.
+XDrawChem is a two-dimensional molecule drawing program for Unix/Linux.
+It mirrors the abilities of the commercial ChemDraw suite and has file
+compatibility with it as well as other chemical formats through OpenBabel.
+
+Features:
+  - Fixed-length, fixed-angle drawing with automatic figure alignment
+  - Automatic detection of structures, text, and arrows
+  - Ring library including all standard amino acids and nucleic acids
+  - Curved arrows, Bezier arrows, and stereo bond drawing
+  - MDL Molfile, CML, and ChemDraw XML format support
+  - OpenBabel integration for 20+ additional file formats
+  - SMILES and InChI string generation
+  - 13C NMR and IR spectrum prediction
+  - Image export to PNG, EPS, SVG
 
 %prep
-%setup -q
+%autosetup -n %{name}-%{version}rc1/xdrawchem-qt5
 
 %build
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT
-qmake-qt5 PREFIX="/usr/local"
-make
+%cmake \
+    -GNinja \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DRINGHOME=%{_datadir}/%{name} \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix}
+%cmake_build
 
 %install
-install -D -m 0755 bin/xdrawchem $RPM_BUILD_ROOT/usr/local/bin/xdrawchem
-mkdir -p $RPM_BUILD_ROOT/usr/local/share/xdrawchem
-chmod 0755 $RPM_BUILD_ROOT/usr/local/share/xdrawchem
-cp ring/* $RPM_BUILD_ROOT/usr/local/share/xdrawchem
-mkdir -p $RPM_BUILD_ROOT/usr/local/share/xdrawchem/doc
-chmod 0755 $RPM_BUILD_ROOT/usr/local/share/xdrawchem/doc
-cp doc/* $RPM_BUILD_ROOT/usr/local/share/xdrawchem/doc
+%cmake_install
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
-%clean
-make clean
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
+%check
+# Run the unit test suite (261 tests across 10 suites)
+# tst_smiles needs an offscreen Qt platform for headless builds
+cd %{_vpath_builddir}
+QT_QPA_PLATFORM=offscreen ctest --output-on-failure -j$(nproc)
 
 %files
-%defattr(-,root,root)
-%doc README.txt INSTALL.txt TODO.txt COPYRIGHT.txt
-/usr/local/bin/xdrawchem
-/usr/local/share/xdrawchem/*
+%license GPL.txt COPYRIGHT.txt
+%doc README.md CHANGELOG.md HISTORY.txt INSTALL.txt
+%{_bindir}/xdrawchem
+%{_datadir}/%{name}/
+%{_datadir}/applications/%{name}.desktop
+%{_datadir}/pixmaps/%{name}.png
 
 %changelog
-* Sun Dec 11 2016 Bryan Herger <bherger@users.sf.net> 
-- initial version of spec file
+* Thu Mar 26 2026 Bryan Herger <bherger@users.sf.net> - 2.0-0.1.rc1
+- Bump to 2.0rc1: Qt6 + CMake port (zero warnings, zero errors)
+- Fix #9: double bond inner-line geometry at non-linear angles
+- Fix #10: Clean up molecule now preserves molecule orientation (Procrustes)
+- Fix #13: curved arrow tips aligned using arc tangent direction
+- Fix #14: implement Bezier arrow drawing (was entirely non-functional)
+- Fix #15: SMILES output no longer produces ** (MDL Molfile column fix)
+- Fix #18: OpenBabel 3 build works without manual .pro editing
+- Add 261-test unit suite (10 suites) run during %%check
+- Port QXmlSimpleReader -> QXmlStreamReader, remove QHttp, update signals
+- Add CMakeLists.txt for modern CMake/Ninja build alongside qmake
 
+* Sun Dec 11 2016 Bryan Herger <bherger@users.sf.net> - 1.10.2-1
+- Initial RPM spec file

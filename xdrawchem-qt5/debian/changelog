@@ -1,0 +1,22 @@
+xdrawchem (2.0~rc1-1) unstable; urgency=medium
+
+  * Qt6 + CMake port: zero build warnings/errors against Qt 6.2+
+  * Fix #9: double bond inner-line geometry at non-linear angles
+  * Fix #10: Clean up molecule preserves molecule orientation (Procrustes)
+  * Fix #13: curved arrow tips aligned using arc tangent direction
+  * Fix #14: implement Bezier arrow drawing (was entirely non-functional)
+  * Fix #15: SMILES output no longer produces ** (MDL Molfile column fix)
+  * Fix #18: OpenBabel 3 build works without manual .pro file editing
+  * Add 261-test unit suite (10 suites) executed during build
+  * Add .desktop file and application icon for desktop integration
+  * Port QXmlSimpleReader -> QXmlStreamReader (removed in Qt6)
+  * Remove QHttp usage (removed in Qt5); all 266 foreach -> range-for
+  * Add CMakeLists.txt for cmake/ninja alongside legacy qmake build
+
+ -- Bryan Herger <bherger@users.sf.net>  Thu, 26 Mar 2026 03:00:00 +0000
+
+xdrawchem (1.10.2-1) unstable; urgency=low
+
+  * Initial packaging
+
+ -- Bryan Herger <bherger@users.sf.net>  Sun, 11 Dec 2016 00:00:00 +0000
