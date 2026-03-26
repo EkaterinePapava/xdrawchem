@@ -47,7 +47,8 @@ QString GraphicObject::ToXML( QString xml_id )
 
         for ( ci = 0; ci < 4; ci++ ) {
             s.append( "<point>" );
-            objectPoints.point( ci, &xi, &yi );
+            xi = objectPoints[ci].x();
+            yi = objectPoints[ci].y();
             n1.setNum( xi );
             s.append( n1 );
             s.append( " " );
@@ -156,10 +157,10 @@ void GraphicObject::FromXML( QString xml_tag )
 
             ts >> xi >> yi;
             qDebug() << ci << " " << xi << " " << yi;
-            objectPoints.setPoint( ci, xi, yi );
+            objectPoints[ci] = QPoint( xi, yi );
         }
-        start = new DPoint( objectPoints.point( 0 ) );
-        end = new DPoint( objectPoints.point( 1 ) );
+        start = new DPoint( objectPoints[0] );
+        end = new DPoint( objectPoints[1] );
     }
 }
 
@@ -301,8 +302,8 @@ void GraphicObject::setPointArray( QPolygon inp1 )
 {
     objectPoints = inp1;
     // kludge around lack opf Start and End in this object type/style
-    start = new DPoint( objectPoints.point( 0 ) );
-    end = new DPoint( objectPoints.point( 1 ) );
+    start = new DPoint( objectPoints[0] );
+    end = new DPoint( objectPoints[1] );
 }
 
 // kate: tab-width 4; indent-width 4; space-indent on; replace-trailing-space-save on;

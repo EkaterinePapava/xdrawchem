@@ -686,31 +686,26 @@ void Render2D::mouseReleaseEvent( QMouseEvent *e1 )
         emit SignalSetStatusBar( tr( "Select mode: left click on objects to move" ) );
         return;
     }
-    // MODE_DRAWBEZIER
+    // MODE_DRAWBEZIER: collect 4 control points then emit the curve
     if ( mode == MODE_DRAWBEZIER ) {
-        update();
-        directdraw = true;
-//        painter->begin(this);
-        if ( bezier_count < 3 ) {
-//            tmp_bezier.setPoint( bezier_count, curqpt.x(), curqpt.y() );
-            drawBezier( tmp_bezier, currentColor, true );
-            bezier_count++;
+        // Record this click as a control point
+        tmp_bezier[bezier_count] = curqpt;
+        bezier_count++;
+        if ( bezier_count < 4 ) {
+            // Show in-progress control points
+            update();
         } else {
-//            tmp_bezier.setPoint( bezier_count, curqpt.x(), curqpt.y() );
-            // add new GraphicObject
+            // All 4 control points collected — create the object
             evt = new XDC_Event( EVT_ADD_GRAPHIC );
             evt->setPoints( tmp_bezier );
             evt->setParam1( bracket_type );
             evt->setColor( currentColor );
             emit XDCEventSignal( evt );
-
-//            drawBezier( tmp_bezier, currentColor, false, bracket_type );
             tmp_bezier.resize( 0 );
             tmp_bezier.resize( 4 );
             bezier_count = 0;
+            update();
         }
-        directdraw = false;
-        //      painter->end();
         return;
     }
     // MODE_TOOL_*: ChemData handles this, mostly
@@ -1232,9 +1227,6 @@ void Render2D::mouseMoveEvent( QMouseEvent * e1 )
     if ( ( mode == MODE_RING ) && mouse1down )
         return;
 
-    if ( ( mode == MODE_DRAWBEZIER ) && mouse1down )
-        return;
-
     QPoint curqpt = zoomCorrectReverse( e1->pos() );
 
     if ( preferences.getSnapGrid() != GRID_NONE ) {
@@ -1242,6 +1234,12 @@ void Render2D::mouseMoveEvent( QMouseEvent * e1 )
     }
 
     lastmouse = curqpt;
+
+    // Trigger repaint for Bezier rubber-band preview
+    if ( mode == MODE_DRAWBEZIER ) {
+        update();
+        return;
+    }
 
     moved = true;
 
@@ -1982,6 +1980,21 @@ void Render2D::paintEvent( QPaintEvent * )
       drawCurveArrow( startPoint, endPoint, currentColor, symbolfile );
     } else if ( mode == MODE_DRAWBRACKET_DRAWING ) {
       drawBracket( startPoint, endPoint, currentColor, bracket_type, currentColor );
+    } else if ( mode == MODE_DRAWBEZIER ) {
+      // Show control points placed so far + rubber-band to current mouse position
+      if ( bezier_count > 0 ) {
+          // Draw small squares at already-placed control points
+          for ( int bi = 0; bi < bezier_count; bi++ )
+              drawBox( tmp_bezier[bi] - QPoint(2,2), tmp_bezier[bi] + QPoint(2,2), currentColor );
+          // Rubber-band line from last placed point to current mouse
+          drawLine( tmp_bezier[bezier_count-1], lastmouse, 1, currentColor, 1 );
+      }
+      if ( bezier_count == 3 ) {
+          // All control points set except P3 — preview the full curve with lastmouse as P3
+          QVector<QPoint> preview = tmp_bezier;
+          preview[3] = lastmouse;
+          drawBezier( preview, currentColor, false, bracket_type );
+      }
     }
     // now bitBlt buffer onto widget
 //    bitBlt(this, 0, 0, &dbuffer);

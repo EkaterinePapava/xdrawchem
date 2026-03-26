@@ -131,53 +131,51 @@ void Render2D::drawPolyline( QVector<QPoint> p, QColor c1 )
 // note that this only works on screen and bitmap (for now)
 void Render2D::drawBezier( QVector<QPoint> a1, QColor c1, bool drawPoints, int arrowHead )
 {
-    qDebug() << "Render2D::drawBezier()";
-    /*
-       if (directdraw)
-       p.begin(this);
-       else
-       p.begin(&dbuffer);
-       p.scale(zoomFactor, zoomFactor);
-     */
-/*    painter->setPen( c1 );
-    int xp1, yp1;
+    // a1 contains 4 control points: P0 (start), P1 (ctrl1), P2 (ctrl2), P3 (end).
+    // When drawPoints==true we are in placement mode — draw small markers at each
+    // collected control point so the user gets visual feedback.
+    // When drawPoints==false the full cubic Bezier curve is drawn, plus an
+    // optional arrowhead at P3 (arrowHead 0=none, 1=half, 2=full).
+
+    if ( a1.size() < 4 )
+        return;
+
+    painter->setPen( QPen( c1, 1 ) );
+    painter->setBrush( Qt::NoBrush );
 
     if ( drawPoints ) {
-        for ( int l1 = 0; l1 <= bezier_count; l1++ ) {
-            a1.point( l1, &xp1, &yp1 );
-            painter->drawRect( xp1 - 1, yp1 - 1, 3, 3 );
+        // In-progress: draw small squares at each recorded control point
+        for ( int i = 0; i < a1.size(); ++i ) {
+            if ( a1[i].isNull() )
+                break;
+            painter->drawRect( a1[i].x() - 2, a1[i].y() - 2, 4, 4 );
         }
+        return;
     }
-    if ( drawPoints == false ) {
-        painter->drawCubicBezier( a1 );
-        QPoint ar1, ar2;        // apparent arrowhead shaft:  (ar1)-->(ar2)
 
-        ar1 = a1.point( a1.count() - 2 );
-        ar2 = a1.point( a1.count() - 1 );
+    // Draw the cubic Bezier curve
+    QPainterPath path;
+    path.moveTo( a1[0] );
+    path.cubicTo( a1[1], a1[2], a1[3] );
+    painter->drawPath( path );
 
-        double ang;
-
-        ang = getAngle( ar2, ar1 );
-
+    // Draw arrowhead at the end point (P3), pointing in the direction P2→P3
+    if ( arrowHead > 0 ) {
+        double ang = getAngle( a1[3], a1[2] );   // direction from P3 looking back toward P2
         double newang1 = ang + 30.0;
         double newang2 = ang - 30.0;
+        QPoint tip = a1[3];
+        QPoint q1( qRound( tip.x() + cos( newang1 / MOL_ARAD ) * 10.0 ),
+                   qRound( tip.y() + sin( newang1 / MOL_ARAD ) * 10.0 ) );
+        QPoint q2( qRound( tip.x() + cos( newang2 / MOL_ARAD ) * 10.0 ),
+                   qRound( tip.y() + sin( newang2 / MOL_ARAD ) * 10.0 ) );
 
-        QPoint p1( qRound( ar2.x() + ( cos( newang1 / MOL_ARAD ) * 10.0 ) ), qRound( ar2.y() + ( sin( newang1 / MOL_ARAD ) * 10.0 ) ) );
-        QPoint p2( qRound( ar2.x() + ( cos( newang2 / MOL_ARAD ) * 10.0 ) ), qRound( ar2.y() + ( sin( newang2 / MOL_ARAD ) * 10.0 ) ) );
-
-        if ( arrowHead > 0 ) {
-            // draw half arrowhead
-            drawLine( ar2, p1, 1, c1 );
-        }
-        if ( arrowHead > 1 ) {
-            // draw other half
-            drawLine( ar2, p2, 1, c1 );
-        }
-        return;
+        // arrowHead==1: half arrow (one barb only)
+        drawLine( tip, q1, 1, c1 );
+        // arrowHead==2: full arrow (both barbs)
+        if ( arrowHead > 1 )
+            drawLine( tip, q2, 1, c1 );
     }
-    if ( ( mode == MODE_DRAWBEZIER ) && ( bezier_count < 3 ) )
-        return;
-    painter->drawCubicBezier( a1 );*/
 }
 
 void Render2D::drawBracket( QPoint a, QPoint b, QColor c1, int type, QColor fillColor )
