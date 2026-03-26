@@ -1,0 +1,57 @@
+# ci.yml — runs on every push and pull request
+# Builds the Qt6/CMake version, runs all 261 unit tests,
+# and reports pass/fail. Fast feedback loop for contributors.
+
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test:
+    name: Build & test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends \
+            cmake ninja-build pkg-config \
+            qt6-base-dev qt6-tools-dev \
+            libopenbabel-dev \
+            libgl-dev libegl-dev \
+            libxkbcommon-dev libxcb-icccm4-dev
+
+      - name: Configure
+        run: |
+          cmake -S xdrawchem-qt5 -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DRINGHOME=${{ github.workspace }}/xdrawchem-qt5/ring
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          cd build
+          ctest --output-on-failure -j$(nproc)
+
+      - name: Upload test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: build/Testing/

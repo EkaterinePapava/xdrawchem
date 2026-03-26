@@ -1,0 +1,82 @@
+# build-deb.yml — builds .deb packages for Debian/Ubuntu
+# Triggered on pushes to master and on release tags.
+# Produces packages for Ubuntu 22.04 LTS and 24.04 LTS (both amd64).
+
+name: Build DEB packages
+
+on:
+  push:
+    branches: [ master, main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:      # allow manual trigger from the Actions tab
+
+jobs:
+  build-deb:
+    name: DEB (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            codename: jammy
+          - os: ubuntu-24.04
+            codename: noble
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends \
+            debhelper cmake ninja-build pkg-config \
+            qt6-base-dev qt6-tools-dev \
+            libopenbabel-dev \
+            libgl-dev libegl-dev \
+            libxkbcommon-dev \
+            desktop-file-utils \
+            fakeroot lintian
+
+      # debhelper-compat 13 is handled by debian/compat; 
+      # install the actual debhelper package
+      - name: Build DEB packages
+        working-directory: xdrawchem-qt5
+        env:
+          DEB_BUILD_OPTIONS: parallel=${{ runner.cpu_count || 2 }}
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          dpkg-buildpackage -us -uc -b
+          # Move the resulting .deb files to a known location
+          mkdir -p ../debs
+          mv ../*.deb ../debs/
+
+      - name: Run lintian
+        working-directory: debs
+        run: |
+          # Run lintian for informational output; don't fail the build on warnings
+          lintian --tag-display-limit 0 *.deb || true
+
+      - name: List produced packages
+        run: |
+          ls -lh debs/
+          dpkg-deb --info debs/xdrawchem_*.deb | grep -E "Package|Version|Architecture|Installed-Size"
+
+      - name: Upload DEB artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: xdrawchem-deb-${{ matrix.codename }}-amd64
+          path: debs/*.deb
+          retention-days: 30
+
+      # On a tag push, also upload to the release assets (handled by release.yml)
+      # Here we just cache the debs for the release job to pick up
+      - name: Upload for release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-deb-${{ matrix.codename }}
+          path: debs/*.deb
+          retention-days: 1

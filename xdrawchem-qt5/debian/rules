@@ -12,10 +12,8 @@ export QT_QPA_PLATFORM = offscreen
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
-		-GNinja \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
-		-DRINGHOME=/usr/share/xdrawchem \
-		-DCMAKE_INSTALL_PREFIX=/usr
+		-DRINGHOME=/usr/share/xdrawchem
 
 override_dh_auto_test:
 	cd build-deb && ctest --output-on-failure -j$(nproc)

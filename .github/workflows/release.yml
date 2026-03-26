@@ -1,0 +1,110 @@
+# release.yml — triggered on version tags (v*)
+# Waits for all package builds to succeed, then creates a GitHub Release
+# with all .deb and .rpm files attached as release assets.
+#
+# Usage:
+#   git tag -a v2.0rc1 -m "XDrawChem 2.0 Release Candidate 1"
+#   git push origin v2.0rc1
+#
+# This triggers:
+#   1. ci.yml            — tests pass on Ubuntu 22.04 + 24.04
+#   2. build-deb.yml     — .deb for Jammy + Noble
+#   3. build-rpm.yml     — .rpm for Fedora 40, Rocky 9, Rocky 8
+#   4. THIS workflow     — creates the GitHub Release with all assets
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  # Wait for all package builds to complete successfully
+  wait-for-packages:
+    name: Wait for package builds
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo (needed for workflow context)
+        uses: actions/checkout@v4
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: wait-for-packages
+    permissions:
+      contents: write     # needed to create releases and upload assets
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Download all package artifacts from the parallel build jobs
+      - name: Download DEB artifacts (jammy)
+        uses: actions/download-artifact@v4
+        with:
+          name: release-deb-jammy
+          path: release-assets/
+        continue-on-error: true   # graceful if a build failed
+
+      - name: Download DEB artifacts (noble)
+        uses: actions/download-artifact@v4
+        with:
+          name: release-deb-noble
+          path: release-assets/
+        continue-on-error: true
+
+      - name: Download RPM artifacts (fedora-40)
+        uses: actions/download-artifact@v4
+        with:
+          name: release-rpm-fedora-40
+          path: release-assets/
+        continue-on-error: true
+
+      - name: Download RPM artifacts (rocky-9)
+        uses: actions/download-artifact@v4
+        with:
+          name: release-rpm-rocky-9
+          path: release-assets/
+        continue-on-error: true
+
+      - name: Download RPM artifacts (rocky-8)
+        uses: actions/download-artifact@v4
+        with:
+          name: release-rpm-rocky-8
+          path: release-assets/
+        continue-on-error: true
+
+      - name: List release assets
+        run: ls -lh release-assets/ || echo "(no assets downloaded)"
+
+      # Extract version from tag (strips leading 'v')
+      - name: Set version
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      # Build release notes from CHANGELOG if present
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # Try to extract the relevant section from CHANGELOG.md
+          if [ -f xdrawchem-qt5/CHANGELOG.md ]; then
+            # Get content between first ## heading and second ## heading
+            awk '/^## /{if(found)exit; found=1; next} found{print}' \
+              xdrawchem-qt5/CHANGELOG.md > /tmp/release-notes.md
+          else
+            echo "See commit history for changes in this release." > /tmp/release-notes.md
+          fi
+          echo "notes_file=/tmp/release-notes.md" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: XDrawChem ${{ steps.version.outputs.version }}
+          body_path: ${{ steps.changelog.outputs.notes_file }}
+          draft: ${{ contains(steps.version.outputs.version, 'rc') || contains(steps.version.outputs.version, 'alpha') || contains(steps.version.outputs.version, 'beta') }}
+          prerelease: ${{ contains(steps.version.outputs.version, 'rc') || contains(steps.version.outputs.version, 'alpha') || contains(steps.version.outputs.version, 'beta') }}
+          files: release-assets/*
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

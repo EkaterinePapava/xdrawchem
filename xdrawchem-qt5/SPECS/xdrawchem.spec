@@ -4,6 +4,9 @@ Release:        0.1.rc1%{?dist}
 Summary:        Two-dimensional chemical structure drawing program
 License:        GPL-2.0-only
 URL:            https://github.com/bryanherger/xdrawchem
+# Official GitHub release tarball (created by "git archive" in the release workflow)
+# For local builds: tar -czf ~/rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz \
+#                     --transform='s,^,xdrawchem-2.0rc1/,' xdrawchem-qt5/
 Source0:        https://github.com/bryanherger/%{name}/archive/refs/tags/v%{version}rc1.tar.gz#/%{name}-%{version}rc1.tar.gz
 
 # ── RHEL 8 / CentOS Stream 8 / Rocky 8 / Alma 8 ──────────────────────────────
@@ -51,7 +54,9 @@ Features:
   - Image export to PNG, EPS, SVG
 
 %prep
-%autosetup -n %{name}-%{version}rc1/xdrawchem-qt5
+# The source tarball contains xdrawchem-2.0rc1/xdrawchem-qt5/
+# %autosetup extracts and enters that directory
+%autosetup -n %{name}-2.0rc1/xdrawchem-qt5
 
 %build
 %cmake \

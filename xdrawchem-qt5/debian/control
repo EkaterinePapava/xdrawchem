@@ -14,13 +14,6 @@ Build-Depends:
  libegl-dev,
  desktop-file-utils,
  libxkbcommon-dev,
- libxcb-icccm4-dev,
- libxcb-image0-dev,
- libxcb-keysyms1-dev,
- libxcb-randr0-dev,
- libxcb-render-util0-dev,
- libxcb-xinerama0-dev,
- libxcb-xkb-dev,
 Standards-Version: 4.6.2
 Homepage: https://github.com/bryanherger/xdrawchem
 Vcs-Git: https://github.com/bryanherger/xdrawchem.git
