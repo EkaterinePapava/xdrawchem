@@ -6,7 +6,7 @@ License:        GPL-2.0-only
 URL:            https://github.com/bryanherger/xdrawchem
 # Official GitHub release tarball (created by "git archive" in the release workflow)
 # For local builds: tar -czf ~/rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz \
-#                     --transform='s,^,xdrawchem-2.0rc1/,' xdrawchem-qt5/
+#   --transform='s|^xdrawchem-qt5|xdrawchem-2.0rc1|' xdrawchem-qt5
 Source0:        https://github.com/bryanherger/%{name}/archive/refs/tags/v%{version}rc1.tar.gz#/%{name}-%{version}rc1.tar.gz
 
 # ── RHEL 8 / CentOS Stream 8 / Rocky 8 / Alma 8 ──────────────────────────────
@@ -54,9 +54,8 @@ Features:
   - Image export to PNG, EPS, SVG
 
 %prep
-# The source tarball contains xdrawchem-2.0rc1/xdrawchem-qt5/
-# %autosetup extracts and enters that directory
-%autosetup -n %{name}-2.0rc1/xdrawchem-qt5
+# Source tarball top-level directory is xdrawchem-2.0rc1/
+%autosetup -n %{name}-2.0rc1
 
 %build
 %cmake \

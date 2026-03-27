@@ -1,6 +1,6 @@
 # build-deb.yml — builds .deb packages for Debian/Ubuntu
 # Triggered on pushes to master and on release tags.
-# Produces xdrawchem_*.deb for Ubuntu 22.04 LTS and 24.04 LTS (both amd64).
+# Produces xdrawchem_*.deb for Ubuntu 24.04 LTS (Noble, amd64).
 
 name: Build DEB packages
 
@@ -20,13 +20,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-22.04
-            codename: jammy
           - os: ubuntu-24.04
             codename: noble
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4.3.1
 
       - name: Install build dependencies
         run: |
