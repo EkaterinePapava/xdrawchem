@@ -70,15 +70,12 @@ jobs:
             ${{ matrix.image }} \
             bash -exc '
               ${{ matrix.setup }}
-              rpmdev-setuptree
-              cp /github/home/rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz ~/rpmbuild/SOURCES/
-              cp /github/home/rpmbuild/SPECS/xdrawchem.spec ~/rpmbuild/SPECS/
-              rpmbuild -ba ~/rpmbuild/SPECS/xdrawchem.spec \
+              # rpmdev-setuptree creates ~/rpmbuild = /github/home/rpmbuild (already mounted)
+              # Sources and spec are already in place from the host prepare step.
+              rpmbuild -ba /github/home/rpmbuild/SPECS/xdrawchem.spec \
+                --define "_topdir /github/home/rpmbuild" \
                 --define "dist .${{ matrix.name }}" \
                 -j$(nproc)
-              # Copy results back to the mounted volume
-              find ~/rpmbuild/RPMS ~/rpmbuild/SRPMS -name "*.rpm" \
-                -exec cp {} /github/home/rpmbuild/ \;
             '
 
       - name: List produced packages
