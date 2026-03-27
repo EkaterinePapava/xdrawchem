@@ -31,8 +31,6 @@ Depends:
  libqt6network6 (>= 6.2),
  libqt6printsupport6 (>= 6.2),
  libopenbabel7 (>= 3.0),
-Recommends:
- xdrawchem-doc,
 Description: two-dimensional chemical structure drawing program
  XDrawChem is a two-dimensional molecule drawing program for Unix/Linux.
  It mirrors the abilities of the commercial ChemDraw suite and has file
@@ -48,11 +46,3 @@ Description: two-dimensional chemical structure drawing program
   * SMILES and InChI string generation
   * 13C NMR and IR spectrum prediction
   * PNG, EPS, and SVG image export
-
-Package: xdrawchem-doc
-Architecture: all
-Multi-Arch: foreign
-Depends: ${misc:Depends}
-Description: documentation for XDrawChem
- HTML user manual and reference documentation for XDrawChem,
- a two-dimensional chemical structure drawing program.

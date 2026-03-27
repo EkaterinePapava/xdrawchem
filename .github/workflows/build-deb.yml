@@ -1,6 +1,6 @@
 # build-deb.yml — builds .deb packages for Debian/Ubuntu
 # Triggered on pushes to master and on release tags.
-# Produces packages for Ubuntu 22.04 LTS and 24.04 LTS (both amd64).
+# Produces xdrawchem_*.deb for Ubuntu 22.04 LTS and 24.04 LTS (both amd64).
 
 name: Build DEB packages
 
