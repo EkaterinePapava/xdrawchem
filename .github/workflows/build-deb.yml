@@ -6,7 +6,6 @@ name: Build DEB packages
 
 on:
   push:
-    branches: [ master, main ]
     tags: [ 'v*' ]
   pull_request:
     branches: [ master, main ]
