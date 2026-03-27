@@ -10,6 +10,8 @@
 
 #include <QApplication>
 #include <QGuiApplication>
+#include <QStyleFactory>
+#include <QPalette>
 #include <QString>
 #include <QTextStream>
 #include <QLocale>
@@ -106,6 +108,33 @@ int main( int argc, char **argv )
     }
 
     QApplication a( argc, argv );
+
+    // Force Fusion style with a standard light palette so the application
+    // always looks consistent regardless of the system color scheme
+    // (Qt6 on Linux will otherwise follow the Gnome/KDE dark/light setting).
+    // Users can override this at launch with: -style <name>
+    // or by setting QT_STYLE_OVERRIDE in the environment.
+    if ( qEnvironmentVariableIsEmpty( "QT_STYLE_OVERRIDE" ) &&
+         !QCoreApplication::arguments().contains( "-style" ) ) {
+        QApplication::setStyle( QStyleFactory::create( "Fusion" ) );
+        // Build an explicit light palette so dark-mode desktops don't
+        // bleed through even with Fusion selected.
+        QPalette lightPalette;
+        lightPalette.setColor( QPalette::Window,          QColor( 240, 240, 240 ) );
+        lightPalette.setColor( QPalette::WindowText,      Qt::black );
+        lightPalette.setColor( QPalette::Base,            Qt::white );
+        lightPalette.setColor( QPalette::AlternateBase,   QColor( 233, 233, 233 ) );
+        lightPalette.setColor( QPalette::ToolTipBase,     Qt::white );
+        lightPalette.setColor( QPalette::ToolTipText,     Qt::black );
+        lightPalette.setColor( QPalette::Text,            Qt::black );
+        lightPalette.setColor( QPalette::Button,          QColor( 240, 240, 240 ) );
+        lightPalette.setColor( QPalette::ButtonText,      Qt::black );
+        lightPalette.setColor( QPalette::BrightText,      Qt::red );
+        lightPalette.setColor( QPalette::Link,            QColor( 0, 0, 255 ) );
+        lightPalette.setColor( QPalette::Highlight,       QColor( 0, 120, 215 ) );
+        lightPalette.setColor( QPalette::HighlightedText, Qt::white );
+        QApplication::setPalette( lightPalette );
+    }
 
     // set library directory (RingDir = default RINGHOME)
     QString dname( RINGHOME );
