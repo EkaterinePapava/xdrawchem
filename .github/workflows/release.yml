@@ -30,6 +30,15 @@ jobs:
           TAG:  ${{ github.ref_name }}
         run: |
           mkdir -p release-assets
+          # Debug: show what head_branch values exist for our artifacts
+          # (helps diagnose future tag/branch matching issues)
+          echo "=== Artifact head_branch values for this repo ==="
+          gh api "repos/$REPO/actions/artifacts?per_page=20" \
+            --jq '.artifacts[] | select(.expired == false) | {name:.name, branch:.workflow_run.head_branch, sha:.workflow_run.head_sha}' \
+            2>/dev/null | head -40 || true
+          echo "TAG=$TAG"
+          echo "==="
+
           MAX_WAIT=1200
           INTERVAL=30
           ELAPSED=0
@@ -37,10 +46,19 @@ jobs:
           fetch_artifact() {
             local NAME="$1"
             local ART_ID
-            ART_ID=$(gh api "repos/$REPO/actions/artifacts?name=$NAME&per_page=50" \
+            # head_branch may be the tag name OR the full ref depending on the
+            # runner type (container jobs sometimes differ). Match on either form,
+            # and also accept head_sha matching the tagged commit as a fallback.
+            local TAG_SHA
+            TAG_SHA=$(git rev-list -n1 "$TAG" 2>/dev/null || true)
+            ART_ID=$(gh api "repos/$REPO/actions/artifacts?name=$NAME&per_page=100" \
               --jq ".artifacts[]
-                    | select(.workflow_run.head_branch == \"$TAG\")
                     | select(.expired == false)
+                    | select(
+                        (.workflow_run.head_branch == \"$TAG\") or
+                        (.workflow_run.head_branch == \"refs/tags/$TAG\") or
+                        (.workflow_run.head_sha == \"$TAG_SHA\")
+                      )
                     | .id" 2>/dev/null | head -1)
             echo "$ART_ID"
           }
