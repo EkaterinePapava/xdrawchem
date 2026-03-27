@@ -1,4 +1,4 @@
-xdrawchem (2.0~rc1-1) unstable; urgency=medium
+xdrawchem (2:2.0~rc1-1) unstable; urgency=medium
 
   * Qt6 + CMake port: zero build warnings/errors against Qt 6.2+
   * Fix #9: double bond inner-line geometry at non-linear angles
