@@ -29,8 +29,7 @@ See `xdrawchem-qt5/README.md` for full build instructions and dependencies.
 
 ## Links
 
-- Project page: https://www.woodsidelabs.com/chemistry/xdrawchem.php
-- Releases: https://sourceforge.net/projects/xdrawchem/files/xdrawchem/
-- Issues & PRs: https://github.com/bryanherger/xdrawchem
+- Releases: here on the right side of the page, and https://sourceforge.net/projects/xdrawchem/files/xdrawchem/
+- Issues & PRs: here on GitHub, https://github.com/bryanherger/xdrawchem
 
 Bryan Herger — bherger@users.sf.net
