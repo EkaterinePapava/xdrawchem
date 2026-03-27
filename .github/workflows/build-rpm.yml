@@ -91,8 +91,7 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: |
           rpmbuild -ba ~/rpmbuild/SPECS/xdrawchem.spec \
-            --define "dist .$(echo ${{ matrix.name }} | tr '-' '_')" \
-            -j$(nproc)
+            --define "dist .$(echo ${{ matrix.name }} | tr '-' '_')"
 
       - name: List produced packages
         run: |
