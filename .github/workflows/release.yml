@@ -55,13 +55,6 @@ jobs:
           path: release-assets/
         continue-on-error: true
 
-      - name: Download RPM artifacts (fedora-40)
-        uses: actions/download-artifact@v8.0.1
-        with:
-          name: release-rpm-fedora-40
-          path: release-assets/
-        continue-on-error: true
-
       - name: Download RPM artifacts (rocky-9)
         uses: actions/download-artifact@v8.0.1
         with:

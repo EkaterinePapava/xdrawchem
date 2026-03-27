@@ -25,15 +25,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: fedora-40
-            image: fedora:40
-            setup: |
-              dnf install -y rpm-build rpmdevtools cmake ninja-build gcc-c++ \
-                qt6-qtbase-devel qt6-qttools-devel \
-                openbabel-devel \
-                desktop-file-utils libGL-devel libEGL-devel \
-                pkgconfig
-
           - name: rocky-9
             image: rockylinux:9
             setup: |
@@ -74,7 +65,7 @@ jobs:
               # Sources and spec are already in place from the host prepare step.
               rpmbuild -ba /github/home/rpmbuild/SPECS/xdrawchem.spec \
                 --define "_topdir /github/home/rpmbuild" \
-                --define "dist .${{ matrix.name }}" \
+                --define "dist .$(echo ${{ matrix.name }} | tr '-' '_')" \
                 --define "_smp_mflags -j$(nproc)"
             '
 
