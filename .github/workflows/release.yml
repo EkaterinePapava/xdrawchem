@@ -106,8 +106,21 @@ jobs:
           fi
           echo "notes_file=/tmp/release-notes.md" >> "$GITHUB_OUTPUT"
 
+      - name: Delete existing release assets (allow re-tag)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "${{ github.ref_name }}" \
+            --repo "${{ github.repository }}" \
+            --json assets --jq '.assets[].name' 2>/dev/null | \
+          while read -r asset; do
+            echo "Deleting existing asset: $asset"
+            gh release delete-asset "${{ github.ref_name }}" "$asset" \
+              --repo "${{ github.repository }}" --yes 2>/dev/null || true
+          done
+
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2.3.2
+        uses: softprops/action-gh-release@v2.6.1
         with:
           tag_name: ${{ github.ref_name }}
           name: XDrawChem ${{ steps.version.outputs.version }}
@@ -116,6 +129,5 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.version, 'rc') || contains(steps.version.outputs.version, 'alpha') || contains(steps.version.outputs.version, 'beta') }}
           files: release-assets/*
           fail_on_unmatched_files: false
-          overwrite_assets: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

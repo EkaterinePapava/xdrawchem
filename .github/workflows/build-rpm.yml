@@ -68,10 +68,14 @@ jobs:
                 --define "_smp_mflags -j$(nproc)"
             '
 
-      - name: List produced packages
+      - name: Collect and list produced packages
         run: |
-          ls -lh rpmbuild/*.rpm || echo "No RPMs found"
-          for f in rpmbuild/*.rpm; do
+          # RPMs land in rpmbuild/RPMS/<arch>/ and rpmbuild/SRPMS/
+          mkdir -p rpmbuild/output
+          find rpmbuild/RPMS rpmbuild/SRPMS -name "*.rpm" \
+            -exec cp {} rpmbuild/output/ \; 2>/dev/null || true
+          ls -lh rpmbuild/output/*.rpm 2>/dev/null || echo "No RPMs found"
+          for f in rpmbuild/output/*.rpm; do
             [ -f "$f" ] || continue
             echo "=== $f ==="
             rpm -qip "$f" 2>/dev/null | grep -E "^Name|^Version|^Release|^Architecture|^Size" || true
@@ -81,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v7.0.0
         with:
           name: xdrawchem-rpm-${{ matrix.name }}
-          path: rpmbuild/*.rpm
+          path: rpmbuild/output/*.rpm
           retention-days: 30
 
       - name: Upload for release
@@ -89,5 +93,5 @@ jobs:
         uses: actions/upload-artifact@v7.0.0
         with:
           name: release-rpm-${{ matrix.name }}
-          path: rpmbuild/*.rpm
+          path: rpmbuild/output/*.rpm
           retention-days: 1
