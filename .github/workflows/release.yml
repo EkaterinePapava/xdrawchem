@@ -98,5 +98,6 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.version, 'rc') || contains(steps.version.outputs.version, 'alpha') || contains(steps.version.outputs.version, 'beta') }}
           files: release-assets/*
           fail_on_unmatched_files: false
+          overwrite_assets: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
