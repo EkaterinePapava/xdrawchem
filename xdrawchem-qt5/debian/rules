@@ -18,3 +18,5 @@ override_dh_auto_configure:
 override_dh_auto_test:
 	cd build-deb && ctest --output-on-failure -j$(nproc)
 
+override_dh_auto_install:
+	DESTDIR=$(CURDIR)/debian/tmp cmake --install build-deb --prefix /usr
