@@ -61,7 +61,7 @@ jobs:
       image: ${{ matrix.image }}
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4.3.1
 
       - name: Install build dependencies
         run: ${{ matrix.pre }}
@@ -69,16 +69,11 @@ jobs:
       - name: Set up rpmbuild tree
         run: |
           rpmdev-setuptree
-          # Create source tarball from the xdrawchem-qt5 subtree
-          # The spec expects xdrawchem-2.0rc1/xdrawchem-qt5 structure inside the tarball
-          VERSION=$(grep "^Version:" xdrawchem-qt5/SPECS/xdrawchem.spec | awk '{print $2}')
-          RELEASE_TAG=$(grep "^Release:" xdrawchem-qt5/SPECS/xdrawchem.spec | awk '{print $2}' | sed 's/%{?dist}//')
-          echo "Building version: ${VERSION}-${RELEASE_TAG}"
-          
-          # Pack as xdrawchem-2.0rc1.tar.gz containing the xdrawchem-qt5 content
-          # The spec's %autosetup uses -n %{name}-%{version}rc1/xdrawchem-qt5
+          # Create source tarball: top-level dir is xdrawchem-2.0rc1/
+          # containing the xdrawchem-qt5/ content directly (flat structure).
+          # %autosetup -n xdrawchem-2.0rc1 in the spec will cd into this dir.
           mkdir -p /tmp/xdrawchem-2.0rc1
-          cp -r xdrawchem-qt5/. /tmp/xdrawchem-2.0rc1/xdrawchem-qt5/
+          cp -r xdrawchem-qt5/. /tmp/xdrawchem-2.0rc1/
           tar -czf ~/rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz \
             -C /tmp xdrawchem-2.0rc1/
 

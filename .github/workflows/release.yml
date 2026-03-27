@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo (needed for workflow context)
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4.3.1
 
   create-release:
     name: Create GitHub Release
@@ -36,7 +36,7 @@ jobs:
       contents: write     # needed to create releases and upload assets
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4.3.1
 
       # Download all package artifacts from the parallel build jobs
       - name: Download DEB artifacts (jammy)
