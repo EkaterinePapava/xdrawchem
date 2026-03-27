@@ -38,32 +38,32 @@ jobs:
       contents: write     # needed to create releases and upload assets
 
     steps:
-      - uses: actions/checkout@v4.3.1
+      - uses: actions/checkout@v5.0.1
 
       # Download all package artifacts from the parallel build jobs
       - name: Download DEB artifacts (jammy)
-        uses: actions/download-artifact@v4.3.0
+        uses: actions/download-artifact@v8.0.1
         with:
           name: release-deb-jammy
           path: release-assets/
         continue-on-error: true   # graceful if a build failed
 
       - name: Download DEB artifacts (noble)
-        uses: actions/download-artifact@v4.3.0
+        uses: actions/download-artifact@v8.0.1
         with:
           name: release-deb-noble
           path: release-assets/
         continue-on-error: true
 
       - name: Download RPM artifacts (fedora-40)
-        uses: actions/download-artifact@v4.3.0
+        uses: actions/download-artifact@v8.0.1
         with:
           name: release-rpm-fedora-40
           path: release-assets/
         continue-on-error: true
 
       - name: Download RPM artifacts (rocky-9)
-        uses: actions/download-artifact@v4.3.0
+        uses: actions/download-artifact@v8.0.1
         with:
           name: release-rpm-rocky-9
           path: release-assets/
