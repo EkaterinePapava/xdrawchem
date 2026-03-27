@@ -1,93 +1,97 @@
-# release.yml — triggered on version tags (v*)
-# Waits for all package builds to succeed, then creates a GitHub Release
-# with all .deb and .rpm files attached as release assets.
+# release.yml — creates a GitHub Release when a v* tag is pushed.
 #
-# Usage:
-#   git tag -a v2.0rc1 -m "XDrawChem 2.0 Release Candidate 1"
-#   git push origin v2.0rc1
-#
-# This triggers:
-#   1. ci.yml            — tests pass on Ubuntu 22.04 + 24.04
-#   2. build-deb.yml     — .deb for Jammy + Noble
-#   3. build-rpm.yml     — .rpm for Fedora 40, Rocky 9, Rocky 8
-#   4. THIS workflow     — creates the GitHub Release with all assets
+# Triggers directly on v* tag pushes alongside build-deb and build-rpm.
+# Polls the GitHub API until the build artifacts appear, then downloads
+# them and attaches to the release.
 
 name: Release
 
 on:
-  workflow_run:
-    workflows:
-      - "Build DEB packages"
-      - "Build RPM packages"
-    types:
-      - completed
-    branches-ignore: []   # run for tags too
-
-# Only create a release when BOTH build workflows succeeded on a v* tag
-# The condition is checked per job below.
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  create-release:
+  release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    # Only run when triggered by a tag push and both upstream builds passed
-    if: |
-      github.event.workflow_run.conclusion == 'success' &&
-      startsWith(github.event.workflow_run.head_branch, 'v')
     permissions:
-      contents: write     # needed to create releases and upload assets
+      contents: write
 
     steps:
       - uses: actions/checkout@v5.0.1
 
-      # Download all package artifacts from the parallel build jobs
-      - name: Download DEB artifacts (jammy)
-        uses: actions/download-artifact@v8.0.1
-        with:
-          name: release-deb-jammy
-          path: release-assets/
-        continue-on-error: true   # graceful if a build failed
+      # Poll until both build workflows upload their release artifacts,
+      # or until a 20-minute timeout (whichever comes first).
+      - name: Wait for and download build artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          TAG:  ${{ github.ref_name }}
+        run: |
+          mkdir -p release-assets
+          MAX_WAIT=1200
+          INTERVAL=30
+          ELAPSED=0
 
-      - name: Download DEB artifacts (noble)
-        uses: actions/download-artifact@v8.0.1
-        with:
-          name: release-deb-noble
-          path: release-assets/
-        continue-on-error: true
+          fetch_artifact() {
+            local NAME="$1"
+            local ART_ID
+            ART_ID=$(gh api "repos/$REPO/actions/artifacts?name=$NAME&per_page=50" \
+              --jq ".artifacts[]
+                    | select(.workflow_run.head_branch == \"$TAG\")
+                    | select(.expired == false)
+                    | .id" 2>/dev/null | head -1)
+            echo "$ART_ID"
+          }
 
-      - name: Download RPM artifacts (rocky-9)
-        uses: actions/download-artifact@v8.0.1
-        with:
-          name: release-rpm-rocky-9
-          path: release-assets/
-        continue-on-error: true
+          while [ $ELAPSED -lt $MAX_WAIT ]; do
+            DEB_ID=$(fetch_artifact "release-deb-noble")
+            RPM_ID=$(fetch_artifact "release-rpm-rocky-9")
+            echo "  DEB id=${DEB_ID:-(pending)}  RPM id=${RPM_ID:-(pending)}  (${ELAPSED}s elapsed)"
+            if [ -n "$DEB_ID" ] && [ -n "$RPM_ID" ]; then
+              break
+            fi
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+          done
 
-      - name: List release assets
-        run: ls -lh release-assets/ || echo "(no assets downloaded)"
+          # Download whatever we found (partial release is still useful)
+          for NAME in release-deb-noble release-rpm-rocky-9; do
+            ART_ID=$(fetch_artifact "$NAME")
+            if [ -n "$ART_ID" ]; then
+              echo "Downloading artifact $NAME (id=$ART_ID)..."
+              gh api "repos/$REPO/actions/artifacts/$ART_ID/zip" > /tmp/art.zip
+              unzip -q /tmp/art.zip -d release-assets/
+              rm /tmp/art.zip
+            else
+              echo "Artifact $NAME not found after ${ELAPSED}s — skipping."
+            fi
+          done
 
-      # Extract version from tag (strips leading 'v')
+          echo "=== Release assets ==="
+          ls -lh release-assets/ || echo "(none)"
+
       - name: Set version
         id: version
-        run: echo "version=${{ github.event.workflow_run.head_branch }}" >> "$GITHUB_OUTPUT"
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
-      # Build release notes from CHANGELOG if present
       - name: Extract changelog section
         id: changelog
         run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          # Try to extract the relevant section from CHANGELOG.md
           if [ -f xdrawchem-qt5/CHANGELOG.md ]; then
-            # Get content between first ## heading and second ## heading
             awk '/^## /{if(found)exit; found=1; next} found{print}' \
               xdrawchem-qt5/CHANGELOG.md > /tmp/release-notes.md
           else
-            echo "See commit history for changes in this release." > /tmp/release-notes.md
+            echo "See commit history for changes in this release." \
+              > /tmp/release-notes.md
           fi
           echo "notes_file=/tmp/release-notes.md" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2.3.2
         with:
+          tag_name: ${{ github.ref_name }}
           name: XDrawChem ${{ steps.version.outputs.version }}
           body_path: ${{ steps.changelog.outputs.notes_file }}
           draft: ${{ contains(steps.version.outputs.version, 'rc') || contains(steps.version.outputs.version, 'alpha') || contains(steps.version.outputs.version, 'beta') }}
