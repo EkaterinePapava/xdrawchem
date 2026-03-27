@@ -1,9 +1,11 @@
 # build-rpm.yml — builds .rpm packages for RHEL/Fedora family
-# Uses container jobs to get the correct build environment.
+# Runs on ubuntu-latest (Node 24 host) and invokes docker for the distro
+# build environment. This avoids the Node.js deprecation warning that
+# occurs when actions/checkout runs inside a container job.
+#
 # Produces packages for:
 #   - Fedora 40 (current stable)
-#   - Rocky Linux 9 / AlmaLinux 9  (RHEL 9 compatible)
-#   - Rocky Linux 8 / AlmaLinux 8  (RHEL 8 compatible, needs EPEL)
+#   - Rocky Linux 9 (RHEL 9 compatible, with EPEL)
 
 name: Build RPM packages
 
@@ -18,24 +20,23 @@ on:
 jobs:
   build-rpm:
     name: RPM (${{ matrix.name }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest        # Node 24 host — actions run here, not in container
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: fedora-40
             image: fedora:40
-            pre: |
+            setup: |
               dnf install -y rpm-build rpmdevtools cmake ninja-build gcc-c++ \
                 qt6-qtbase-devel qt6-qttools-devel \
                 openbabel-devel \
                 desktop-file-utils libGL-devel libEGL-devel \
                 pkgconfig
-            epel: ""
 
           - name: rocky-9
             image: rockylinux:9
-            pre: |
+            setup: |
               dnf install -y epel-release dnf-plugins-core
               dnf config-manager --set-enabled crb
               dnf install -y rpm-build rpmdevtools cmake ninja-build gcc-c++ \
@@ -43,69 +44,57 @@ jobs:
                 openbabel-devel \
                 desktop-file-utils libGL-devel libEGL-devel \
                 pkgconfig
-            epel: "epel"
-
-          - name: rocky-8
-            image: rockylinux:8
-            pre: |
-              dnf install -y epel-release dnf-plugins-core
-              dnf config-manager --set-enabled powertools
-              dnf install -y rpm-build rpmdevtools cmake ninja-build gcc-c++ \
-                qt6-qtbase-devel qt6-qttools-devel \
-                openbabel-devel \
-                desktop-file-utils libGL-devel libEGL-devel \
-                pkgconfig
-            epel: "epel"
-
-    container:
-      image: ${{ matrix.image }}
 
     steps:
       - uses: actions/checkout@v4.3.1
 
-      - name: Install build dependencies
-        run: ${{ matrix.pre }}
-
-      - name: Set up rpmbuild tree
+      # Prepare the source tree and spec on the host before entering the container
+      - name: Prepare source tarball and spec
         run: |
-          rpmdev-setuptree
-          # Create source tarball: top-level dir is xdrawchem-2.0rc1/
-          # containing the xdrawchem-qt5/ content directly (flat structure).
-          # %autosetup -n xdrawchem-2.0rc1 in the spec will cd into this dir.
+          mkdir -p rpmbuild/SOURCES rpmbuild/SPECS rpmbuild/RPMS rpmbuild/SRPMS
+          # Flat tarball: xdrawchem-2.0rc1/ contains xdrawchem-qt5 content directly
           mkdir -p /tmp/xdrawchem-2.0rc1
           cp -r xdrawchem-qt5/. /tmp/xdrawchem-2.0rc1/
-          tar -czf ~/rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz \
+          tar -czf rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz \
             -C /tmp xdrawchem-2.0rc1/
+          cp xdrawchem-qt5/SPECS/xdrawchem.spec rpmbuild/SPECS/
 
-      - name: Copy spec file
+      # Run the entire build inside the distro container
+      # Mount the repo into /workspace so we can use the prepared sources
+      - name: Build RPM in container
         run: |
-          cp xdrawchem-qt5/SPECS/xdrawchem.spec ~/rpmbuild/SPECS/
-
-      - name: Build RPM
-        env:
-          QT_QPA_PLATFORM: offscreen
-        run: |
-          rpmbuild -ba ~/rpmbuild/SPECS/xdrawchem.spec \
-            --define "dist .$(echo ${{ matrix.name }} | tr '-' '_')"
+          docker run --rm \
+            -v "${{ github.workspace }}/rpmbuild:/github/home/rpmbuild" \
+            -e QT_QPA_PLATFORM=offscreen \
+            -e HOME=/github/home \
+            ${{ matrix.image }} \
+            bash -exc '
+              ${{ matrix.setup }}
+              rpmdev-setuptree
+              cp /github/home/rpmbuild/SOURCES/xdrawchem-2.0rc1.tar.gz ~/rpmbuild/SOURCES/
+              cp /github/home/rpmbuild/SPECS/xdrawchem.spec ~/rpmbuild/SPECS/
+              rpmbuild -ba ~/rpmbuild/SPECS/xdrawchem.spec \
+                --define "dist .${{ matrix.name }}" \
+                -j$(nproc)
+              # Copy results back to the mounted volume
+              find ~/rpmbuild/RPMS ~/rpmbuild/SRPMS -name "*.rpm" \
+                -exec cp {} /github/home/rpmbuild/ \;
+            '
 
       - name: List produced packages
         run: |
-          find ~/rpmbuild/RPMS ~/rpmbuild/SRPMS -name "*.rpm" | while read f; do
+          ls -lh rpmbuild/*.rpm || echo "No RPMs found"
+          for f in rpmbuild/*.rpm; do
+            [ -f "$f" ] || continue
             echo "=== $f ==="
-            rpm -qip "$f" | grep -E "^Name|^Version|^Release|^Architecture|^Size"
+            rpm -qip "$f" 2>/dev/null | grep -E "^Name|^Version|^Release|^Architecture|^Size" || true
           done
-
-      - name: Collect RPMs
-        run: |
-          mkdir -p rpms
-          find ~/rpmbuild/RPMS -name "*.rpm" -exec cp {} rpms/ \;
-          ls -lh rpms/
 
       - name: Upload RPM artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
           name: xdrawchem-rpm-${{ matrix.name }}
-          path: rpms/*.rpm
+          path: rpmbuild/*.rpm
           retention-days: 30
 
       - name: Upload for release
@@ -113,5 +102,5 @@ jobs:
         uses: actions/upload-artifact@v4.6.2
         with:
           name: release-rpm-${{ matrix.name }}
-          path: rpms/*.rpm
+          path: rpmbuild/*.rpm
           retention-days: 1
